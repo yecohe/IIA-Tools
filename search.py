@@ -137,9 +137,13 @@ def check_and_add_headers(sheet):
         print(f"Sheet '{sheet.title}' already has data.")
 
 # Main function to process keywords and URLs
-def process_keywords(keywords, lang="en", inurl=False, limit=100, sure_sheet, not_sure_sheet, keywords_sheet):
+def process_keywords(keywords, lang="en", inurl=False, limit=100, client):
+    keywords_sheet = client.open_by_key(st.secrets["keywords_id"]).worksheet("Keywords")
+    sure_sheet = client.open_by_key(st.secrets["filter_id"]).worksheet("Sure")
+    not_sure_sheet = client.open_by_key(st.secrets["filter_id"]).worksheet("Not Sure")
     good_keywords = [kw.lower() for kw in keywords_sheet.col_values(1)[1:]]  # Lowercase good keywords
     bad_keywords = [kw.lower() for kw in keywords_sheet.col_values(3)[1:]]  # Lowercase bad keywords
+    
     for keyword in keywords:
         st.success(f"Processing keyword: {keyword}")
         check_and_add_headers(sure_sheet)
