@@ -260,11 +260,12 @@ if credentials_file is not None:
 
         # Handle form submission
         if submit_button:
-            keywords_query=list(keywords_query)   
             # Validate inputs
             if not keywords_query:
                 st.error("Please provide at least one keyword.")
             else:
+                keywords_query = keywords_query.split(",")  # Split by commas
+                keywords_query = [kw.strip() for kw in keywords_query]  # Remove extra spaces around words
                 process_keywords(keywords_query, lang=language, inurl=include_inurl)
                 # Process and display inputs
                 st.write("### Search Details")
