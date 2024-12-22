@@ -1,1 +1,15 @@
 streamlit
+gspread
+random
+oauth2client.service_account
+googlesearch
+datetime
+pytz
+time
+import requests
+bs4
+pycld2
+re
+googletrans
+urllib.parse
+collections
