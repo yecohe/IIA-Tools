@@ -1,5 +1,5 @@
 import random
-from google.oauth2 import service_account
+from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime
 import pytz
 import time
@@ -209,10 +209,8 @@ if credentials_file is not None:
         ]
 
         # Read and process the credentials file
-        credentials = service_account.Credentials.from_json_keyfile_dict(
-            json.loads(credentials_file.read()),
-            scopes=scope
-        )
+        credentials_file = json.loads(credentials_file.read())
+        credentials = ServiceAccountCredentials.from_json_keyfile_dict(credentials_file, scope)
         client = gspread.authorize(credentials)
         
         st.success("Credentials file uploaded and authenticated successfully!")
