@@ -6,7 +6,6 @@ pytz
 requests
 bs4
 pycld2
-re
 googletrans
 urllib.parse
 collections
