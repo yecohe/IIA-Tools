@@ -196,69 +196,74 @@ st.set_page_config(page_title="Internet Archive Tool", layout="centered")
 
 # Ask for credentials file
 st.title("Upload Credentials File")
-credentials_file = st.file_uploader("Please upload your credentials file", type="txt")
-credentials_text = credentials_file.read().decode("utf-8")
-print(credentials_text)
+credentials_file = st.file_uploader("Please upload your OAuth 2.0 JSON credentials file", type="json")
 
-if credentials_text is not None:
-    # Read and process the credentials file (if needed)
-    st.success("Credentials file uploaded successfully!")
-    
-    # Credentials
-    scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
-    credentials = ServiceAccountCredentials.from_json_keyfile_dict(credentials_text, scope)
-    client = gspread.authorize(credentials)
-    
-    # Title
-    st.title("Internet Archive - Keywords Search Tool")
-
-    # Description
-    st.write(
-        "Use this tool to add URLs to the internet archive based on your keyword searches. "
-        "Fill in the details below to customize your search."
-    )
-
-    # Inputs for Keywords Search
-    with st.form("keywords_search_form"):
-        st.subheader("Keywords Search")
-
-        # Keywords input
-        keywords_list = st.text_area(
-            "Keywords List (separate by commas)",
-            help="Enter the keywords you want to search for. Use commas to separate multiple keywords."
+if credentials_file is not None:
+    try:
+        # Read and process the credentials file
+        credentials = service_account.Credentials.from_service_account_info(
+            st.json.loads(credentials_file.read())
         )
 
-        # Language input
-        language = st.text_input(
-            "Language", 
-            value="English", 
-            help="Enter the language for the search."
+        # Credentials
+        scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
+        credentials = ServiceAccountCredentials.from_json_keyfile_dict(credentials_text, scope)
+        client = gspread.authorize(credentials)
+
+        st.success("Credentials file uploaded and authenticated successfully!")
+
+        # Title
+        st.title("Internet Archive - Keywords Search Tool")
+
+        # Description
+        st.write(
+            "Use this tool to add URLs to the internet archive based on your keyword searches. "
+            "Fill in the details below to customize your search."
         )
 
-        # Include inurl checkbox
-        include_inurl = st.checkbox(
-            "Include 'inurl' in the search",
-            value=False,
-            help="Check this box if you want to include 'inurl' in the search results."
-        )
+        # Inputs for Keywords Search
+        with st.form("keywords_search_form"):
+            st.subheader("Keywords Search")
 
-        # Submit button
-        submit_button = st.form_submit_button("Add to Archive")
+            # Keywords input
+            keywords_list = st.text_area(
+                "Keywords List (separate by commas)",
+                help="Enter the keywords you want to search for. Use commas to separate multiple keywords."
+            )
 
-    # Handle form submission
-    if submit_button:
-        # Validate inputs
-        if not keywords_list.strip():
-            st.error("Please provide at least one keyword.")
-        else:
-            # Process and display inputs
-            st.success("Keywords successfully added to the archive queue!")
-            st.write("### Search Details")
-            st.write(f"**Keywords List:** {keywords_list}")
-            st.write(f"**Language:** {language}")
-            st.write(f"**Include 'inurl':** {'Yes' if include_inurl else 'No'}")
+            # Language input
+            language = st.text_input(
+                "Language", 
+                value="English", 
+                help="Enter the language for the search."
+            )
 
-            # Simulate adding to the archive (Replace with actual backend logic)
-            st.info("The URLs are being processed and added to the archive.")
+            # Include inurl checkbox
+            include_inurl = st.checkbox(
+                "Include 'inurl' in the search",
+                value=False,
+                help="Check this box if you want to include 'inurl' in the search results."
+            )
+
+            # Submit button
+            submit_button = st.form_submit_button("Add to Archive")
+
+        # Handle form submission
+        if submit_button:
+            # Validate inputs
+            if not keywords_list.strip():
+                st.error("Please provide at least one keyword.")
+            else:
+                # Process and display inputs
+                st.success("Keywords successfully added to the archive queue!")
+                st.write("### Search Details")
+                st.write(f"**Keywords List:** {keywords_list}")
+                st.write(f"**Language:** {language}")
+                st.write(f"**Include 'inurl':** {'Yes' if include_inurl else 'No'}")
+
+                # Simulate adding to the archive (Replace with actual backend logic)
+                st.info("The URLs are being processed and added to the archive.")
+    except Exception as e:
+        st.error(f"Error processing credentials file: {e}")
 else:
     st.warning("Please upload the credentials file to proceed.")
