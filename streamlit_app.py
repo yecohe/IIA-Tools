@@ -2,7 +2,7 @@ import streamlit as st
 import json
 from google.oauth2 import service_account
 import gspread
-import keywords_search
+import keywords_search.run
 import wikidata_tool
 import automatic_filter
 
