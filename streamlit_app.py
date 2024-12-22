@@ -95,7 +95,7 @@ if credentials_file is not None:
         else:
             keywords_query = keywords_query.split(",")  # Split by commas
             keywords_query = [kw.strip() for kw in keywords_query]  # Remove extra spaces around words
-            process_keywords(keywords_query, lang=language, inurl=include_inurl, limit=100, client)
+            process_keywords(client, keywords_query, lang=language, inurl=include_inurl, limit=100)
             # Process and display inputs
             st.write("### Search Details")
             st.write(f"**Keywords List:** {keywords_query}")
