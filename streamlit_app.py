@@ -16,8 +16,6 @@ import streamlit as st
 import json
 
 
-
-
 # Error handler function to streamline error handling
 def error_handler(url, error_message):
     print(f"Error processing '{url}': {error_message}")
@@ -147,8 +145,7 @@ def add_headers(sheet, headers):
     sheet.insert_row(headers, 1)
 
 # Main function to process keywords and URLs
-def process_keywords(lang="yi"):
-    keywords = query_sheet.col_values(1)
+def process_keywords(keywords, lang="en", inurl=False):
     headers = ["URL", "Tier", "Details", "Source", "Good Keywords", "Bad Keywords", "Title", "Description", "Languages", "Timestamp"]
     #add_headers(sure_sheet, headers)
     #add_headers(not_sure_sheet, headers)
@@ -161,9 +158,9 @@ def process_keywords(lang="yi"):
         try:
             # Perform searches
             homepage_urls = search_and_filter_urls(keyword, page_size=10, language=lang, homepage_only=True)
-            inurl_urls = search_and_filter_urls(f"inurl:{keyword}", page_size=10, language=lang, homepage_only=True)
-
-            all_urls = homepage_urls + inurl_urls
+            if inurl:
+                inurl_urls = search_and_filter_urls(f"inurl:{keyword}", page_size=10, language=lang, homepage_only=True)
+                all_urls = homepage_urls + inurl_urls
 
             for url, source in all_urls:
                 try:
@@ -192,7 +189,6 @@ def process_keywords(lang="yi"):
         print(f"Finished processing keyword: {keyword}")
 
 
-
 # Page configuration
 st.set_page_config(page_title="Internet Archive Tool", layout="centered")
 
@@ -216,6 +212,13 @@ if credentials_file is not None:
         )
         client = gspread.authorize(credentials)
         
+        # Open the Google Sheet by ID
+        keywords_sheet = client.open_by_key(keyword_id).worksheet("Keywords")
+        sure_sheet = client.open_by_key(filter_id).worksheet("Sure")
+        not_sure_sheet = client.open_by_key(filter_id).worksheet("Not Sure")
+        good_keywords = [kw.lower() for kw in keywords_sheet.col_values(1)[1:]]  # Lowercase good keywords
+        bad_keywords = [kw.lower() for kw in keywords_sheet.col_values(3)[1:]]  # Lowercase bad keywords
+        
         st.success("Credentials file uploaded and authenticated successfully!")
 
         # Title
@@ -232,7 +235,7 @@ if credentials_file is not None:
             st.subheader("Keywords Search")
 
             # Keywords input
-            keywords_list = st.text_area(
+            keywords_query = st.text_area(
                 "Keywords List (separate by commas)",
                 help="Enter the keywords you want to search for. Use commas to separate multiple keywords."
             )
@@ -240,7 +243,7 @@ if credentials_file is not None:
             # Language input
             language = st.text_input(
                 "Language", 
-                value="English", 
+                value="en", 
                 help="Enter the language for the search."
             )
 
@@ -252,7 +255,7 @@ if credentials_file is not None:
             )
 
             # Submit button
-            submit_button = st.form_submit_button("Add to Archive")
+            submit_button = st.form_submit_button("Search")
 
         # Handle form submission
         if submit_button:
@@ -260,15 +263,16 @@ if credentials_file is not None:
             if not keywords_list.strip():
                 st.error("Please provide at least one keyword.")
             else:
+                process_keywords(keywords_query, lang=language, inurl=include_inurl)
                 # Process and display inputs
                 st.success("Keywords successfully added to the archive queue!")
                 st.write("### Search Details")
-                st.write(f"**Keywords List:** {keywords_list}")
+                st.write(f"**Keywords List:** {keywords_query}")
                 st.write(f"**Language:** {language}")
                 st.write(f"**Include 'inurl':** {'Yes' if include_inurl else 'No'}")
 
                 # Simulate adding to the archive (Replace with actual backend logic)
-                st.info("The URLs are being processed and added to the archive.")
+                st.info("The URLs are being processed and added to the file.")
     except Exception as e:
         st.error(f"Error processing credentials file: {e}")
 else:
