@@ -41,14 +41,7 @@ with st.sidebar:
                 scopes=scope
             )
             client = gspread.authorize(credentials)
-            
-            # Open the Google Sheet by ID
-            keywords_sheet = client.open_by_key(st.secrets["keywords_id"]).worksheet("Keywords")
-            sure_sheet = client.open_by_key(st.secrets["filter_id"]).worksheet("Sure")
-            not_sure_sheet = client.open_by_key(st.secrets["filter_id"]).worksheet("Not Sure")
-            good_keywords = [kw.lower() for kw in keywords_sheet.col_values(1)[1:]]  # Lowercase good keywords
-            bad_keywords = [kw.lower() for kw in keywords_sheet.col_values(3)[1:]]  # Lowercase bad keywords
-            
+                        
             st.success("Credentials file uploaded and authenticated successfully!")
 
         except Exception as e:
