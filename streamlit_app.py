@@ -14,6 +14,7 @@ from collections import Counter
 import re
 import streamlit as st
 import json
+from googlesearch import search
 
 
 # Error handler function to streamline error handling
