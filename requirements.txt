@@ -7,5 +7,4 @@ requests
 bs4
 pycld2
 googletrans
-urllib
 collections
