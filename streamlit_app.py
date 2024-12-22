@@ -209,7 +209,7 @@ if credentials_file is not None:
 
         # Read and process the credentials file
         credentials = service_account.Credentials.from_service_account_info(
-            st.json.loads(credentials_file.read()),
+            json.loads(credentials_file.read()),
             scopes=scope
         )
         client = gspread.authorize(credentials)
