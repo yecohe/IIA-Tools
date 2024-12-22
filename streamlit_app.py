@@ -141,14 +141,20 @@ def update_google_sheets(rows_to_sure, rows_to_not_sure):
         not_sure_sheet.append_rows(rows_to_not_sure, value_input_option='RAW')
 
 # Function to add headers to sheets
-def add_headers(sheet, headers):
+def check_and_add_headers(sheet, headers):
     headers = ["URL", "Tier", "Details", "Source", "Good Keywords", "Bad Keywords", "Title", "Description", "Languages", "Timestamp"]
-    sheet.insert_row(headers, 1)
+    # Check if the sheet has any data (excluding the header row)
+    if len(sheet.get_all_values()) <= 1:  # Only the header exists
+        sheet.insert_row(headers, 1)
+    else:
+        print(f"Sheet '{sheet.title}' already has data.")
 
 # Main function to process keywords and URLs
 def process_keywords(keywords, lang="en", inurl=False, limit=100):
     for keyword in keywords:
         st.success(f"Processing keyword: {keyword}")
+        check_and_add_headers(sure_sheet, headers)
+        check_and_add_headers(not_sure_sheet, headers)
         rows_to_sure = []
         rows_to_not_sure = []
 
