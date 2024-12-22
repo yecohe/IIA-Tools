@@ -20,7 +20,7 @@ if authenticated:
     apps = {
         "Keywords Search Tool": keywords_tool.run,
         "Wikidata Tool": wikidata_tool.run,
-        "Automatic Filter Tool": automatic_filter.run,
+        "Automatic Filter Tool": filter_tool.run,
     }
     choice = st.sidebar.radio("Select an app", list(apps.keys()))
     apps[choice]()  # Render the selected app
