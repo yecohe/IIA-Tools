@@ -121,7 +121,7 @@ def search_and_filter_urls(query, num_results=100, language="en", homepage_only=
     return classified_urls
 
 # Function to update Google Sheets after processing each keyword
-def update_google_sheets(rows_to_sure, rows_to_not_sure):
+def update_google_sheets(rows_to_sure, rows_to_not_sure, sure_sheet, not_sure_sheet):
     if rows_to_sure:
         sure_sheet.append_rows(rows_to_sure, value_input_option='RAW')
     if rows_to_not_sure:
@@ -137,14 +137,16 @@ def check_and_add_headers(sheet):
         print(f"Sheet '{sheet.title}' already has data.")
 
 # Main function to process keywords and URLs
-def process_keywords(keywords, lang="en", inurl=False, limit=100):
+def process_keywords(keywords, lang="en", inurl=False, limit=100, sure_sheet, not_sure_sheet, keywords_sheet):
+    good_keywords = [kw.lower() for kw in keywords_sheet.col_values(1)[1:]]  # Lowercase good keywords
+    bad_keywords = [kw.lower() for kw in keywords_sheet.col_values(3)[1:]]  # Lowercase bad keywords
     for keyword in keywords:
         st.success(f"Processing keyword: {keyword}")
         check_and_add_headers(sure_sheet)
         check_and_add_headers(not_sure_sheet)
         rows_to_sure = []
         rows_to_not_sure = []
-
+        
         try:
             # Perform searches
             homepage_urls = search_and_filter_urls(keyword, num_results=limit, language=lang, homepage_only=True)
@@ -174,6 +176,6 @@ def process_keywords(keywords, lang="en", inurl=False, limit=100):
             st.error(f"Error processing keyword '{keyword}': {e}")
 
         # Update Google Sheets after processing the keyword
-        update_google_sheets(rows_to_sure, rows_to_not_sure)
+        update_google_sheets(rows_to_sure, rows_to_not_sure, sure_sheet, not_sure_sheet)
         st.success(f"Finished processing keyword: {keyword}")
 
