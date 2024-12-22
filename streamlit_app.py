@@ -5,16 +5,11 @@ from datetime import datetime
 import pytz
 import time
 import requests
-from bs4 import BeautifulSoup
-import pycld2 as cld2
 import re
-from googletrans import Translator
-from urllib.parse import urlparse
 from collections import Counter
 import re
 import streamlit as st
 import json
-from googlesearch import search
 
 
 # Error handler function to streamline error handling
