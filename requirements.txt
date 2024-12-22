@@ -6,7 +6,7 @@ googlesearch
 datetime
 pytz
 time
-import requests
+requests
 bs4
 pycld2
 re
