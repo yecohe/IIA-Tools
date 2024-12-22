@@ -53,7 +53,7 @@ if authenticated:
         "Automatic Filter Tool": filter_tool.run,
     }
     choice = st.sidebar.radio("Select an app", list(apps.keys()))
-    apps[choice]()  # Render the selected app
+    apps[choice]  # Render the selected app
 else:
     st.warning("Please upload the credentials file to access the tools.")
 
