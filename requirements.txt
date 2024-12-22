@@ -1,7 +1,6 @@
 streamlit
 gspread
 oauth2client
-googlesearch
 datetime
 pytz
 time
