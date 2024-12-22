@@ -164,6 +164,7 @@ def process_keywords(client, keywords, lang="en", inurl=False, limit=100):
                     languages = detect_language(title, description)
                     score, details, good_count, bad_count = calculate_score(title, description, url, languages)
                     timestamp = datetime.now(pytz.timezone('Asia/Jerusalem')).strftime("%Y-%m-%d %H:%M:%S")
+                    source = f"google search for '{source}'"
                     row_data = [url, title, description, score, details, source, ", ".join(languages), good_count, bad_count, timestamp]
 
                     if score in ["A", "B"]:
