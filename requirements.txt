@@ -8,3 +8,4 @@ bs4
 pycld2
 googletrans
 googlesearch-python
+SPARQLWrapper
