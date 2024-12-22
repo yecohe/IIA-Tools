@@ -201,11 +201,10 @@ credentials_file = st.file_uploader("Please upload your OAuth 2.0 JSON credentia
 if credentials_file is not None:
     try:
         # Read and process the credentials file
-        credentials_file=st.json.loads(credentials_file.read())
-
-        # Credentials
-        scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
-        credentials = ServiceAccountCredentials.from_json_keyfile_dict(credentials_file, scope)
+        credentials = ServiceAccountCredentials.from_service_account_info(
+            st.json.loads(credentials_file.read()),
+            scopes=scope
+        )
         client = gspread.authorize(credentials)
 
         st.success("Credentials file uploaded and authenticated successfully!")
