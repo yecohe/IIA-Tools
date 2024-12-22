@@ -133,8 +133,6 @@ def check_and_add_headers(sheet):
     # Check if the sheet has any data (excluding the header row)
     if len(sheet.get_all_values()) <= 1:  # Only the header exists
         sheet.insert_row(headers, 1)
-    else:
-        print(f"Sheet '{sheet.title}' already has data.")
 
 # Main function to process keywords and URLs
 def process_keywords(client, keywords, lang="en", inurl=False, limit=100):
@@ -176,6 +174,7 @@ def process_keywords(client, keywords, lang="en", inurl=False, limit=100):
                     st.error(f"Error processing URL '{url}': {e}")
                     error_row = [url, "Error", "Error", source, "", "", "", "", "", ""]
                     rows_to_not_sure.append(error_row)
+                    
         # Update Google Sheets after processing the keyword
         update_google_sheets(rows_to_sure, rows_to_not_sure, sure_sheet, not_sure_sheet)
         st.success(f"Finished processing keyword: {keyword}")
