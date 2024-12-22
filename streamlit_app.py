@@ -142,7 +142,7 @@ def update_google_sheets(rows_to_sure, rows_to_not_sure):
 
 # Function to add headers to sheets
 def check_and_add_headers(sheet):
-    headers = ["URL", "Tier", "Details", "Source", "Good Keywords", "Bad Keywords", "Title", "Description", "Languages", "Timestamp"]
+    headers = ["URL", "Title", "Description", "Tier", "Details", "Source","Languages", "Good Keywords", "Bad Keywords" , "Timestamp"]
     # Check if the sheet has any data (excluding the header row)
     if len(sheet.get_all_values()) <= 1:  # Only the header exists
         sheet.insert_row(headers, 1)
@@ -170,9 +170,8 @@ def process_keywords(keywords, lang="en", inurl=False, limit=100):
                     title, description = get_title_and_description(url)
                     languages = detect_language(title, description)
                     score, details, good_count, bad_count = calculate_score(title, description, url, languages)
-
                     timestamp = datetime.now(pytz.timezone('Asia/Jerusalem')).strftime("%Y-%m-%d %H:%M:%S")
-                    row_data = [url, score, details, source, good_count, bad_count, title, description, ", ".join(languages), timestamp]
+                    row_data = [url, title, description, score, details, source, ", ".join(languages), good_count, bad_count, timestamp]
 
                     if score in ["A", "B"]:
                         rows_to_sure.append(row_data)
