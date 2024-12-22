@@ -197,14 +197,15 @@ st.set_page_config(page_title="Internet Archive Tool", layout="centered")
 # Ask for credentials file
 st.title("Upload Credentials File")
 credentials_file = st.file_uploader("Please upload your credentials file", type="txt")
+credentials_text = credentials_file.read().decode("utf-8")
 
-if credentials_file is not None:
+if credentials_text is not None:
     # Read and process the credentials file (if needed)
     st.success("Credentials file uploaded successfully!")
     
     # Credentials
     scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
-    credentials = ServiceAccountCredentials.from_json_keyfile_dict(credentials_file, scope)
+    credentials = ServiceAccountCredentials.from_json_keyfile_dict(credentials_text, scope)
     client = gspread.authorize(credentials)
     
     # Title
