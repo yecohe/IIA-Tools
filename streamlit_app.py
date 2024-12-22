@@ -3,8 +3,8 @@ import json
 from google.oauth2 import service_account
 import gspread
 import keywords_tool.run
-import wikidata_tool
-import filter_tool
+import wikidata_tool.run
+import filter_tool.run
 
 
 # Global title
