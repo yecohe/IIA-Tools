@@ -95,15 +95,12 @@ if credentials_file is not None:
         else:
             keywords_query = keywords_query.split(",")  # Split by commas
             keywords_query = [kw.strip() for kw in keywords_query]  # Remove extra spaces around words
-            process_keywords(client, keywords_query, lang=language, inurl=include_inurl, limit=100)
-            # Process and display inputs
+
             st.write("### Search Details")
             st.write(f"**Keywords List:** {keywords_query}")
             st.write(f"**Language:** {language}")
             st.write(f"**Include 'inurl':** {'Yes' if include_inurl else 'No'}")
-            st.success("Keywords successfully added to the archive queue!")
-
-            # Simulate adding to the archive (Replace with actual backend logic)
+            process_keywords(client, keywords_query, lang=language, inurl=include_inurl, limit=100)
             st.info("The URLs are being processed and added to the file.")
 else:
     st.warning("Please upload the credentials file to proceed with keyword search.")
