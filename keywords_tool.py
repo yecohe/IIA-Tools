@@ -1,5 +1,4 @@
 def run():
-
     # Main interface for keyword processing (only accessible if credentials are uploaded)
     if credentials_file is not None:
         st.subheader("Keywords Search Tool")
@@ -53,5 +52,5 @@ def run():
                 st.write(f"**Include 'inurl':** {'Yes' if include_inurl else 'No'}")
                 process_keywords(client, keywords_query, lang=language, inurl=include_inurl, limit=100)
                 st.info("The URLs are being processed and added to the file.")
-else:
-    st.warning("Please upload the credentials file to proceed with keyword search.")
+    else:
+        st.warning("Please upload the credentials file to proceed with keyword search.")
