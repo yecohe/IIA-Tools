@@ -7,4 +7,3 @@ requests
 bs4
 pycld2
 googletrans
-collections
