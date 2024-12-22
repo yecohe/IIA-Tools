@@ -19,7 +19,7 @@ from googlesearch import search
 
 # Error handler function to streamline error handling
 def error_handler(url, error_message):
-    print(f"Error processing '{url}': {error_message}")
+    st.error(f"Error processing '{url}': {error_message}")
     return "Error", "Error"
 
 # Function to fetch title and description from a URL
@@ -116,8 +116,8 @@ def calculate_score(title, description, url, languages):
         return score, details, good_count, bad_count
 
 # Function to search and filter URLs based on query
-def search_and_filter_urls(query, page_size, language, homepage_only=False):
-    search_results = search(query, num=page_size, lang=language)
+def search_and_filter_urls(query, num_results=100, language="en", homepage_only=False):
+    search_results = search(query, num_results, lang=language)
     classified_urls = []
 
     for result in search_results:
@@ -146,7 +146,7 @@ def add_headers(sheet, headers):
     sheet.insert_row(headers, 1)
 
 # Main function to process keywords and URLs
-def process_keywords(keywords, lang="en", inurl=False):
+def process_keywords(keywords, lang="en", inurl=False, limit=100):
     for keyword in keywords:
         st.success(f"Processing keyword: {keyword}")
         rows_to_sure = []
@@ -154,9 +154,9 @@ def process_keywords(keywords, lang="en", inurl=False):
 
         try:
             # Perform searches
-            homepage_urls = search_and_filter_urls(keyword, page_size=10, language=lang, homepage_only=True)
+            homepage_urls = search_and_filter_urls(keyword, num_results=limit, language=lang, homepage_only=True)
             if inurl:
-                inurl_urls = search_and_filter_urls(f"inurl:{keyword}", page_size=10, language=lang, homepage_only=True)
+                inurl_urls = search_and_filter_urls(f"inurl:{keyword}", num_results=limit, language=lang, homepage_only=True)
                 all_urls = homepage_urls + inurl_urls
 
             for url, source in all_urls:
@@ -183,7 +183,7 @@ def process_keywords(keywords, lang="en", inurl=False):
 
         # Update Google Sheets after processing the keyword
         update_google_sheets(rows_to_sure, rows_to_not_sure)
-        st.sucsses(f"Finished processing keyword: {keyword}")
+        st.success(f"Finished processing keyword: {keyword}")
 
 
 # Page configuration
@@ -262,7 +262,7 @@ if credentials_file is not None:
             else:
                 keywords_query = keywords_query.split(",")  # Split by commas
                 keywords_query = [kw.strip() for kw in keywords_query]  # Remove extra spaces around words
-                process_keywords(keywords_query, lang=language, inurl=include_inurl)
+                process_keywords(keywords_query, lang=language, inurl=include_inurl,limit=100)
                 # Process and display inputs
                 st.write("### Search Details")
                 st.write(f"**Keywords List:** {keywords_query}")
