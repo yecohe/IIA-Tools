@@ -1,7 +1,7 @@
-import gspread
-from google.oauth2 import service_account
 import streamlit as st
-from apps import keywords_search, wikidata_tool, automatic_filter
+import json
+from google.oauth2 import service_account
+import gspread
 
 # Global title
 st.title("Israeli Internet Archive")
@@ -11,8 +11,34 @@ with st.sidebar:
     st.subheader("Upload Credentials File")
     credentials_file = st.file_uploader("Please upload your OAuth 2.0 JSON credentials file", type="json")
 
-# Authentication
-authenticated = authenticate_user(credentials_file)
+# Initialize app options and flag
+apps = {}
+authenticated = False
+
+# Handle credentials upload
+if credentials_file is not None:
+    try:
+        # Define the scope for Google API
+        scope = [
+            "https://spreadsheets.google.com/feeds", 
+            "https://www.googleapis.com/auth/spreadsheets", 
+            "https://www.googleapis.com/auth/drive"
+        ]
+        
+        # Read credentials
+        credentials = service_account.Credentials.from_service_account_info(
+            json.loads(credentials_file.read().decode("utf-8")), 
+            scopes=scope
+        )
+        
+        # Authenticate with Google Sheets
+        client = gspread.authorize(credentials)
+        st.sidebar.success("Credentials uploaded and authenticated successfully!")
+        authenticated = True
+
+    except Exception as e:
+        st.sidebar.error(f"Error processing credentials: {e}")
+
 
 # Menu Logic
 if authenticated:
