@@ -263,7 +263,7 @@ if credentials_file is not None:
             keywords_query=list(keywords_query)   
             # Validate inputs
             if not keywords_query:
-                #st.error("Please provide at least one keyword.")
+                st.error("Please provide at least one keyword.")
             else:
                 process_keywords(keywords_query, lang=language, inurl=include_inurl)
                 # Process and display inputs
