@@ -1,5 +1,5 @@
 import random
-from oauth2client.service_account import ServiceAccountCredentials
+from google.oauth2 import service_account
 from datetime import datetime
 import pytz
 import time
@@ -200,8 +200,15 @@ credentials_file = st.file_uploader("Please upload your OAuth 2.0 JSON credentia
 
 if credentials_file is not None:
     try:
+        # Define the scope for Google API
+        scope = [
+            "https://spreadsheets.google.com/feeds", 
+            "https://www.googleapis.com/auth/spreadsheets", 
+            "https://www.googleapis.com/auth/drive"
+        ]
+
         # Read and process the credentials file
-        credentials = ServiceAccountCredentials.from_service_account_info(
+        credentials = service_account.Credentials.from_service_account_info(
             st.json.loads(credentials_file.read()),
             scopes=scope
         )
