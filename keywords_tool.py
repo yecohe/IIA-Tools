@@ -1,7 +1,7 @@
 import streamlit as st
 from search import process_keywords
 
-def run():
+def run(client):
     # Main interface for keyword processing (only accessible if credentials are uploaded)
     st.subheader("Keywords Search Tool")
     st.write("This tool searches google fr keywords.")
