@@ -182,5 +182,3 @@ def process_keywords(client, keywords, lang="en", inurl=False, limit=100):
         except Exception as e:
             st.error(f"Error processing keyword '{keyword}': {e}")
 
-
-
