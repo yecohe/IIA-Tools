@@ -19,7 +19,7 @@ def run(client):
         "Arabic (ar)": "ar",
         "French (fr)": "fr",
         "German (de)": "de",
-        "Italian (it)": "it"
+        "Italian (it)": "it",
         "Portuguese (Brazil) (pt-BR)": "pt-BR"
     }
     
