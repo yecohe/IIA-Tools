@@ -48,7 +48,7 @@ if credentials_file is not None:
 if authenticated:
     st.sidebar.subheader("Menu")
     apps = {
-        "Keywords Search Tool": keywords_tool.run,
+        "Keywords Search Tool": keywords_tool.run(client),
         "Wikidata Tool": wikidata_tool.run,
         "Automatic Filter Tool": filter_tool.run,
     }
