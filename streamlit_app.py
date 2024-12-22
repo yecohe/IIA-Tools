@@ -213,7 +213,7 @@ if credentials_file is not None:
         client = gspread.authorize(credentials)
         
         # Open the Google Sheet by ID
-        keywords_sheet = client.open_by_key(st.secrets["keywords_id").worksheet("Keywords")
+        keywords_sheet = client.open_by_key(st.secrets["keywords_id"]).worksheet("Keywords")
         sure_sheet = client.open_by_key(filter_id).worksheet("Sure")
         not_sure_sheet = client.open_by_key(filter_id).worksheet("Not Sure")
         good_keywords = [kw.lower() for kw in keywords_sheet.col_values(1)[1:]]  # Lowercase good keywords
