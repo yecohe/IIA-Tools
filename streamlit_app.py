@@ -18,7 +18,7 @@ authenticated = authenticate_user(credentials_file)
 if authenticated:
     st.sidebar.subheader("Menu")
     apps = {
-        "Keywords Search Tool": keywords_search.run,
+        "Keywords Search Tool": keywords_tool.run,
         "Wikidata Tool": wikidata_tool.run,
         "Automatic Filter Tool": automatic_filter.run,
     }
