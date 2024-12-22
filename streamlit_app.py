@@ -198,6 +198,7 @@ st.set_page_config(page_title="Internet Archive Tool", layout="centered")
 st.title("Upload Credentials File")
 credentials_file = st.file_uploader("Please upload your credentials file", type="txt")
 credentials_text = credentials_file.read().decode("utf-8")
+print(credentials_text)
 
 if credentials_text is not None:
     # Read and process the credentials file (if needed)
