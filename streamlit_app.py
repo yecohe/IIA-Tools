@@ -41,6 +41,11 @@ with st.sidebar:
                 scopes=scope
             )
             client = gspread.authorize(credentials)
+            # Open the Google Sheet by ID
+            keywords_sheet = client.open_by_key(st.secrets["keywords_id"]).worksheet("Keywords")
+            sure_sheet = client.open_by_key(st.secrets["filter_id"]).worksheet("Sure")
+            not_sure_sheet = client.open_by_key(st.secrets["filter_id"]).worksheet("Not Sure")
+
                         
             st.success("Credentials file uploaded and authenticated successfully!")
 
