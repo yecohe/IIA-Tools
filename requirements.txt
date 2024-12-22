@@ -1,6 +1,5 @@
 streamlit
 gspread
-random
 oauth2client.service_account
 googlesearch
 datetime
