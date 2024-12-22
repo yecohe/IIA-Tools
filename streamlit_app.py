@@ -151,7 +151,7 @@ def process_keywords(keywords, lang="en", inurl=False):
     #add_headers(not_sure_sheet, headers)
 
     for keyword in keywords:
-        print(f"Processing keyword: {keyword}")
+        st.success(f"Processing keyword: {keyword}")
         rows_to_sure = []
         rows_to_not_sure = []
 
