@@ -2,9 +2,9 @@ import streamlit as st
 import json
 from google.oauth2 import service_account
 import gspread
-import keywords_tool.run
-import wikidata_tool.run
-import filter_tool.run
+import keywords_tool
+import wikidata_tool
+import filter_tool
 
 
 # Global title
