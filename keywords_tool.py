@@ -1,6 +1,6 @@
 def run():
     # Main interface for keyword processing (only accessible if credentials are uploaded)
-    if credentials_file is not None:
+    if authenticated:
         st.subheader("Keywords Search Tool")
         st.write("This tool searches google fr keywords.")
     
