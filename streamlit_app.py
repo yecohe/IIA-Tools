@@ -260,16 +260,16 @@ if credentials_file is not None:
         # Handle form submission
         if submit_button:
             # Validate inputs
-            if not keywords_list.strip():
+            if not keywords_query.strip():
                 st.error("Please provide at least one keyword.")
             else:
                 process_keywords(keywords_query, lang=language, inurl=include_inurl)
                 # Process and display inputs
-                st.success("Keywords successfully added to the archive queue!")
                 st.write("### Search Details")
                 st.write(f"**Keywords List:** {keywords_query}")
                 st.write(f"**Language:** {language}")
                 st.write(f"**Include 'inurl':** {'Yes' if include_inurl else 'No'}")
+                st.success("Keywords successfully added to the archive queue!")
 
                 # Simulate adding to the archive (Replace with actual backend logic)
                 st.info("The URLs are being processed and added to the file.")
