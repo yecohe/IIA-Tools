@@ -176,11 +176,12 @@ def process_keywords(client, keywords, lang="en", inurl=False, limit=100):
                     st.error(f"Error processing URL '{url}': {e}")
                     error_row = [url, "Error", "Error", source, "", "", "", "", "", ""]
                     rows_to_not_sure.append(error_row)
-
-        except Exception as e:
-            st.error(f"Error processing keyword '{keyword}': {e}")
-
         # Update Google Sheets after processing the keyword
         update_google_sheets(rows_to_sure, rows_to_not_sure, sure_sheet, not_sure_sheet)
         st.success(f"Finished processing keyword: {keyword}")
+        
+        except Exception as e:
+            st.error(f"Error processing keyword '{keyword}': {e}")
+
+
 
