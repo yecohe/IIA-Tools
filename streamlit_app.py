@@ -10,6 +10,7 @@ from collections import Counter
 import re
 import streamlit as st
 import json
+from search import process_keywords
 
 
 # Error handler function to streamline error handling
