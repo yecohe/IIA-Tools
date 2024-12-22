@@ -1,3 +1,5 @@
+import streamlit as st
+
 def run():
     # Main interface for keyword processing (only accessible if credentials are uploaded)
     st.subheader("Keywords Search Tool")
