@@ -12,6 +12,17 @@ def run(client):
         "Fill in the details below to customize your search."
     )
 
+    # Language options and descriptions
+    language_options = {
+        "English (en)": "en",
+        "Hebrew (he)": "he",
+        "Arabic (ar)": "ar",
+        "French (fr)": "fr",
+        "German (de)": "de",
+        "Italian (it)": "it"
+        "Portuguese (Brazil) (pt-BR)": "pt-BR"
+    }
+    
     # Inputs for Keywords Search
     with st.form("keywords_search_form"):
         st.subheader("Keywords Search")
@@ -22,12 +33,13 @@ def run(client):
             help="Enter the keywords you want to search for. Use commas to separate multiple keywords."
         )
 
-        # Language input
-        language = st.text_input(
-            "Language", 
-            value="en", 
-            help="Enter the language for the search."
+        # Language dropdown
+        selected_language = st.selectbox(
+            "Select Language for Search",
+            options=list(language_options.keys()),
+            help="Choose the language for the keyword search."
         )
+        language = language_options[selected_language]  # Get the language code
 
         # Include inurl checkbox
         include_inurl = st.checkbox(
