@@ -1,6 +1,5 @@
 import random
 from oauth2client.service_account import ServiceAccountCredentials
-from googlesearch import search
 from datetime import datetime
 import pytz
 import time
