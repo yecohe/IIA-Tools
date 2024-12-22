@@ -142,15 +142,11 @@ def update_google_sheets(rows_to_sure, rows_to_not_sure):
 
 # Function to add headers to sheets
 def add_headers(sheet, headers):
-    sheet.clear()
+    headers = ["URL", "Tier", "Details", "Source", "Good Keywords", "Bad Keywords", "Title", "Description", "Languages", "Timestamp"]
     sheet.insert_row(headers, 1)
 
 # Main function to process keywords and URLs
 def process_keywords(keywords, lang="en", inurl=False):
-    headers = ["URL", "Tier", "Details", "Source", "Good Keywords", "Bad Keywords", "Title", "Description", "Languages", "Timestamp"]
-    #add_headers(sure_sheet, headers)
-    #add_headers(not_sure_sheet, headers)
-
     for keyword in keywords:
         st.success(f"Processing keyword: {keyword}")
         rows_to_sure = []
@@ -178,16 +174,16 @@ def process_keywords(keywords, lang="en", inurl=False):
                         rows_to_not_sure.append(row_data)
 
                 except Exception as e:
-                    print(f"Error processing URL '{url}': {e}")
+                    st.error(f"Error processing URL '{url}': {e}")
                     error_row = [url, "Error", "Error", source, "", "", "", "", "", ""]
                     rows_to_not_sure.append(error_row)
 
         except Exception as e:
-            print(f"Error processing keyword '{keyword}': {e}")
+            st.error(f"Error processing keyword '{keyword}': {e}")
 
         # Update Google Sheets after processing the keyword
         update_google_sheets(rows_to_sure, rows_to_not_sure)
-        print(f"Finished processing keyword: {keyword}")
+        st.sucsses(f"Finished processing keyword: {keyword}")
 
 
 # Page configuration
