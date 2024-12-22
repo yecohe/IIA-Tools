@@ -3,7 +3,6 @@ gspread
 oauth2client
 datetime
 pytz
-time
 requests
 bs4
 pycld2
