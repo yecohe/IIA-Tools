@@ -42,11 +42,7 @@ with st.sidebar:
             )
             client = gspread.authorize(credentials)
             # Open the Google Sheet by ID
-            keywords_sheet = client.open_by_key(st.secrets["keywords_id"]).worksheet("Keywords")
-            sure_sheet = client.open_by_key(st.secrets["filter_id"]).worksheet("Sure")
-            not_sure_sheet = client.open_by_key(st.secrets["filter_id"]).worksheet("Not Sure")
-
-                        
+                
             st.success("Credentials file uploaded and authenticated successfully!")
 
         except Exception as e:
@@ -99,7 +95,7 @@ if credentials_file is not None:
         else:
             keywords_query = keywords_query.split(",")  # Split by commas
             keywords_query = [kw.strip() for kw in keywords_query]  # Remove extra spaces around words
-            process_keywords(keywords_query, lang=language, inurl=include_inurl, limit=100, sure_sheet, not_sure_sheet, keywords_sheet)
+            process_keywords(keywords_query, lang=language, inurl=include_inurl, limit=100, client_cred=client)
             # Process and display inputs
             st.write("### Search Details")
             st.write(f"**Keywords List:** {keywords_query}")
