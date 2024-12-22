@@ -209,8 +209,10 @@ if credentials_file is not None:
         ]
 
         # Read and process the credentials file
-        credentials_file = json.loads(credentials_file.read())
-        credentials = ServiceAccountCredentials.from_json_keyfile_dict(credentials_file, scope)
+        credentials = service_account.Credentials.from_service_account_info(
+            json.loads(credentials_file.read().decode('utf-8')),  
+            scopes=scope
+        )
         client = gspread.authorize(credentials)
         
         st.success("Credentials file uploaded and authenticated successfully!")
