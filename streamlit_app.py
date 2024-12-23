@@ -51,8 +51,8 @@ if authenticated:
     # Define apps
     apps = {
         "Keywords Search Tool": keywords_tool.run(client) if callable(keywords_tool.run) else None,
-        "Wikidata Tool": wikidata_tool.run if callable(wikidata_tool.run) else None,
-        "Automatic Filter Tool": filter_tool.run if callable(filter_tool.run) else None,
+        "Wikidata Tool": wikidata_tool.run(client) if callable(wikidata_tool.run) else None,
+        "Automatic Filter Tool": filter_tool.run(client) if callable(filter_tool.run) else None,
     }
     apps = {k: v for k, v in apps.items() if v}  # Filter out invalid entries
 
