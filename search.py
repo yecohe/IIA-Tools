@@ -10,6 +10,11 @@ import pytz
 import streamlit as st
 from urllib.parse import urlparse
 
+# Error handler function to streamline error handling
+def error_handler(url, error_message):
+    print(f"Error processing '{url}': {error_message}")
+    return "Error", "Error"
+    
 # Function to fetch title and description from a URL
 def get_title_and_description(url):
     try:
