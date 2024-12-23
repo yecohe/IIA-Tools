@@ -48,14 +48,25 @@ if credentials_file is not None:
 if authenticated:
     st.sidebar.subheader("Menu")
     apps = {
-        "Keywords Search Tool": keywords_tool.run(client),
-        "Wikidata Tool": wikidata_tool.run,
-        "Automatic Filter Tool": filter_tool.run,
+        "Keywords Search Tool": keywords_tool.run(client) if callable(keywords_tool.run) else None,
+        "Wikidata Tool": wikidata_tool.run if callable(wikidata_tool.run) else None,
+        "Automatic Filter Tool": filter_tool.run if callable(filter_tool.run) else None,
     }
-    choice = st.sidebar.radio("Select an app", list(apps.keys()))
-    apps[choice]()  # Render the selected app
+    apps = {k: v for k, v in apps.items() if v}  # Filter out invalid entries
+
+    if apps:
+        # Buttons Menu
+        for app_name, app_function in apps.items():
+            if st.sidebar.button(app_name):
+                if callable(app_function):
+                    app_function()  # Render the selected app
+                else:
+                    st.error(f"{app_name} is not callable.")
+    else:
+        st.error("No valid tools available. Please check your configuration.")
 else:
     st.warning("Please upload the credentials file to access the tools.")
+
 
 
 
