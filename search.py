@@ -82,7 +82,7 @@ def translate_to_english(title, description):
         return title, description
 
 # Function to calculate score based on good and bad keywords
-def calculate_score(title, description, url, languages):
+def calculate_score(title, description, url, languages, good_keywords, bad_keywords):
     if url.endswith(".il") or url.endswith(".il/"):
         return "A", "Hebrew / .il", 0, 0
     elif "HEBREW" in languages:
@@ -166,7 +166,7 @@ def process_keywords(client, keywords, lang="en", inurl=False, limit=100):
                 try:
                     title, description = get_title_and_description(url)
                     languages = detect_language(title, description)
-                    score, details, good_count, bad_count = calculate_score(title, description, url, languages)
+                    score, details, good_count, bad_count = calculate_score(title, description, url, languages, good_keywords, bad_keywords)
                     timestamp = datetime.now(pytz.timezone('Asia/Jerusalem')).strftime("%Y-%m-%d %H:%M:%S")
                     source = f"google search for '{source}'"
                     row_data = [url, title, description, score, details, source, ", ".join(languages), good_count, bad_count, timestamp]
