@@ -47,6 +47,8 @@ if credentials_file is not None:
 # Menu Logic
 if authenticated:
     st.sidebar.subheader("Menu")
+    
+    # Define apps
     apps = {
         "Keywords Search Tool": keywords_tool.run(client) if callable(keywords_tool.run) else None,
         "Wikidata Tool": wikidata_tool.run if callable(wikidata_tool.run) else None,
@@ -54,21 +56,29 @@ if authenticated:
     }
     apps = {k: v for k, v in apps.items() if v}  # Filter out invalid entries
 
-    if apps:
-        # Buttons Menu
-        for app_name, app_function in apps.items():
-            if st.sidebar.button(app_name):
-                if callable(app_function):
-                    app_function()  # Render the selected app
-                else:
-                    st.error(f"{app_name} is not callable.")
+    # Initialize session state for the selected app
+    if "selected_app" not in st.session_state:
+        st.session_state.selected_app = None
+
+    # Create buttons for each app
+    for app_name, app_function in apps.items():
+        if st.sidebar.button(app_name):
+            st.session_state.selected_app = app_name  # Set the selected app in session state
+
+    # Display the selected app
+    selected_app_name = st.session_state.selected_app
+    if selected_app_name:
+        app_function = apps[selected_app_name]
+        if callable(app_function):
+            st.title(selected_app_name)
+            app_function()  # Render the selected app
+        else:
+            st.error(f"The app '{selected_app_name}' is not callable.")
     else:
-        st.error("No valid tools available. Please check your configuration.")
+        st.info("Please select an app to get started.")
+
 else:
     st.warning("Please upload the credentials file to access the tools.")
-
-
-
 
 
 
