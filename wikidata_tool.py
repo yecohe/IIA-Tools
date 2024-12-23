@@ -73,7 +73,7 @@ def query_wikidata(filters):
     return sparql.query().convert()
 
 # Process query results in batches of 20
-def process_results(results, filters, explanations):
+def process_results(results, filters, explanations, client):
     batch_size = 10000
     websites_batch = []
     names_batch = []
@@ -110,7 +110,7 @@ def process_results(results, filters, explanations):
         names_sheet.append_rows(names_batch)
 
 
-def run():
+def run(client):
     st.subheader("Wikidata Tool")
     st.write("This tool interacts with Wikidata for advanced queries.")
     st.text_input("Enter a Wikidata query")
