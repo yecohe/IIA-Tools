@@ -51,8 +51,11 @@ def query_wikidata(filters):
     return sparql.query().convert()
 
 # Streamlit app logic
-def run():
+def run(client):
     st.subheader("Wikidata Tool")
+    
+    websites_sheet = client.open_by_key(id).worksheet("Websites")
+    names_sheet = client.open_by_key(id).worksheet("Names")
 
     # Initialize session state for dynamic rows
     if "filters" not in st.session_state:
@@ -93,11 +96,41 @@ def run():
             st.success("Query completed!")
 
             # Display results
-            if results["results"]["bindings"]:
-                for result in results["results"]["bindings"]:
-                    entity_label = result["entityLabel"]["value"]
-                    website = result.get("website", {}).get("value", "No website available")
-                    st.write(f"**Entity**: {entity_label}, **Website**: {website}")
+            if results:
+                batch_size = 10000
+                websites_batch = []
+                names_batch = []
+            
+                # Iterate through the results and explanations for each row
+                for i, result in enumerate(results["results"]["bindings"]):
+                    name_en = result["entityLabel"]["value"]
+                    website = result.get("website", {}).get("value", "")
+            
+                    # Get the explanation for the corresponding filter
+                    explanation = explanations[i % len(filters)]  # Use modulo to cycle through explanations if needed
+            
+                    if website:
+                        websites_batch.append([name_en, website, explanation])
+                    else:
+                        names_batch.append([name_en, explanation])
+            
+                    # Write batches of rows
+                    if len(websites_batch) >= batch_size:
+                        websites_sheet.append_rows(websites_batch)
+                        print(f"Added {batch_size} names with websites")
+                        websites_batch = []
+            
+                    if len(names_batch) >= batch_size:
+                        names_sheet.append_rows(names_batch)
+                        print(f"Added {batch_size} names")
+                        names_batch = []
+            
+                # Write remaining rows
+                if websites_batch:
+                    websites_sheet.append_rows(websites_batch)
+                if names_batch:
+                    names_sheet.append_rows(names_batch)
+
             else:
                 st.warning("No results found!")
         else:
