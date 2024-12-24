@@ -51,7 +51,18 @@ def query_wikidata(property_id, value_id):
 # Streamlit app logic
 def run(client):
     st.subheader("Wikidata Tool")
+    st.write("This tool searches Wikidata for enteries. The results are here: https://docs.google.com/spreadsheets/d/1s1J1QRMnJukdvVhNU5EM_O625VGg198XwC6MTobb0SM/")
 
+    # Display examples table
+    st.subheader("Examples")
+    st.table([
+        {"Property": "country of citizenship", "Matching Value": "Israel"},
+        {"Property": "religion or worldview", "Matching Value": "Judaism"},
+        {"Property": "ethnic group", "Matching Value": "Jewish people"},
+        {"Property": "instance of", "Matching Value": "Jewish organization"},
+        {"Property": "instance of", "Matching Value": "yeshiva"}
+    ])
+    
     # Set up Google Sheets
     websites_sheet = client.open_by_key(st.secrets["wikidata_id"]).worksheet("Websites")
     names_sheet = client.open_by_key(st.secrets["wikidata_id"]).worksheet("Names")
