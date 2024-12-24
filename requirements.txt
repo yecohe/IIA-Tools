@@ -1,4 +1,5 @@
 streamlit
+googlesearch-python
 gspread
 oauth2client
 datetime
@@ -9,5 +10,3 @@ pycld2
 googletrans
 SPARQLWrapper
 streamlit_option_menu
-googlesearch
-googlesearch-python
