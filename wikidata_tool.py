@@ -63,15 +63,6 @@ def run(client):
         {"Property": "instance of", "Matching Value": "yeshiva"}
     ])
     
-    # Set up Google Sheets
-    websites_sheet = client.open_by_key(st.secrets["wikidata_id"]).worksheet("Websites")
-    names_sheet = client.open_by_key(st.secrets["wikidata_id"]).worksheet("Names")
-
-    # Add headers if the sheets are empty
-    if not websites_sheet.get_all_records():
-        websites_sheet.append_row(["Name", "Website", "Source"])
-    if not names_sheet.get_all_records():
-        names_sheet.append_row(["Name", "Source"])
 
     # Input fields for one property and value
     property_label = st.text_input("Property")
@@ -79,6 +70,16 @@ def run(client):
 
     # Process filters and query Wikidata
     if st.button("Run Query"):
+        # Set up Google Sheets
+        websites_sheet = client.open_by_key(st.secrets["wikidata_id"]).worksheet("Websites")
+        names_sheet = client.open_by_key(st.secrets["wikidata_id"]).worksheet("Names")
+        
+        # Add headers if the sheets are empty
+        if not websites_sheet.get_all_records():
+            websites_sheet.append_row(["Name", "Website", "Source"])
+        if not names_sheet.get_all_records():
+            names_sheet.append_row(["Name", "Source"])
+
         if property_label and value_label:
             try:
                 # Convert labels to IDs
