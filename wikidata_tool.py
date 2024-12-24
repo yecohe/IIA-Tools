@@ -94,6 +94,7 @@ def run(client):
                 value_id = label_to_id(value_label)
                 filters.append(f"?entity wdt:{property_id} wd:{value_id}.")
                 explanations.append(f"{property_label} is {value_label}")
+                st.warning(f"{property_label} is {value_label}")
 
         if filters:
             st.info("Querying Wikidata...")
@@ -138,6 +139,6 @@ def run(client):
 
             else:
                 st.warning("No results found!")
-        #else:
-            #st.error("Please add at least one valid filter.")
+        else:
+            st.error("Please add at least one valid filter.")
 
