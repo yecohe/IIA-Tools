@@ -27,6 +27,7 @@ def run(client):
 
     # Handle form submission
     if submit_button:
+        st.success(f"The URLs from '{source_name}' are being processed...")
         # Validate inputs
         urls = []
 
@@ -54,5 +55,6 @@ def run(client):
             # Process URLs
             sheet_id = st.secrets["filter_id"]
             process_urls(client, sheet_id, urls, source_name, limit=100)
+            st.success(f"The process is done.")
 
-            st.success(f"The URLs from '{source_name}' are being processed and added to the file.")
+            
