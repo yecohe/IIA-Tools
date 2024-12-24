@@ -109,8 +109,8 @@ def calculate_score(title, description, url, languages, good_keywords, bad_keywo
         return score, details, good_count, bad_count
 
 # Function to search and filter URLs based on query
-def search_and_filter_urls(query, limit=100, language="en", homepage_only=False):
-    search_results = search(query, num_results=limit, lang=language)
+def search_and_filter_urls(query, num_results=100, language="en", homepage_only=False):
+    search_results = search(query, num_results, lang=language)
     classified_urls = []
 
     for result in search_results:
@@ -188,4 +188,3 @@ def process_keywords(client, keywords, lang="en", inurl=False, limit=100):
         
         except Exception as e:
             st.error(f"Error processing keyword '{keyword}': {e}")
-
