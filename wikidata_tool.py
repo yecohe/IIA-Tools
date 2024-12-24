@@ -74,8 +74,8 @@ def run(client):
         names_sheet.append_row(["Name", "Source"])
 
     # Input fields for one property and value
-    property_label = st.text_input("Property (e.g., country of citizenship)")
-    value_label = st.text_input("Value (e.g., Israel)")
+    property_label = st.text_input("Property")
+    value_label = st.text_input("Matching Value")
 
     # Process filters and query Wikidata
     if st.button("Run Query"):
