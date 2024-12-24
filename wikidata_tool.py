@@ -56,6 +56,11 @@ def run(client):
     
     websites_sheet = client.open_by_key(st.secrets["wikidata_id"]).worksheet("Websites")
     names_sheet = client.open_by_key(st.secrets["wikidata_id"]).worksheet("Names")
+    # Add headers if the sheets are empty
+    if not websites_sheet.get_all_records():
+        websites_sheet.append_row(["Name", "Website", "Source"])
+    if not names_sheet.get_all_records():
+        names_sheet.append_row(["Name", "Source"])
 
     # Initialize session state for dynamic rows
     if "filters" not in st.session_state:
