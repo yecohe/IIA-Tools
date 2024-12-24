@@ -223,5 +223,4 @@ def process_urls(client, sheet_id, urls, source_name, limit=100):
             
     # Update Google Sheets after processing the keyword
     update_google_sheets(rows_to_sure, rows_to_not_sure, sure_sheet, not_sure_sheet)
-    st.success(f"Finished processing list: {source_name}")
 
