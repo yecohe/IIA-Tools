@@ -158,6 +158,7 @@ def process_keywords(client, keywords, lang="en", inurl=False, limit=100):
         try:
             # Perform searches
             homepage_urls = search_and_filter_urls(keyword, num_results=limit, language=lang, homepage_only=True)
+            inurl_urls = []
             if inurl:
                 inurl_urls = search_and_filter_urls(f"inurl:{keyword}", num_results=limit, language=lang, homepage_only=True)
             all_urls = homepage_urls + inurl_urls
