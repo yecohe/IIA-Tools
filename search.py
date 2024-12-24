@@ -5,6 +5,7 @@ import re
 from googletrans import Translator
 from collections import Counter
 from googlesearch import search
+from googlesearch.googlesearch import GoogleSearch
 from datetime import datetime
 import pytz
 import streamlit as st
@@ -110,7 +111,8 @@ def calculate_score(title, description, url, languages, good_keywords, bad_keywo
 
 # Function to search and filter URLs based on query
 def search_and_filter_urls(query, num_results=100, language="en", homepage_only=False):
-    search_results = search(query, num_results, lang=language)
+    search_results = GoogleSearch(query, num_results, lang=language)
+    #search_results = search(query, num_results, lang=language)
     classified_urls = []
 
     for result in search_results:
