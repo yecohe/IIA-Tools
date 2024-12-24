@@ -160,7 +160,7 @@ def process_keywords(client, keywords, lang="en", inurl=False, limit=100):
             homepage_urls = search_and_filter_urls(keyword, num_results=limit, language=lang, homepage_only=True)
             if inurl:
                 inurl_urls = search_and_filter_urls(f"inurl:{keyword}", num_results=limit, language=lang, homepage_only=True)
-                all_urls = homepage_urls + inurl_urls
+            all_urls = homepage_urls + inurl_urls
 
             for url, source in all_urls:
                 try:
