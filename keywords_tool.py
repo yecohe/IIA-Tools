@@ -1,5 +1,5 @@
 import streamlit as st
-from search import process_keywords
+from searching import process_keywords
 
 def run(client):
     # Main interface for keyword processing (only accessible if credentials are uploaded)
