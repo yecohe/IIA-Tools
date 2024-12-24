@@ -10,4 +10,4 @@ googletrans
 googlesearch-python
 SPARQLWrapper
 streamlit_option_menu
-googlesearch
+google-search
