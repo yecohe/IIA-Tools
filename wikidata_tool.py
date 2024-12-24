@@ -84,7 +84,7 @@ def run(client):
                 # Convert labels to IDs
                 property_id = label_to_id(property_label)
                 value_id = label_to_id(value_label)
-                explanation = f"{property_label} is {value_label}"
+                explanation = f"{property_label} - {value_label}"
 
                 # Query Wikidata
                 st.info("Querying Wikidata...")
