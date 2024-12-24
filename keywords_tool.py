@@ -4,13 +4,7 @@ from search import process_keywords
 def run(client):
     # Main interface for keyword processing (only accessible if credentials are uploaded)
     st.subheader("Keywords Search Tool")
-    st.write("This tool searches google fr keywords.")
-
-    # Description
-    st.write(
-        "Use this tool to add URLs to the internet archive based on your keyword searches. "
-        "Fill in the details below to customize your search."
-    )
+    st.write("This tool searches google for keywords. The results are here: https://docs.google.com/spreadsheets/d/1qqupnQ5nSVRRF04giVNzq8NaSdaiTVrgXc2ISH5Ib3Q/")
 
     # Language options and descriptions
     language_options = {
