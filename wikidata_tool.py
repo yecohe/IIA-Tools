@@ -75,9 +75,9 @@ def run(client):
         names_sheet = client.open_by_key(st.secrets["wikidata_id"]).worksheet("Names")
         
         # Add headers if the sheets are empty
-        if not websites_sheet.get_all_records():
+        if len(websites_sheet.get_all_values()) <= 1:  # Only the header exists
             websites_sheet.append_row(["Name", "Website", "Source"])
-        if not names_sheet.get_all_records():
+        if len(names_sheet.get_all_values()) <= 1:  # Only the header exists
             names_sheet.append_row(["Name", "Source"])
 
         if property_label and value_label:
