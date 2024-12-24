@@ -189,3 +189,41 @@ def process_keywords(client, sheet_id, keywords, lang="en", inurl=False, limit=1
         
         except Exception as e:
             st.error(f"Error processing keyword '{keyword}': {e}")
+
+# Main function to process keywords and URLs
+def process_urls(client, sheet_id, urls, source_name, limit=100):
+    query_sheet = client.open_by_key(sheet_id).worksheet("Keywords")
+    keywords_sheet = client.open_by_key(st.secrets["keywords_id"]).worksheet("Keywords")
+    sure_sheet = client.open_by_key(sheet_id).worksheet("Sure")
+    not_sure_sheet = client.open_by_key(sheet_id).worksheet("Not Sure")
+    good_keywords = [kw.lower() for kw in keywords_sheet.col_values(1)[1:]]  # Lowercase good keywords
+    bad_keywords = [kw.lower() for kw in keywords_sheet.col_values(3)[1:]]  # Lowercase bad keywords
+    
+    check_and_add_headers(sure_sheet)
+    check_and_add_headers(not_sure_sheet)
+    rows_to_sure = []
+    rows_to_not_sure = []
+
+    for url in urls:
+        try:
+            title, description = get_title_and_description(url)
+            languages = detect_language(title, description)
+            score, details, good_count, bad_count = calculate_score(title, description, url, languages, good_keywords, bad_keywords)
+            timestamp = datetime.now(pytz.timezone('Asia/Jerusalem')).strftime("%Y-%m-%d %H:%M:%S")
+            source = source_name
+            row_data = [url, title, description, score, details, source, ", ".join(languages), good_count, bad_count, timestamp]
+
+            if score in ["A", "B"]:
+                rows_to_sure.append(row_data)
+            else:
+                rows_to_not_sure.append(row_data)
+
+        except Exception as e:
+            st.error(f"Error processing URL '{url}': {e}")
+            error_row = [url, "Error", "Error", source, "", "", "", "", "", ""]
+            rows_to_not_sure.append(error_row)
+            
+    # Update Google Sheets after processing the keyword
+    update_google_sheets(rows_to_sure, rows_to_not_sure, sure_sheet, not_sure_sheet)
+    st.success(f"Finished processing keyword: {keyword}")
+
