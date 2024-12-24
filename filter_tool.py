@@ -52,7 +52,7 @@ def run(client):
             st.error("No valid URLs provided.")
         else:
             # Process URLs
-            sheet_id = client.open_by_key(st.secrets["filter_id"]).worksheet("URLs")
+            sheet_id = st.secrets["filter_id"]
             process_urls(client, sheet_id, urls, source_name, limit=100)
 
             st.success(f"The URLs from '{source_name}' are being processed and added to the file.")
