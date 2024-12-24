@@ -5,7 +5,7 @@ import re
 from googletrans import Translator
 from collections import Counter
 from googlesearch import search
-from googlesearch import GoogleSearch
+from googlesearch.googlesearch import GoogleSearch
 from datetime import datetime
 import pytz
 import streamlit as st
