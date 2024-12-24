@@ -54,8 +54,8 @@ def query_wikidata(filters):
 def run(client):
     st.subheader("Wikidata Tool")
     
-    websites_sheet = client.open_by_key(id).worksheet("Websites")
-    names_sheet = client.open_by_key(id).worksheet("Names")
+    websites_sheet = client.open_by_key(st.secrets["wikidata_id"]).worksheet("Websites")
+    names_sheet = client.open_by_key(st.secrets["wikidata_id"]).worksheet("Names")
 
     # Initialize session state for dynamic rows
     if "filters" not in st.session_state:
