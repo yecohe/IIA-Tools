@@ -20,7 +20,7 @@ def run(client):
         uploaded_file = st.file_uploader("Or upload a file (CSV or TXT with URLs):", type=["csv", "txt"])
 
         # Name for the source
-        source_name = st.text_input("Name the list (source_name):", placeholder="E.g., 'My URL List'")
+        source_name = st.text_input("List Name):", placeholder="E.g., 'My URL List'")
 
         # Submit button
         submit_button = st.form_submit_button("Filter URLs")
