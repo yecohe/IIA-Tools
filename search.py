@@ -50,22 +50,22 @@ def detect_language(title, description):
     try:
         # Check for Hebrew letters in the text
         if re.search(r'[\u0590-\u05FF]', combined_text):
-            languages = ["HEBREW"]
+            languages = ["hebrew"]
         else:
             languages = []
 
         # Use CLD2 for further language detection
         is_reliable, _, details = cld2.detect(combined_text)
         if is_reliable:
-            detected_languages = [detail[0] for detail in details if detail[0] != "Unknown"]
+            detected_languages = [detail[0].lower() for detail in details if detail[0] != "Unknown"]
             languages.extend(detected_languages)
             languages = list(set(languages))  # Remove duplicates
             return languages
         else:
-            return languages if languages else ["Unknown"]
+            return [lang.lower() for lang in languages] if languages else ["unknown"]
     except Exception as e:
-        return error_handler(title, e)
-        return ["Unknown"]
+        error_handler(title, e)
+        return ["unknown"]
 
 # Helper function to combine title and description text
 def combine_text(title, description):
@@ -85,10 +85,10 @@ def translate_to_english(title, description):
 def calculate_score(title, description, url, languages, good_keywords, bad_keywords):
     if url.endswith(".il") or url.endswith(".il/"):
         return "A", "Hebrew / .il", 0, 0
-    elif "HEBREW" in languages:
+    elif "hebrew" in languages:
         return "A", "Hebrew / .il", 0, 0
     else:
-        if languages and languages[0] != 'ENGLISH':
+        if languages and languages[0] != 'english':
             title, description = translate_to_english(title, description)
         combined_text = combine_text(title, description)
 
