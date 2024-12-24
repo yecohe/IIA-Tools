@@ -197,8 +197,6 @@ def process_urls(client, sheet_id, urls, source_name, limit=100):
     good_keywords = [kw.lower() for kw in keywords_sheet.col_values(1)[1:]]  # Lowercase good keywords
     bad_keywords = [kw.lower() for kw in keywords_sheet.col_values(3)[1:]]  # Lowercase bad keywords
     
-    check_and_add_headers(sure_sheet)
-    check_and_add_headers(not_sure_sheet)
     rows_to_sure = []
     rows_to_not_sure = []
 
