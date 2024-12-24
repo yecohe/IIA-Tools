@@ -141,10 +141,11 @@ def check_and_add_headers(sheet):
         sheet.insert_row(headers, 1)
 
 # Main function to process keywords and URLs
-def process_keywords(client, keywords, lang="en", inurl=False, limit=100):
+def process_keywords(client, sheet_id, keywords, lang="en", inurl=False, limit=100):
+    query_sheet = client.open_by_key(sheet_id).worksheet("Keywords")
     keywords_sheet = client.open_by_key(st.secrets["keywords_id"]).worksheet("Keywords")
-    sure_sheet = client.open_by_key(st.secrets["filter_id"]).worksheet("Sure")
-    not_sure_sheet = client.open_by_key(st.secrets["filter_id"]).worksheet("Not Sure")
+    sure_sheet = client.open_by_key(sheet_id).worksheet("Sure")
+    not_sure_sheet = client.open_by_key(sheet_id).worksheet("Not Sure")
     good_keywords = [kw.lower() for kw in keywords_sheet.col_values(1)[1:]]  # Lowercase good keywords
     bad_keywords = [kw.lower() for kw in keywords_sheet.col_values(3)[1:]]  # Lowercase bad keywords
     
