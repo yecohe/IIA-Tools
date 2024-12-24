@@ -58,6 +58,6 @@ def run(client):
             st.write(f"**Keywords List:** {keywords_query}")
             st.write(f"**Language:** {language}")
             st.write(f"**Include 'inurl':** {'Yes' if include_inurl else 'No'}")
-            sheet_id = client.open_by_key(st.secrets["google_id"]).worksheet("Keywords")
+            sheet_id = st.secrets["google_id"]
             process_keywords(client, sheet_id, keywords_query, lang=language, inurl=include_inurl, limit=100)
             st.info("The URLs are being processed and added to the file.")
