@@ -138,6 +138,6 @@ def run(client):
 
             else:
                 st.warning("No results found!")
-        else:
-            st.error("Please add at least one valid filter.")
+        #else:
+            #st.error("Please add at least one valid filter.")
 
