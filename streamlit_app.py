@@ -5,7 +5,7 @@ import gspread
 import keywords_tool
 import wikidata_tool
 import filter_tool
-
+from streamlit_option_menu import option_menu
 
 # Global title
 st.title("Israeli Internet Archive")
@@ -43,55 +43,33 @@ if credentials_file is not None:
     except Exception as e:
         st.sidebar.error(f"Error processing credentials: {e}")
 
-
 # Menu Logic
 if authenticated:
-    st.sidebar.subheader("Menu")
-    
     # Define apps
     apps = {
-        "Keywords Search Tool": keywords_tool.run(client) if callable(keywords_tool.run) else None,
-        "Wikidata Tool": wikidata_tool.run(client) if callable(wikidata_tool.run) else None,
-        "Automatic Filter Tool": filter_tool.run(client) if callable(filter_tool.run) else None,
+        "Keywords Search Tool": keywords_tool.run if callable(keywords_tool.run) else None,
+        "Wikidata Tool": wikidata_tool.run if callable(wikidata_tool.run) else None,
+        "Automatic Filter Tool": filter_tool.run if callable(filter_tool.run) else None,
     }
     apps = {k: v for k, v in apps.items() if v}  # Filter out invalid entries
 
-    # Initialize session state for the selected app
-    if "selected_app" not in st.session_state:
-        st.session_state.selected_app = None
+    # Display menu using streamlit-option-menu
+    selected_app_name = option_menu(
+        "Main Menu",
+        options=list(apps.keys()),
+        icons=["search", "database", "filter"],  # Customize icons
+        menu_icon="cast",
+        default_index=0,
+        orientation="horizontal"  # Horizontal menu at the top
+    )
 
-    # Create buttons for each app
-    for app_name, app_function in apps.items():
-        if st.sidebar.button(app_name):
-            st.session_state.selected_app = app_name  # Set the selected app in session state
-
-    # Display the selected app
-    selected_app_name = st.session_state.selected_app
-    if selected_app_name:
-        app_function = apps[selected_app_name]
-        if callable(app_function):
-            st.title(selected_app_name)
-            app_function()  # Render the selected app
-        else:
-            st.error(f"The app '{selected_app_name}' is not callable.")
+    # Render the selected app
+    app_function = apps[selected_app_name]
+    if callable(app_function):
+        st.title(selected_app_name)
+        app_function(client)  # Pass the client to the app function
     else:
-        st.info("Please select an app to get started.")
+        st.error(f"The app '{selected_app_name}' is not callable.")
 
 else:
     st.warning("Please upload the credentials file to access the tools.")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
