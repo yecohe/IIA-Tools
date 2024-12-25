@@ -1,3 +1,4 @@
+--upgrade pip
 streamlit
 gspread
 oauth2client
