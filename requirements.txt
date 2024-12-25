@@ -8,6 +8,6 @@ requests
 bs4
 pycld2
 googletrans
-uninstall googlesearch-python
+googlesearch-python
 SPARQLWrapper
 streamlit_option_menu
