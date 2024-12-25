@@ -8,7 +8,7 @@ from datetime import datetime
 import pytz
 import streamlit as st
 from urllib.parse import urlparse
-from googlesearch import search
+#from googlesearch import search
 
 
 # Error handler function to streamline error handling
@@ -16,16 +16,47 @@ def error_handler(url, error_message):
     print(f"Error processing '{url}': {error_message}")
     return "Error", "Error"
 
-def google_search(query, num_results=5):
-    headers = {"User-Agent": "Mozilla/5.0"}
-    url = f"https://www.google.com/search?q={query}&num={num_results}"
-    response = requests.get(url, headers=headers)
-    soup = BeautifulSoup(response.text, "html.parser")
+def google_search(query, num_results=10, language="en"):
+    """
+    Perform a Google search using requests and BeautifulSoup.
 
-    results = []
-    for g in soup.find_all('div', class_='BNeawe vvjwJb AP7Wnd'):
-        results.append(g.get_text())
-    return results
+    Args:
+        query (str): The search query.
+        language (str): The language code for the search (default is "en").
+        num_results (int): The number of results to return (default is 10).
+
+    Returns:
+        list: A list of URLs from the search results.
+    """
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36"
+    }
+    search_url = f"https://www.google.com/search?q={query}&hl={language}&num={num_results}"
+
+    try:
+        # Make the HTTP request
+        response = requests.get(search_url, headers=headers)
+        response.raise_for_status()
+
+        # Parse the response with BeautifulSoup
+        soup = BeautifulSoup(response.text, "html.parser")
+
+        # Extract links from search results
+        result_divs = soup.find_all("div", class_="tF2Cxc")
+        results = []
+
+        for div in result_divs:
+            link_tag = div.find("a")
+            if link_tag and link_tag["href"]:
+                results.append(link_tag["href"])
+            if len(results) >= num_results:
+                break
+
+        return results
+
+    except requests.exceptions.RequestException as e:
+        print(f"An error occurred: {e}")
+        return []
 
 # Function to fetch title and description from a URL
 def get_title_and_description(url):
@@ -123,7 +154,7 @@ def calculate_score(title, description, url, languages, good_keywords, bad_keywo
 # Function to search and filter URLs based on query
 def search_and_filter_urls(query, num_results=100, language="en", homepage_only=False):
     #search_results = search(query, num_results, lang=language)
-    search_results = google_search(query)
+    search_results = google_search(query, num_results, language)
     classified_urls = []
 
     for result in search_results:
