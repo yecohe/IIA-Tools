@@ -4,7 +4,6 @@ import pycld2 as cld2
 import re
 from googletrans import Translator
 from collections import Counter
-! pip install googlesearch-python
 from googlesearch import search
 from datetime import datetime
 import pytz
