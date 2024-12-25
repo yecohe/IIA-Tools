@@ -4,7 +4,7 @@ import pycld2 as cld2
 import re
 from googletrans import Translator
 from collections import Counter
-from googlesearch import search
+#from googlesearch import search
 from datetime import datetime
 import pytz
 import streamlit as st
@@ -14,7 +14,18 @@ from urllib.parse import urlparse
 def error_handler(url, error_message):
     print(f"Error processing '{url}': {error_message}")
     return "Error", "Error"
-    
+
+def google_search(query, num_results=5):
+    headers = {"User-Agent": "Mozilla/5.0"}
+    url = f"https://www.google.com/search?q={query}&num={num_results}"
+    response = requests.get(url, headers=headers)
+    soup = BeautifulSoup(response.text, "html.parser")
+
+    results = []
+    for g in soup.find_all('div', class_='BNeawe vvjwJb AP7Wnd'):
+        results.append(g.get_text())
+    return results
+
 # Function to fetch title and description from a URL
 def get_title_and_description(url):
     try:
@@ -110,7 +121,8 @@ def calculate_score(title, description, url, languages, good_keywords, bad_keywo
 
 # Function to search and filter URLs based on query
 def search_and_filter_urls(query, num_results=100, language="en", homepage_only=False):
-    search_results = search(query, num_results, lang=language)
+    #search_results = search(query, num_results, lang=language)
+    search_results = google_search(query)
     classified_urls = []
 
     for result in search_results:
