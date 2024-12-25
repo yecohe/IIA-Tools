@@ -1,6 +1,3 @@
-python3.10 -m venv myenv
-source myenv/bin/activate
-
 import requests
 from bs4 import BeautifulSoup
 import pycld2 as cld2
