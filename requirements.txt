@@ -8,6 +8,6 @@ requests
 bs4
 pycld2
 googletrans
-googlesearch-python
+googlesearch-python==1.2.5
 SPARQLWrapper
 streamlit_option_menu
