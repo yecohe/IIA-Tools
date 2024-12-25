@@ -4,11 +4,12 @@ import pycld2 as cld2
 import re
 from googletrans import Translator
 from collections import Counter
-from googlesearch import search
 from datetime import datetime
 import pytz
 import streamlit as st
 from urllib.parse import urlparse
+from googlesearch import search
+
 
 # Error handler function to streamline error handling
 def error_handler(url, error_message):
