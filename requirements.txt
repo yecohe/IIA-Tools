@@ -8,5 +8,7 @@ bs4
 pycld2
 googletrans
 googlesearch-python
+googlesearch
+googlesearch.googlesearch
 SPARQLWrapper
 streamlit_option_menu
