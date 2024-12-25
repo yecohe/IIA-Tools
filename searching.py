@@ -31,7 +31,7 @@ def google_search(query, num_results=10, language="en"):
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36"
     }
-    search_url = f"https://www.google.com/search?q={query}&hl={language}&num={num_results}"
+    search_url = f"https://www.google.com/search?q={query}&hl={language}&lr=lang_{language}&num={num_results}"
 
     try:
         # Make the HTTP request
