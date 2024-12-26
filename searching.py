@@ -12,8 +12,8 @@ from urllib.parse import urlparse
 
 
 # Error handler function to streamline error handling
-def error_handler(url, error_message):
-    print(f"Error processing '{url}': {error_message}")
+def error_handler(item, error_message):
+    st.error(f"Error processing '{item}': {error_message}")
     return "Error", "Error"
 
 def google_search(query, num_results=100, language="en"):
@@ -55,7 +55,7 @@ def google_search(query, num_results=100, language="en"):
         return results
 
     except requests.exceptions.RequestException as e:
-        print(f"An error occurred: {e}")
+        st.error(f"An error occurred: {e}")
         return []
 
 # Function to fetch title and description from a URL
