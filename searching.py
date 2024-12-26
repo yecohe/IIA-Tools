@@ -96,7 +96,8 @@ def get_title_and_description(url):
         title = "Error"
         description = "Error"
         error_handler("get title and description", url, e)
-
+    st.info(title)
+    st.info(description)
     return title, description
 
         
