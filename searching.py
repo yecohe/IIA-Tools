@@ -19,17 +19,6 @@ def error_handler(function, item, error_message):
     return "Error", "Error"
 
 def google_search(query, num_results=100, language="en"):
-    """
-    Perform a Google search using requests and BeautifulSoup.
-
-    Args:
-        query (str): The search query.
-        language (str): The language code for the search (default is "en").
-        num_results (int): The number of results to return (default is 10).
-
-    Returns:
-        list: A list of URLs from the search results.
-    """
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36"
     }
@@ -96,8 +85,7 @@ def get_title_and_description(url):
         title = "Error"
         description = "Error"
         error_handler("get title and description", url, e)
-    st.info(title)
-    st.info(description)
+
     return title, description
 
         
