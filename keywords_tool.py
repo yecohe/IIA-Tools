@@ -4,7 +4,7 @@ from searching import process_keywords
 def run(client):
     # Main interface for keyword processing (only accessible if credentials are uploaded)
     st.subheader("Keywords Search Tool")
-    st.write("This tool searches google for keywords. The results are here: https://docs.google.com/spreadsheets/d/1qqupnQ5nSVRRF04giVNzq8NaSdaiTVrgXc2ISH5Ib3Q/")
+    st.write("This tool searches Google for keywords. The results are here: https://docs.google.com/spreadsheets/d/1qqupnQ5nSVRRF04giVNzq8NaSdaiTVrgXc2ISH5Ib3Q/")
 
     # Language options and descriptions
     language_options = {
@@ -35,6 +35,14 @@ def run(client):
         )
         language = language_options[selected_language]  # Get the language code
 
+        # Number of results dropdown
+        limit = st.selectbox(
+            "Max Number of Results",
+            options=[10, 50, 100],
+            index=0,
+            help="Choose the max number of results to retrieve."
+        )
+
         # Include inurl checkbox
         include_inurl = st.checkbox(
             "Include 'inurl' in the search",
@@ -54,10 +62,9 @@ def run(client):
             keywords_query = keywords_query.split(",")  # Split by commas
             keywords_query = [kw.strip() for kw in keywords_query]  # Remove extra spaces around words
 
-            st.write("### Search Details")
-            st.write(f"**Keywords List:** {keywords_query}")
-            st.write(f"**Language:** {language}")
-            st.write(f"**Include 'inurl':** {'Yes' if include_inurl else 'No'}")
+            st.write(f"**Keywords List:** {keywords_query}, **Language:** {language}, **Number of Results:** {limit}, **Include 'inurl':** {'Yes' if include_inurl else 'No'}")
+
+            # Call the process_keywords function with the selected limit
             sheet_id = st.secrets["google_id"]
-            process_keywords(client, sheet_id, keywords_query, lang=language, inurl=include_inurl, limit=100)
+            process_keywords(client, sheet_id, keywords_query, lang=language, inurl=include_inurl, limit=limit)
             st.info("The URLs were added to the file.")
