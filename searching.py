@@ -221,12 +221,12 @@ def process_keywords(client, sheet_id, keywords, lang="en", inurl=False, limit=1
             all_urls = homepage_urls + inurl_urls
 
             for url, source in all_urls:
+                timestamp = datetime.now(pytz.timezone('Asia/Jerusalem')).strftime("%Y-%m-%d %H:%M:%S")
+                source = f"google search for '{source}'"
                 try:
                     title, description = get_title_and_description(url)
                     languages = detect_language(title, description)
                     score, details, good_count, bad_count = calculate_score(title, description, url, languages, good_keywords, bad_keywords)
-                    timestamp = datetime.now(pytz.timezone('Asia/Jerusalem')).strftime("%Y-%m-%d %H:%M:%S")
-                    source = f"google search for '{source}'"
                     row_data = [url, title, description, score, details, source, ", ".join(languages), good_count, bad_count, timestamp]
 
                     if score in ["A", "B"]:
@@ -236,7 +236,7 @@ def process_keywords(client, sheet_id, keywords, lang="en", inurl=False, limit=1
 
                 except Exception as e:
                     st.error(f"Error processing URL '{url}': {e}")
-                    error_row = [url, "Error", "Error", source, "", "", "", "", "", ""]
+                    error_row = [url, "Error", "Error", "", "Error", source, "", "", "", timestamp]
                     rows_to_not_sure.append(error_row)
                     
             # Update Google Sheets after processing the keyword
