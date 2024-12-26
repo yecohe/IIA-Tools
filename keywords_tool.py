@@ -13,7 +13,14 @@ def run(client):
         "French (fr)": "fr",
         "German (de)": "de",
         "Italian (it)": "it",
-        "Portuguese (Brazil) (pt-BR)": "pt-BR"
+        "Dutch (nl)": "nl",
+        "Romanian (ro)": "ro",
+        "Spanish - Latin America (es-419)": "es-419",
+        "Spanish - Spain (es-ES)" :"es-ES",
+        "Portuguese - Brazil (pt-BR)": "pt-BR",
+        "Portuguese - Portugal (pt-PT)": "pt-PT",
+        "Hungarian (hu)" : "hu",
+        "Polish (pl)" : "pl"
     }
     
     # Inputs for Keywords Search
