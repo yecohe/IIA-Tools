@@ -235,7 +235,7 @@ def process_keywords(client, sheet_id, keywords, lang="en", inurl=False, limit=1
                 timestamp = datetime.now(pytz.timezone('Asia/Jerusalem')).strftime("%Y-%m-%d %H:%M:%S")
                 source = f"google search for '{source}'"
                 try:
-                    title, description = get_title_and_description(url)
+                    title, description = get_title_and_description(url)[:2]
                     languages = detect_language(title, description)
                     score, details, good_count, bad_count = calculate_score(title, description, url, languages, good_keywords, bad_keywords)
                     row_data = [url, title, description, score, details, source, ", ".join(languages), good_count, bad_count, timestamp]
@@ -272,7 +272,7 @@ def process_urls(client, sheet_id, urls, source_name):
         timestamp = datetime.now(pytz.timezone('Asia/Jerusalem')).strftime("%Y-%m-%d %H:%M:%S")
         source = source_name
         try:
-            title, description = get_title_and_description(url)
+            title, description = get_title_and_description(url)[:2]
             languages = detect_language(title, description)
             score, details, good_count, bad_count = calculate_score(title, description, url, languages, good_keywords, bad_keywords)
             row_data = [url, title, description, score, details, source, ", ".join(languages), good_count, bad_count, timestamp]
