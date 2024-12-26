@@ -26,29 +26,23 @@ def google_search(query, num_results=100, language="en"):
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36"
     }
     search_url = f"https://www.google.com/search?q={query}&hl={language}&lr=lang_{language}&num={num_results}"
-
     try:
         # Make the HTTP request
         response = requests.get(search_url, headers=headers)
         response.raise_for_status()
-
         # Parse the response with BeautifulSoup
         soup = BeautifulSoup(response.text, "html.parser")
-
         # Extract links from search results
         result_divs = soup.find_all("div", class_="tF2Cxc")
         results = []
-
         for div in result_divs:
             link_tag = div.find("a")
             if link_tag and link_tag["href"]:
                 results.append(link_tag["href"])
             if len(results) >= num_results:
                 break
-                
         st.info(f"{len(results)} results for the query {query}")
         return results
-
     except requests.exceptions.RequestException as e:
         error_handler("google search", query, e)
         return []
@@ -67,14 +61,11 @@ def get_title(url):
         # Try to get the title
         title = soup.title.string if soup.title else "No title available"
         title = re.sub(r'[\r\n]+', ' ', title.strip()) if title else "No title available"
-        # If the title is a list, join its elements into a string
-        if isinstance(title, list):
-            title = ' '.join(title)
     except requests.exceptions.RequestException as e:
         # Handle connection errors
         title = "Error"
         error_handler("get title", url, e)
-    return str(title)
+    return title
 
 
 # Function to fetch description from a URL
@@ -91,13 +82,11 @@ def get_description(url):
         description_tag = soup.find('meta', attrs={'name': 'description'}) or soup.find('meta', attrs={'property': 'og:description'})
         description = description_tag['content'] if description_tag else ""
         description = re.sub(r'[\r\n]+', ' ', description.strip()) if description else ""
-        if isinstance(description, list):
-            title = ' '.join(description)
     except requests.exceptions.RequestException as e:
         # Handle connection errors
         description = "Error"
         error_handler("get description", url, e)
-    return str(description)
+    return description
 
 
         
