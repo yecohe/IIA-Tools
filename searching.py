@@ -10,6 +10,11 @@ import streamlit as st
 from urllib.parse import urlparse
 import time
 import random
+import requests_cache
+
+
+# Install cache for HTTP requests
+requests_cache.install_cache('http_cache', expire_after=3600)
 
 # Error handler function to streamline error handling
 def error_handler(function, item, error_message):
@@ -48,11 +53,12 @@ def google_search(query, num_results=100, language="en"):
         error_handler("google search", query, e)
         return []
 
-# Function to fetch title and description from a URL
-def get_title_and_description(url):
-    title = "No title available"
-    description = "No description available"
 
+
+
+# Function to fetch title from a URL
+def get_title(url):
+    title = "No title available"
     try:
         # Add scheme if missing
         if not re.match(r'^https?://', url):
@@ -62,29 +68,40 @@ def get_title_and_description(url):
         soup = BeautifulSoup(response.text, 'html.parser')
 
         # Try to get the title
-        try:
-            title = soup.title.string if soup.title else "No title available"
-            title = re.sub(r'[\r\n]+', ' ', title.strip()) if title else "No title available"
-        except Exception as e:
-            title = "Error"
-            error_handler("get title", url, e)
-
-        # Try to get the description
-        try:
-            description_tag = soup.find('meta', attrs={'name': 'description'}) or soup.find('meta', attrs={'property': 'og:description'})
-            description = description_tag['content'] if description_tag else ""
-            description = re.sub(r'[\r\n]+', ' ', description.strip()) if description else ""
-        except Exception as e:
-            description = "Error"
-            error_handler("get description", url, e)
+        title = soup.title.string if soup.title else "No title available"
+        title = re.sub(r'[\r\n]+', ' ', title.strip()) if title else "No title available"
 
     except requests.exceptions.RequestException as e:
-        # Fallback for connection errors
+        # Handle connection errors
         title = "Error"
-        description = "Error"
-        error_handler("get title and description", url, e)
+        error_handler("get title", url, e)
 
-    return title, description
+    return title
+
+
+# Function to fetch description from a URL
+def get_description(url):
+    description = "No description available"
+    try:
+        # Add scheme if missing
+        if not re.match(r'^https?://', url):
+            url = 'https://' + url
+        response = requests.get(url, timeout=5)
+        response.encoding = 'utf-8'
+        soup = BeautifulSoup(response.text, 'html.parser')
+
+        # Try to get the description
+        description_tag = soup.find('meta', attrs={'name': 'description'}) or soup.find('meta', attrs={'property': 'og:description'})
+        description = description_tag['content'] if description_tag else ""
+        description = re.sub(r'[\r\n]+', ' ', description.strip()) if description else ""
+
+    except requests.exceptions.RequestException as e:
+        # Handle connection errors
+        description = "Error"
+        error_handler("get description", url, e)
+
+    return description
+
 
         
 # Function to detect language using CLD2
