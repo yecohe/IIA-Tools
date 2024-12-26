@@ -16,6 +16,7 @@ import requests_cache
 # Install cache for HTTP requests
 requests_cache.install_cache('http_cache', expire_after=3600)
 
+
 # Error handler function to streamline error handling
 def error_handler(function, item, error_message):
     st.error(f"Error processing {function} for '{item}': {error_message}")
@@ -89,7 +90,6 @@ def get_description(url):
     return description
 
 
-        
 # Function to detect language using CLD2
 def detect_language(title, description):
     combined_text = combine_text(title, description)
@@ -99,7 +99,6 @@ def detect_language(title, description):
             languages = ["hebrew"]
         else:
             languages = []
-
         # Use CLD2 for further language detection
         is_reliable, _, details = cld2.detect(combined_text)
         if is_reliable:
@@ -123,11 +122,9 @@ def translate_to_english(title, description):
         # Translate the title
         title_translated_result = translator.translate(title, src='auto', dest='en')
         title_translated = title_translated_result.text if title_translated_result else title
-        
         # Translate the description
         description_translated_result = translator.translate(description, src='auto', dest='en')
         description_translated = description_translated_result.text if description_translated_result else description
-        
         return title_translated, description_translated
     except AttributeError as e:
         # Handle NoneType or missing attributes
@@ -135,6 +132,7 @@ def translate_to_english(title, description):
     except Exception as e:
         # Catch all other exceptions
         return f"Error translating title '{title}': {str(e)}"
+
 
 # Function to calculate score based on good and bad keywords
 def calculate_score(title, description, url, languages, good_keywords, bad_keywords):
@@ -146,29 +144,25 @@ def calculate_score(title, description, url, languages, good_keywords, bad_keywo
         if languages and languages[0] != 'english':
             title, description = translate_to_english(title, description)
         combined_text = combine_text(title, description)
-
         # Count occurrences of each word in the combined text
         word_counts = Counter(combined_text.split())
-
         # Sum up counts for good and bad keywords
         good_count = sum(word_counts[word] for word in good_keywords if word in word_counts)
         bad_count = sum(word_counts[word] for word in bad_keywords if word in word_counts)
-
         if good_count > 0:
             score = "B"
             details = f"Good keywords"
         else:
             score = "C"
             details = f"No good keywords"
-
         return score, details, good_count, bad_count
+
 
 # Function to search and filter URLs based on query
 def search_and_filter_urls(query, num_results=100, language="en", homepage_only=False):
     #search_results = search(query, num_results, lang=language)
     search_results = google_search(query, num_results, language)
     classified_urls = []
-
     for result in search_results:
         parsed_url = urlparse(result)
         if homepage_only:
@@ -177,10 +171,9 @@ def search_and_filter_urls(query, num_results=100, language="en", homepage_only=
             source = f"{query}"
         else:
             source = f"{query} - root" if parsed_url.path in ("", "/") and not parsed_url.query and not parsed_url.fragment else f"{query} - page"
-
         classified_urls.append((result, source))
-
     return classified_urls
+
 
 # Function to update Google Sheets after processing each keyword
 def update_google_sheets(rows_to_sure, rows_to_not_sure, sure_sheet, not_sure_sheet):
@@ -189,12 +182,14 @@ def update_google_sheets(rows_to_sure, rows_to_not_sure, sure_sheet, not_sure_sh
     if rows_to_not_sure:
         not_sure_sheet.append_rows(rows_to_not_sure, value_input_option='RAW')
 
+
 # Function to add headers to sheets
 def check_and_add_headers(sheet):
     headers = ["URL", "Title", "Description", "Tier", "Details", "Source","Languages", "Good Keywords", "Bad Keywords" , "Timestamp"]
     # Check if the sheet has any data (excluding the header row)
     if len(sheet.get_all_values()) <= 1:  # Only the header exists
         sheet.insert_row(headers, 1)
+
 
 # Main function to process keywords and URLs
 def process_keywords(client, sheet_id, keywords, lang="en", inurl=False, limit=100):
@@ -247,6 +242,7 @@ def process_keywords(client, sheet_id, keywords, lang="en", inurl=False, limit=1
         except Exception as e:
             st.error(f"Error processing keyword '{keyword}': {e}")
 
+
 # Main function to process keywords and URLs
 def process_urls(client, sheet_id, urls, source_name):
     keywords_sheet = client.open_by_key(st.secrets["keywords_id"]).worksheet("Keywords")
@@ -262,8 +258,8 @@ def process_urls(client, sheet_id, urls, source_name):
         timestamp = datetime.now(pytz.timezone('Asia/Jerusalem')).strftime("%Y-%m-%d %H:%M:%S")
         source = source_name
         try:
-            title = get_title(url)[:1]
-            description = get_description(url)[:1]
+            title = get_title(url)
+            description = get_description(url)
             languages = detect_language(title, description)
             score, details, good_count, bad_count = calculate_score(title, description, url, languages, good_keywords, bad_keywords)
             row_data = [url, title, description, score, details, source, ", ".join(languages), good_count, bad_count, timestamp]
