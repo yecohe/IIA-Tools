@@ -10,8 +10,6 @@ import streamlit as st
 from urllib.parse import urlparse
 import time
 import random
-#from googlesearch import search
-
 
 # Error handler function to streamline error handling
 def error_handler(function, item, error_message):
