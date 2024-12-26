@@ -42,7 +42,10 @@ def google_search(query, num_results=100, language="en"):
                 results.append(link_tag["href"])
             if len(results) >= num_results:
                 break
-        st.info(f"{len(results)} results for the query {query}")
+        if {len(results)} == 0:
+            st.error(f"{len(results)} results for the query {query}")
+        else:
+            st.info(f"{len(results)} results for the query {query}")
         return results
     except requests.exceptions.RequestException as e:
         error_handler("google search", query, e)
