@@ -76,7 +76,7 @@ def get_title(url):
         title = "Error"
         error_handler("get title", url, e)
 
-    return title
+    return str(title)
 
 
 # Function to fetch description from a URL
@@ -100,7 +100,7 @@ def get_description(url):
         description = "Error"
         error_handler("get description", url, e)
 
-    return description
+    return str(description)
 
 
         
@@ -276,8 +276,8 @@ def process_urls(client, sheet_id, urls, source_name):
         timestamp = datetime.now(pytz.timezone('Asia/Jerusalem')).strftime("%Y-%m-%d %H:%M:%S")
         source = source_name
         try:
-            title = str(get_title(url))
-            description = str(get_description(url))
+            title = get_title(url)
+            description = get_description(url)
             languages = detect_language(title, description)
             score, details, good_count, bad_count = calculate_score(title, description, url, languages, good_keywords, bad_keywords)
             row_data = [url, title, description, score, details, source, ", ".join(languages), good_count, bad_count, timestamp]
