@@ -54,8 +54,6 @@ def google_search(query, num_results=100, language="en"):
         return []
 
 
-
-
 # Function to fetch title from a URL
 def get_title(url):
     title = "No title available"
@@ -66,16 +64,16 @@ def get_title(url):
         response = requests.get(url, timeout=5)
         response.encoding = 'utf-8'
         soup = BeautifulSoup(response.text, 'html.parser')
-
         # Try to get the title
         title = soup.title.string if soup.title else "No title available"
         title = re.sub(r'[\r\n]+', ' ', title.strip()) if title else "No title available"
-
+        # If the title is a list, join its elements into a string
+        if isinstance(title, list):
+            title = ' '.join(title)
     except requests.exceptions.RequestException as e:
         # Handle connection errors
         title = "Error"
         error_handler("get title", url, e)
-
     return str(title)
 
 
