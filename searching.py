@@ -16,7 +16,7 @@ def error_handler(url, error_message):
     print(f"Error processing '{url}': {error_message}")
     return "Error", "Error"
 
-def google_search(query, num_results=10, language="en"):
+def google_search(query, num_results=100, language="en"):
     """
     Perform a Google search using requests and BeautifulSoup.
 
@@ -234,7 +234,7 @@ def process_keywords(client, sheet_id, keywords, lang="en", inurl=False, limit=1
             st.error(f"Error processing keyword '{keyword}': {e}")
 
 # Main function to process keywords and URLs
-def process_urls(client, sheet_id, urls, source_name, limit=100):
+def process_urls(client, sheet_id, urls, source_name):
     keywords_sheet = client.open_by_key(st.secrets["keywords_id"]).worksheet("Keywords")
     sure_sheet = client.open_by_key(sheet_id).worksheet("Sure")
     not_sure_sheet = client.open_by_key(sheet_id).worksheet("Not Sure")
