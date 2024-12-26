@@ -88,8 +88,9 @@ def get_title_and_description(url):
 
         return title, description
     except Exception as e:
-        return error_handler("title and description", url, e)
-
+        error_handler("title and description", url, e)
+        return title, description
+        
 # Function to detect language using CLD2
 def detect_language(title, description):
     combined_text = combine_text(title, description)
