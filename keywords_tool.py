@@ -62,7 +62,7 @@ def run(client):
             keywords_query = keywords_query.split(",")  # Split by commas
             keywords_query = [kw.strip() for kw in keywords_query]  # Remove extra spaces around words
 
-            st.write(f"**Keywords List:** {keywords_query}, **Language:** {language}, **Number of Results:** {limit}, **Include 'inurl':** {'Yes' if include_inurl else 'No'}")
+            st.write(f"**Keywords List:** {keywords_query} | **Language:** {language} | **Number of Results:** {limit} | **Include 'inurl':** {'Yes' if include_inurl else 'No'}")
 
             # Call the process_keywords function with the selected limit
             sheet_id = st.secrets["google_id"]
