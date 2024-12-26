@@ -14,8 +14,8 @@ import random
 
 
 # Error handler function to streamline error handling
-def error_handler(item, error_message):
-    st.error(f"Error processing '{item}': {error_message}")
+def error_handler(function, item, error_message):
+    st.error(f"Error processing {function} for '{item}': {error_message}")
     return "Error", "Error"
 
 def google_search(query, num_results=100, language="en"):
@@ -58,7 +58,7 @@ def google_search(query, num_results=100, language="en"):
         return results
 
     except requests.exceptions.RequestException as e:
-        st.error(f"An error occurred: {e}")
+        error_handler("google search", query, e)
         return []
 
 # Function to fetch title and description from a URL
@@ -88,7 +88,7 @@ def get_title_and_description(url):
 
         return title, description
     except Exception as e:
-        return error_handler(url, e)
+        return error_handler("title and description", url, e)
 
 # Function to detect language using CLD2
 def detect_language(title, description):
@@ -110,7 +110,7 @@ def detect_language(title, description):
         else:
             return [lang.lower() for lang in languages] if languages else ["unknown"]
     except Exception as e:
-        error_handler(title, e)
+        error_handler(detect_language, title, e)
         return ["unknown"]
 
 # Helper function to combine title and description text
@@ -124,7 +124,7 @@ def translate_to_english(title, description):
         description_translated = translator.translate(description, src='auto', dest='en').text
         return title_translated, description_translated
     except Exception as e:
-        return error_handler(title, e)
+        return error_handler(translate, title, e)
         return title, description
 
 # Function to calculate score based on good and bad keywords
