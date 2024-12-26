@@ -55,7 +55,7 @@ if authenticated:
 
     # Display menu using streamlit-option-menu
     selected_app_name = option_menu(
-        "Main Menu",
+        "Israeli Internet Archive",
         options=list(apps.keys()),
         icons=["search", "database", "filter"],  # Customize icons
         menu_icon="cast",
