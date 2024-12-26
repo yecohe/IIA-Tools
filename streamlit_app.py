@@ -7,11 +7,9 @@ import wikidata_tool
 import filter_tool
 from streamlit_option_menu import option_menu
 
-# Global title
-st.title("Israeli Internet Archive")
-
 # Sidebar: Upload Credentials File
 with st.sidebar:
+    st.header("Israeli Internet Archive")
     st.subheader("Upload Credentials File")
     credentials_file = st.file_uploader("Please upload your OAuth 2.0 JSON credentials file", type="json")
 
