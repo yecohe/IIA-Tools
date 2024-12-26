@@ -52,7 +52,7 @@ def google_search(query, num_results=100, language="en"):
             if len(results) >= num_results:
                 break
                 
-        st.update(f"{len(results)} results")
+        st.error(f"{len(results)} results")
         return results
 
     except requests.exceptions.RequestException as e:
