@@ -120,8 +120,14 @@ def combine_text(title, description):
 def translate_to_english(title, description):
     try:
         translator = Translator()
-        title_translated = translator.translate(title, src='auto', dest='en').text
-        description_translated = translator.translate(description, src='auto', dest='en').text
+        # Translate the title
+        title_translated_result = translator.translate(title, src='auto', dest='en')
+        title_translated = title_translated_result.text if title_translated_result else title
+        
+        # Translate the description
+        description_translated_result = translator.translate(description, src='auto', dest='en')
+        description_translated = description_translated_result.text if description_translated_result else description
+        
         return title_translated, description_translated
     except Exception as e:
         return error_handler("translate", title, e)
