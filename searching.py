@@ -54,7 +54,7 @@ def google_search(query, num_results=100, language="en"):
             if len(results) >= num_results:
                 break
                 
-        st.error(f"{len(results)} results for the query {query}")
+        st.info(f"{len(results)} results for the query {query}")
         return results
 
     except requests.exceptions.RequestException as e:
@@ -129,9 +129,12 @@ def translate_to_english(title, description):
         description_translated = description_translated_result.text if description_translated_result else description
         
         return title_translated, description_translated
+    except AttributeError as e:
+        # Handle NoneType or missing attributes
+        return f"Error translating title '{title}': {str(e)}"
     except Exception as e:
-        return error_handler("translate", title, e)
-        return title, description
+        # Catch all other exceptions
+        return f"Error translating title '{title}': {str(e)}"
 
 # Function to calculate score based on good and bad keywords
 def calculate_score(title, description, url, languages, good_keywords, bad_keywords):
