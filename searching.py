@@ -87,17 +87,16 @@ def get_description(url):
         response = requests.get(url, timeout=5)
         response.encoding = 'utf-8'
         soup = BeautifulSoup(response.text, 'html.parser')
-
         # Try to get the description
         description_tag = soup.find('meta', attrs={'name': 'description'}) or soup.find('meta', attrs={'property': 'og:description'})
         description = description_tag['content'] if description_tag else ""
         description = re.sub(r'[\r\n]+', ' ', description.strip()) if description else ""
-
+        if isinstance(description, list):
+            title = ' '.join(description)
     except requests.exceptions.RequestException as e:
         # Handle connection errors
         description = "Error"
         error_handler("get description", url, e)
-
     return str(description)
 
 
