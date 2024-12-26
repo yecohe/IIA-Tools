@@ -8,6 +8,8 @@ from datetime import datetime
 import pytz
 import streamlit as st
 from urllib.parse import urlparse
+import time
+import random
 #from googlesearch import search
 
 
@@ -199,7 +201,8 @@ def process_keywords(client, sheet_id, keywords, lang="en", inurl=False, limit=1
         check_and_add_headers(not_sure_sheet)
         rows_to_sure = []
         rows_to_not_sure = []
-        
+        delay = random.uniform(30, 60.0)
+        time.sleep(delay)
         try:
             # Perform searches
             homepage_urls = search_and_filter_urls(keyword, num_results=limit, language=lang, homepage_only=True)
