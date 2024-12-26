@@ -10,3 +10,4 @@ pycld2
 googletrans
 SPARQLWrapper
 streamlit_option_menu
+requests_cache
