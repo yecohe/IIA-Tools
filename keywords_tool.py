@@ -60,4 +60,4 @@ def run(client):
             st.write(f"**Include 'inurl':** {'Yes' if include_inurl else 'No'}")
             sheet_id = st.secrets["google_id"]
             process_keywords(client, sheet_id, keywords_query, lang=language, inurl=include_inurl, limit=100)
-            st.info("The URLs are being processed and added to the file.")
+            st.info("The URLs were added to the file.")
