@@ -54,7 +54,7 @@ def run(client):
         else:
             # Process URLs
             sheet_id = st.secrets["filter_id"]
-            process_urls(client, sheet_id, urls, source_name, limit=100)
+            process_urls(client, sheet_id, urls, source_name)
             st.success(f"The process is done.")
 
             
