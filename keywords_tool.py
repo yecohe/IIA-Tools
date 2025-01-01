@@ -47,7 +47,7 @@ def run(client):
         # Number of results dropdown
         limit = st.selectbox(
             "Max Number of Results",
-            options=[100, 50, 10],
+            options=[200, 100, 50, 10],
             index=0,
             help="Choose the max number of results to retrieve."
         )
