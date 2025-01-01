@@ -213,8 +213,7 @@ def search_and_filter_urls(query, num_results=100, language="en", homepage_only=
             seen_urls.add(url)
             
      # Filter out ignored URLs if provided
-    if ignored_urls:
-        deduplicated_urls = filter_ignored_urls(deduplicated_urls)
+    deduplicated_urls = filter_ignored_urls(deduplicated_urls)
         
     return deduplicated_urls
 
