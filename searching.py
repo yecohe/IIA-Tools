@@ -63,9 +63,9 @@ def google_search(query, num_results=100, language="en"):
             break  # Stop the loop if there's an error
 
     if results:
-        st.info(f"Fetched {len(results)} results for the query: {query}")
+        st.info(f"Fetched {len(results)} results for the query '{query}'")
     else:
-        st.error(f"No results found for the query: {query}")
+        st.error(f"No results found for the query '{query}'")
     return results
 
 
@@ -181,7 +181,7 @@ def calculate_score(title, description, url, languages, good_keywords, bad_keywo
 
 # Function to filter out ignored URLs
 def filter_ignored_urls(classified_urls):
-    ignored_urls = ["https://x.com", "https://en.wiktionary.org", "https://www.reddit.com", "https://www.amazon.com", "https://www.facebook.com", "https://en.wikipedia.org", "https://www.youtube.com", "https://www.instagram.com", "https://books.google.com", "https://en.wikivoyage.org", "https://www.tiktok.com", "https://www.pinterest.com"]
+    ignored_urls = ["https://x.com", "https://en.wiktionary.org", "https://www.reddit.com", "https://www.amazon.com", "https://twitter.com", "https://www.facebook.com", "https://en.wikipedia.org", "https://www.youtube.com", "https://www.instagram.com", "https://books.google.com", "https://en.wikivoyage.org", "https://www.tiktok.com", "https://www.pinterest.com"]
     ignored_set = set(ignored_urls)  # Convert to set for faster lookups
     filtered_urls = [(url, source) for url, source in classified_urls if url not in ignored_set]
     return filtered_urls
@@ -286,10 +286,10 @@ def process_keywords(client, sheet_id, keywords, lang="en", inurl=False, limit=1
                     
             # Update Google Sheets after processing the keyword
             update_google_sheets(rows_to_sure, rows_to_not_sure, sure_sheet, not_sure_sheet)
-            st.success(f"Finished processing keyword: {keyword}")
+            st.success(f"Finished processing the query '{keyword}'")
         
         except Exception as e:
-            st.error(f"Error processing keyword '{keyword}': {e}")
+            st.error(f"Error processing the query '{keyword}': {e}")
 
 
 # Main function to process keywords and URLs
