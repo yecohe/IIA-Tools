@@ -128,7 +128,7 @@ def detect_language(title, description):
             languages = list(set(languages))  # Remove duplicates
         return languages if languages else ["unknown"]
     except Exception as e:
-        error_handler(detect_language, title, e)
+        error_handler("detecting language", title, e)
         return ["unknown"]
 
 # Helper function to combine title and description text
@@ -155,13 +155,17 @@ def translate_to_english(title, description):
 
 def count_keywords(title, description, good_keywords, bad_keywords):
     """Count occurrences of good and bad keywords in the title and description."""
-    combined_text = combine_text(title, description)
-    word_counts = Counter(combined_text.split())
-    good_count = sum(word_counts[word] for word in good_keywords if word in word_counts)
-    bad_count = sum(word_counts[word] for word in bad_keywords if word in word_counts)
-    return good_count, bad_count
+    try:
+        combined_text = combine_text(title, description)
+        word_counts = Counter(combined_text.split())
+        good_count = sum(word_counts[word] for word in good_keywords if word in word_counts)
+        bad_count = sum(word_counts[word] for word in bad_keywords if word in word_counts)
+        return good_count, bad_count
+    # Catch all other exceptions
+    except Exception as e:
+        error_handler("counting keywords", title, e)
+        return 0, 0
     
-
 # Function to calculate score
 def calculate_score(url, title, description, languages, good_keywords, bad_keywords):
     if languages and languages[0] != 'english':
