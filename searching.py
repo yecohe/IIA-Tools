@@ -194,7 +194,10 @@ def search_and_filter_urls(query, num_results=100, language="en", homepage_only=
                 continue
             source = f"{query}"
         else:
+            # Strip URL to domain or subdomain
+            stripped_url = urlunparse((parsed_url.scheme, parsed_url.netloc, "", "", "", ""))
             source = f"{query} - root" if parsed_url.path in ("", "/") and not parsed_url.query and not parsed_url.fragment else f"{query} - page"
+            result = stripped_url  # Replace result with stripped URL
         classified_urls.append((result, source))
     return classified_urls
 
@@ -216,7 +219,7 @@ def check_and_add_headers(sheet):
 
 
 # Main function to process keywords and URLs
-def process_keywords(client, sheet_id, keywords, lang="en", inurl=False, limit=100):
+def process_keywords(client, sheet_id, keywords, lang="en", inurl=False, limit=100, homepage=False):
     keywords_sheet = client.open_by_key(st.secrets["keywords_id"]).worksheet("Keywords")
     sure_sheet = client.open_by_key(sheet_id).worksheet("Sure")
     not_sure_sheet = client.open_by_key(sheet_id).worksheet("Not Sure")
@@ -233,10 +236,10 @@ def process_keywords(client, sheet_id, keywords, lang="en", inurl=False, limit=1
         time.sleep(delay)
         try:
             # Perform searches
-            homepage_urls = search_and_filter_urls(keyword, num_results=limit, language=lang, homepage_only=True)
+            homepage_urls = search_and_filter_urls(keyword, num_results=limit, language=lang, homepage_only=homepage)
             inurl_urls = []
             if inurl:
-                inurl_urls = search_and_filter_urls(f"inurl:{keyword}", num_results=limit, language=lang, homepage_only=True)
+                inurl_urls = search_and_filter_urls(f"inurl:{keyword}", num_results=limit, language=lang, homepage_only=homepage)
             all_urls = homepage_urls + inurl_urls
 
             for url, source in all_urls:
