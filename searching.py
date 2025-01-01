@@ -144,10 +144,10 @@ def translate_to_english(title, description):
     try:
         translator = Translator()
         # Translate the title
-        title_translated_result = translator.translate(title, src='auto', dest='en')
+        title_translated_result = translator.translate(str(title), src='auto', dest='en')
         title_translated = title_translated_result.text if title_translated_result else title
         # Translate the description
-        description_translated_result = translator.translate(description, src='auto', dest='en')
+        description_translated_result = translator.translate(str(description), src='auto', dest='en')
         description_translated = description_translated_result.text if description_translated_result else description
         return title_translated, description_translated
     except Exception as e:
@@ -295,7 +295,7 @@ def process_keywords(client, sheet_id, keywords, lang="en", inurl=False, limit=1
                 # except
                 except Exception as e:
                     st.error(f"Error processing URL '{url}': {e}")
-                    error_row = [url, title if title else "Error", description if description else "Error", "C", "Error", source if source else "Error", lang_text if lang_text else "Error", "Error", "Error", timestamp if timestamp else "Error"]
+                    error_row = [url, title if title else "Error", description if description else "Error", "C", details if details else "Error", source if source else "Error", lang_text if lang_text else "Error", "Error", "Error", timestamp if timestamp else "Error"]
                     rows_to_not_sure.append(error_row)
                     
             # Update Google Sheets after processing the keyword
