@@ -72,7 +72,7 @@ def google_search(query, num_results=100, language="en"):
 
 # Function to fetch title from a URL
 def get_title(url):
-    title = "No title available"
+    title = "t"
     try:
         # Add scheme if missing
         if not re.match(r'^https?://', url):
@@ -81,8 +81,8 @@ def get_title(url):
         response.encoding = 'utf-8'
         soup = BeautifulSoup(response.text, 'html.parser')
         # Try to get the title
-        title = soup.title.string if soup.title else ""
-        title = re.sub(r'[\r\n]+', ' ', title.strip()) if title else ""
+        title = soup.title.string if soup.title else "t"
+        title = re.sub(r'[\r\n]+', ' ', title.strip()) if title else "t"
     except requests.exceptions.RequestException as e:
         # Handle connection errors
         title = "Error"
@@ -92,7 +92,7 @@ def get_title(url):
 
 # Function to fetch description from a URL
 def get_description(url):
-    description = "No description available"
+    description = "d"
     try:
         # Add scheme if missing
         if not re.match(r'^https?://', url):
@@ -102,8 +102,8 @@ def get_description(url):
         soup = BeautifulSoup(response.text, 'html.parser')
         # Try to get the description
         description_tag = soup.find('meta', attrs={'name': 'description'}) or soup.find('meta', attrs={'property': 'og:description'})
-        description = description_tag['content'] if description_tag else ""
-        description = re.sub(r'[\r\n]+', ' ', description.strip()) if description else ""
+        description = description_tag['content'] if description_tag else "d"
+        description = re.sub(r'[\r\n]+', ' ', description.strip()) if description else "d"
     except requests.exceptions.RequestException as e:
         # Handle connection errors
         description = "Error"
@@ -268,11 +268,11 @@ def process_keywords(client, sheet_id, keywords, lang="en", inurl=False, limit=1
                 timestamp = datetime.now(pytz.timezone('Asia/Jerusalem')).strftime("%Y-%m-%d %H:%M:%S")
                 #source = f"google search for '{source}'"
                 try:
-                    title = get_title(url)
-                    description = get_description(url)
-                    languages = detect_language(title, description)
-                    score, details, good_count, bad_count = calculate_score(title, description, url, languages, good_keywords, bad_keywords)
-                    row_data = [url, title, description, score, details, source, ", ".join(languages), good_count, bad_count, timestamp]
+                    title = get_title(url)[:1]
+                    description = get_description(url)[:1]
+                    languages = detect_language(title[:1], description[:1])
+                    score, details, good_count, bad_count = calculate_score(title[:1], description[:1], url, languages, good_keywords, bad_keywords)
+                    row_data = [url, title[:1], description[:1], score, details, source, ", ".join(languages), good_count, bad_count, timestamp]
 
                     if score in ["A", "B"]:
                         rows_to_sure.append(row_data)
