@@ -195,7 +195,7 @@ def search_and_filter_urls(query, num_results=100, language="en", homepage_only=
         else:
             # Strip URL to domain or subdomain
             stripped_url = urlunparse((parsed_url.scheme, parsed_url.netloc, "", "", "", ""))
-            source = f"search for '{query}'" if parsed_url.path in ("", "/") and not parsed_url.query and not parsed_url.fragment else f"search for '{query}' (p)"
+            source = f"search for '{query}' (d)" if parsed_url.path in ("", "/") and not parsed_url.query and not parsed_url.fragment else f"search for '{query}' (p)"
             result = stripped_url  # Replace result with stripped URL
         classified_urls.append((result, source))
     # Deduplicate based on URL
