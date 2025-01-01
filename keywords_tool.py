@@ -31,7 +31,7 @@ def run(client):
 
         # Keywords input
         keywords_query = st.text_area(
-            "Keywords List (separate by commas)",
+            "Keywords List:",
             help="Enter the keywords you want to search for. Use commas to separate multiple keywords."
         )
 
@@ -39,14 +39,14 @@ def run(client):
         col1, col2 = st.columns(2)
         with col1:
             selected_language = st.selectbox(
-                "Language",
+                "Language:",
                 options=list(language_options.keys()),
-                help="Choose the language for the keyword search."
+                help="Choose the language for the google search."
             )
             language = language_options[selected_language]  # Get the language code
         with col2:
             limit = st.selectbox(
-                "Max Results",
+                "Max Results:",
                 options=[200, 100, 50, 10],
                 index=0,
                 help="Choose the max number of results to retrieve."
