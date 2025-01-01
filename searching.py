@@ -87,7 +87,7 @@ def get_title(url):
         # Handle connection errors
         title = "Error"
         error_handler("get title", url, e)
-    return title
+    return str(title)
 
 
 # Function to fetch description from a URL
@@ -108,7 +108,7 @@ def get_description(url):
         # Handle connection errors
         description = "Error"
         error_handler("get description", url, e)
-    return description
+    return str(description)
 
 
 # Function to detect language using CLD2
@@ -268,8 +268,8 @@ def process_keywords(client, sheet_id, keywords, lang="en", inurl=False, limit=1
                 timestamp = datetime.now(pytz.timezone('Asia/Jerusalem')).strftime("%Y-%m-%d %H:%M:%S")
                 #source = f"google search for '{source}'"
                 try:
-                    title = get_title(url)[:1]
-                    description = get_description(url)[:1]
+                    title = get_title(url)
+                    description = get_description(url)
                     languages = detect_language(title, description)
                     score, details, good_count, bad_count = calculate_score(title, description, url, languages, good_keywords, bad_keywords)
                     row_data = [url, title, description, score, details, source, ", ".join(languages), good_count, bad_count, timestamp]
