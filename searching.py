@@ -280,7 +280,7 @@ def process_keywords(client, sheet_id, keywords, lang="en", inurl=False, limit=1
                 # except
                 except Exception as e:
                     st.error(f"Error processing URL '{url}': {e}")
-                    error_row = [url, title if title else "Error", description if description else "Error", "C", "Error", source, "", "", "", timestamp]
+                    error_row = [url, title if title else "Error", description if description else "Error", "C", details if details else "Error", source if source else "Error", lang_text if lang_text else "Error", good_count if good_count else "Error", bad_count if bad_count else "Error", "", timestamp if timestamp else "Error"]
                     rows_to_not_sure.append(error_row)
                     
             # Update Google Sheets after processing the keyword
