@@ -174,6 +174,7 @@ def calculate_score(url, title, description, languages, good_keywords, bad_keywo
         title, description = translate_to_english(title, description)
     score = "C"
     details = "Error"
+    good_count, bad_count = 0, 0
     good_count, bad_count = count_keywords(title, description, good_keywords, bad_keywords)
     if url.endswith(".il") or url.endswith(".il/"):
         score = "A"
