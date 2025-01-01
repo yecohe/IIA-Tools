@@ -150,12 +150,9 @@ def translate_to_english(title, description):
         description_translated_result = translator.translate(description, src='auto', dest='en')
         description_translated = description_translated_result.text if description_translated_result else description
         return title_translated, description_translated
-    except AttributeError as e:
-        # Handle NoneType or missing attributes
-        return f"Error translating title '{title}': {str(e)}"
     except Exception as e:
-        # Catch all other exceptions
-        return f"Error translating title '{title}': {str(e)}"
+        error_handler("translating title", title, e)
+        return title, description
 
 
 def count_keywords(title, description, good_keywords, bad_keywords):
