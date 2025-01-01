@@ -181,6 +181,14 @@ def calculate_score(title, description, url, languages, good_keywords, bad_keywo
         return score, details, good_count, bad_count
 
 
+# Function to filter out ignored URLs
+def filter_ignored_urls(classified_urls):
+    ignored_urls = ["https://x.com", "https://en.wiktionary.org", "https://www.reddit.com", "https://www.amazon.com", "https://www.facebook.com", "https://en.wikipedia.org", "https://www.youtube.com", "https://www.instagram.com", "https://books.google.com", "https://en.wikivoyage.org", "https://www.tiktok.com", "https://www.pinterest.com"]
+    ignored_set = set(ignored_urls)  # Convert to set for faster lookups
+    filtered_urls = [(url, source) for url, source in classified_urls if url not in ignored_set]
+    return filtered_urls
+    
+
 # Function to search and filter URLs based on query
 def search_and_filter_urls(query, num_results=100, language="en", homepage_only=False):
     #search_results = search(query, num_results, lang=language)
@@ -191,7 +199,7 @@ def search_and_filter_urls(query, num_results=100, language="en", homepage_only=
         if homepage_only:
             if parsed_url.path not in ("", "/") or parsed_url.query or parsed_url.fragment:
                 continue
-            source = f"{query}"
+            source = f"search for '{query}' (d)"
         else:
             # Strip URL to domain or subdomain
             stripped_url = urlunparse((parsed_url.scheme, parsed_url.netloc, "", "", "", ""))
@@ -206,6 +214,10 @@ def search_and_filter_urls(query, num_results=100, language="en", homepage_only=
             deduplicated_urls.append((url, source))
             seen_urls.add(url)
             
+     # Filter out ignored URLs if provided
+    if ignored_urls:
+        deduplicated_urls = filter_ignored_urls(deduplicated_urls)
+        
     return deduplicated_urls
 
 
