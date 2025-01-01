@@ -126,9 +126,7 @@ def detect_language(title, description):
             detected_languages = [detail[0].lower() for detail in details if detail[0] != "Unknown"]
             languages.extend(detected_languages)
             languages = list(set(languages))  # Remove duplicates
-            return languages
-        else:
-            return [lang.lower() for lang in languages] if languages else ["unknown"]
+        return languages if languages else ["unknown"]
     except Exception as e:
         error_handler(detect_language, title, e)
         return ["unknown"]
