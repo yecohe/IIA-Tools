@@ -19,13 +19,12 @@ def run(client):
         "Romanian (ro)": "ro",
         "Hungarian (hu)": "hu",
         "Spanish - Latin America (es-419)": "es-419",
-        "Spanish - Spain (es-ES)" :"es-ES",
+        "Spanish - Spain (es-ES)": "es-ES",
         "Portuguese - Brazil (pt-BR)": "pt-BR",
         "Portuguese - Portugal (pt-PT)": "pt-PT",
-        "Hungarian (hu)" : "hu",
-        "Polish (pl)" : "pl"
+        "Polish (pl)": "pl"
     }
-    
+
     # Inputs for Keywords Search
     with st.form("keywords_search_form"):
         st.subheader("Keywords Search")
@@ -36,38 +35,41 @@ def run(client):
             help="Enter the keywords you want to search for. Use commas to separate multiple keywords."
         )
 
-        # Language dropdown
-        selected_language = st.selectbox(
-            "Select Language for Search",
-            options=list(language_options.keys()),
-            help="Choose the language for the keyword search."
-        )
-        language = language_options[selected_language]  # Get the language code
+        # Language and Max Results in the same row
+        col1, col2 = st.columns(2)
+        with col1:
+            selected_language = st.selectbox(
+                "Select Language for Search",
+                options=list(language_options.keys()),
+                help="Choose the language for the keyword search."
+            )
+            language = language_options[selected_language]  # Get the language code
+        with col2:
+            limit = st.selectbox(
+                "Max Number of Results",
+                options=[200, 100, 50, 10],
+                index=0,
+                help="Choose the max number of results to retrieve."
+            )
 
-        # Number of results dropdown
-        limit = st.selectbox(
-            "Max Number of Results",
-            options=[200, 100, 50, 10],
-            index=0,
-            help="Choose the max number of results to retrieve."
-        )
-
-        # Include inurl checkbox
-        include_inurl = st.checkbox(
-            "Include 'inurl' in the search",
-            value=False,
-            help="Check this box if you want to include 'inurl' in the search results."
-        )
-
-                # Include inurl checkbox
-        homepage_only = st.checkbox(
-            "Include only homapages results",
-            value=False,
-            help="Check this box if you want to search only for pages that are homapages (domain or subdomain)."
-        )
+        # Include inurl and homepage only in the same row
+        col3, col4 = st.columns(2)
+        with col3:
+            include_inurl = st.checkbox(
+                "Include 'inurl' in the search",
+                value=False,
+                help="Check this box if you want to include 'inurl' in the search results."
+            )
+        with col4:
+            homepage_only = st.checkbox(
+                "Include only homepage results",
+                value=False,
+                help="Check this box if you want to search only for pages that are homepages (domain or subdomain)."
+            )
 
         # Submit button
         submit_button = st.form_submit_button("Search")
+
 
     # Handle form submission
     if submit_button:
