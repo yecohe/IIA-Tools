@@ -129,9 +129,9 @@ def detect_language(title, description):
         else:
             languages = []
         # Use CLD2 for further language detection
-        is_reliable, _, details = cld2.detect(combined_text)
+        is_reliable, _, lang_details = cld2.detect(combined_text)
         if is_reliable:
-            detected_languages = [detail[0].lower() for detail in details if detail[0] != "Unknown"]
+            detected_languages = [detail[0].lower() for detail in lang_details if detail[0] != "Unknown"]
             languages.extend(detected_languages)
             languages = list(set(languages))  # Remove duplicates
         return languages if languages else ["unknown"]
@@ -297,7 +297,7 @@ def process_keywords(client, sheet_id, keywords, lang="en", inurl=False, limit=1
                 # except
                 except Exception as e:
                     st.error(f"Error processing URL '{url}': {e}")
-                    error_row = [url, title if title else "Error", description if description else "Error", "C", details if details else "Error", source if source else "Error", lang_text if lang_text else "Error", good_count if good_count else "Error", bad_count if bad_count else "Error", "", timestamp if timestamp else "Error"]
+                    error_row = [url, title if title else "Error", description if description else "Error", "C", "Error", source if source else "Error", lang_text if lang_text else "Error", good_count if good_count else "Error", bad_count if bad_count else "Error", "", timestamp if timestamp else "Error"]
                     rows_to_not_sure.append(error_row)
                     
             # Update Google Sheets after processing the keyword
