@@ -11,4 +11,3 @@ googletrans
 SPARQLWrapper
 streamlit_option_menu
 requests_cache
-httpx._types
