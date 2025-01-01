@@ -110,6 +110,14 @@ def get_description(url):
         error_handler("get description", url, e)
     return str(description)
 
+# Helper function to combine title and description text
+def combine_text(title, description):
+    try:
+        return (title or "").lower() + " " + (description or "").lower()
+    except Exception as e:
+        error_handler("combine text", title, e)
+        return title
+
 
 # Function to detect language using CLD2
 def detect_language(title, description):
@@ -131,12 +139,6 @@ def detect_language(title, description):
         error_handler("detecting language", title, e)
         return ["unknown"]
 
-# Helper function to combine title and description text
-def combine_text(title, description):
-    try:
-        return (title or "").lower() + " " + (description or "").lower()
-    except Exception as e:
-        error_handler("combine text", title, e)
 
 def translate_to_english(title, description):
     try:
@@ -283,6 +285,7 @@ def process_keywords(client, sheet_id, keywords, lang="en", inurl=False, limit=1
                     title = get_title(url)
                     description = get_description(url)
                     languages = detect_language(title, description)
+                    details = "Error"
                     lang_text = ", ".join(languages) if languages else "unknown"
                     score, details, good_count, bad_count = calculate_score(url, title, description, languages, good_keywords, bad_keywords)
                     row_data = [url, title, description, score, details, source, lang_text, good_count, bad_count, timestamp]
