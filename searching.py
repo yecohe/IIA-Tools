@@ -83,8 +83,8 @@ def get_title(url):
         response.encoding = 'utf-8'
         soup = BeautifulSoup(response.text, 'html.parser')
         # Try to get the title
-        title = soup.title.string if soup.title else "No title available"
-        title = re.sub(r'[\r\n]+', ' ', title.strip()) if title else "No title available"
+        title = soup.title.string if soup.title else ""
+        title = re.sub(r'[\r\n]+', ' ', title.strip()) if title else ""
     except requests.exceptions.RequestException as e:
         # Handle connection errors
         title = "Error"
