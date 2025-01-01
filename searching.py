@@ -16,6 +16,7 @@ import requests_cache
 # Install cache for HTTP requests
 requests_cache.install_cache('http_cache', expire_after=3600)
 
+headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36"}
 
 # Error handler function to streamline error handling
 def error_handler(function, item, error_message):
@@ -24,9 +25,6 @@ def error_handler(function, item, error_message):
     
 
 def google_search(query, num_results=100, language="en"):
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36"
-    }
     results = []
     start = 0  # Google uses `start` parameter for pagination
 
@@ -79,7 +77,7 @@ def get_title(url):
         # Add scheme if missing
         if not re.match(r'^https?://', url):
             url = 'https://' + url
-        response = requests.get(url, timeout=5)
+        response = requests.get(url, timeout=5, headers=headers)
         response.encoding = 'utf-8'
         soup = BeautifulSoup(response.text, 'html.parser')
         # Try to get the title
@@ -99,7 +97,7 @@ def get_description(url):
         # Add scheme if missing
         if not re.match(r'^https?://', url):
             url = 'https://' + url
-        response = requests.get(url, timeout=5)
+        response = requests.get(url, timeout=5, headers=headers)
         response.encoding = 'utf-8'
         soup = BeautifulSoup(response.text, 'html.parser')
         # Try to get the description
