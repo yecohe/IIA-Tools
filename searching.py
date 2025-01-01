@@ -21,35 +21,56 @@ requests_cache.install_cache('http_cache', expire_after=3600)
 def error_handler(function, item, error_message):
     st.error(f"Error processing {function} for '{item}': {error_message}")
     return "Error", "Error"
+    
 
 def google_search(query, num_results=100, language="en"):
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36"
     }
-    search_url = f"https://www.google.com/search?q={query}&hl={language}&lr=lang_{language}&num={num_results}"
-    try:
-        # Make the HTTP request
-        response = requests.get(search_url, headers=headers)
-        response.raise_for_status()
-        # Parse the response with BeautifulSoup
-        soup = BeautifulSoup(response.text, "html.parser")
-        # Extract links from search results
-        result_divs = soup.find_all("div", class_="tF2Cxc")
-        results = []
-        for div in result_divs:
-            link_tag = div.find("a")
-            if link_tag and link_tag["href"]:
-                results.append(link_tag["href"])
-            if len(results) >= num_results:
+    results = []
+    start = 0  # Google uses `start` parameter for pagination
+
+    while len(results) < num_results:
+        search_url = f"https://www.google.com/search?q={query}&hl={language}&lr=lang_{language}&num=10&start={start}"
+        try:
+            # Make the HTTP request
+            response = requests.get(search_url, headers=headers)
+            response.raise_for_status()
+
+            # Parse the response with BeautifulSoup
+            soup = BeautifulSoup(response.text, "html.parser")
+            
+            # Extract links from search results
+            result_divs = soup.find_all("div", class_="tF2Cxc")
+            for div in result_divs:
+                link_tag = div.find("a")
+                if link_tag and link_tag["href"]:
+                    results.append(link_tag["href"])
+                    if len(results) >= num_results:  # Stop if we've reached the desired number
+                        break
+
+            # Update `start` for the next page
+            start += 10  # Google paginates by increments of 10
+
+            # Stop if no results are found on the current page
+            if not result_divs:
+                st.warning(f"Not enough results found for the query: {query}")
                 break
-        if {len(results)} == 0:
-            st.error(f"{len(results)} results for the query {query}")
-        else:
-            st.info(f"{len(results)} results for the query {query}")
-        return results
-    except requests.exceptions.RequestException as e:
-        error_handler("google search", query, e)
-        return []
+
+            # Pause before the next request
+            delay = random.uniform(2, 10) 
+            time.sleep(delay)
+
+        except requests.exceptions.RequestException as e:
+            error_handler("google search", query, e)
+            break  # Stop the loop if there's an error
+
+    if results:
+        st.info(f"Fetched {len(results)} results for the query: {query}")
+    else:
+        st.error(f"No results found for the query: {query}")
+    return results
+
 
 
 # Function to fetch title from a URL
