@@ -77,7 +77,7 @@ def get_title(url):
         # Add scheme if missing
         if not re.match(r'^https?://', url):
             url = 'https://' + url
-        response = requests.get(url, timeout=60, headers=headers)
+        response = requests.get(url, timeout=120, headers=headers)
         response.encoding = 'utf-8'
         soup = BeautifulSoup(response.text, 'html.parser')
         # Try to get the title
@@ -97,7 +97,7 @@ def get_description(url):
         # Add scheme if missing
         if not re.match(r'^https?://', url):
             url = 'https://' + url
-        response = requests.get(url, timeout=60, headers=headers)
+        response = requests.get(url, timeout=120, headers=headers)
         response.encoding = 'utf-8'
         soup = BeautifulSoup(response.text, 'html.parser')
         # Try to get the description
