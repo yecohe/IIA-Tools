@@ -170,6 +170,9 @@ def count_keywords(title, description, good_keywords, bad_keywords):
 def calculate_score(url, title, description, languages, good_keywords, bad_keywords):
     if languages and languages[0] != 'english':
         title, description = translate_to_english(title, description)
+    good_count, bad_count = "Err", "Err"
+    score = "C"
+    details "Error"
     good_count, bad_count = count_keywords(title, description, good_keywords, bad_keywords)
     if url.endswith(".il") or url.endswith(".il/"):
         score = "A"
@@ -177,13 +180,12 @@ def calculate_score(url, title, description, languages, good_keywords, bad_keywo
     elif "hebrew" in languages:
         score = "A"
         details = "Hebrew / .il"
+    elif good_count > 0:
+        score = "B"
+        details = "Good keywords"
     else:
-        if good_count > 0:
-            score = "B"
-            details = "Good keywords"
-        else:
-            score = "C"
-            details = "No good keywords"
+        score = "C"
+        details = "No good keywords"
     return score, details, good_count, bad_count
 
 
