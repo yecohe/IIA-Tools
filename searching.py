@@ -198,7 +198,15 @@ def search_and_filter_urls(query, num_results=100, language="en", homepage_only=
             source = f"search for '{query}'" if parsed_url.path in ("", "/") and not parsed_url.query and not parsed_url.fragment else f"search for '{query}' (p)"
             result = stripped_url  # Replace result with stripped URL
         classified_urls.append((result, source))
-    return classified_urls
+    # Deduplicate based on URL
+    seen_urls = set()
+    deduplicated_urls = []
+    for url, source in classified_urls:
+        if url not in seen_urls:
+            deduplicated_urls.append((url, source))
+            seen_urls.add(url)
+            
+    return deduplicated_urls
 
 
 # Function to update Google Sheets after processing each keyword
@@ -231,7 +239,7 @@ def process_keywords(client, sheet_id, keywords, lang="en", inurl=False, limit=1
         check_and_add_headers(not_sure_sheet)
         rows_to_sure = []
         rows_to_not_sure = []
-        delay = random.uniform(30, 60.0)
+        delay = random.uniform(10, 60)
         time.sleep(delay)
         try:
             # Perform searches
@@ -264,7 +272,7 @@ def process_keywords(client, sheet_id, keywords, lang="en", inurl=False, limit=1
                 # except
                 except Exception as e:
                     st.error(f"Error processing URL '{url}': {e}")
-                    error_row = [url, "Error", "Error", "", "Error", source, "", "", "", timestamp]
+                    error_row = [url, "Error", "Error", "C", "Error", source, "", "", "", timestamp]
                     rows_to_not_sure.append(error_row)
                     
             # Update Google Sheets after processing the keyword
