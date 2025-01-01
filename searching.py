@@ -239,8 +239,14 @@ def process_keywords(client, sheet_id, keywords, lang="en", inurl=False, limit=1
             inurl_urls = []
             if inurl:
                 inurl_urls = search_and_filter_urls(f"inurl:{keyword}", num_results=limit, language=lang, homepage_only=homepage)
-            all_urls = homepage_urls + inurl_urls
-
+            # Combine and remove duplicates based on URL only
+            all_urls_dict = {}
+            for url, source in homepage_urls + inurl_urls:
+                if url not in all_urls_dict:
+                    all_urls_dict[url] = source
+            # Convert back to a list of tuples (url, source)
+            all_urls = [(url, source) for url, source in all_urls_dict.items()]
+            # get info for urls
             for url, source in all_urls:
                 timestamp = datetime.now(pytz.timezone('Asia/Jerusalem')).strftime("%Y-%m-%d %H:%M:%S")
                 #source = f"google search for '{source}'"
@@ -255,7 +261,7 @@ def process_keywords(client, sheet_id, keywords, lang="en", inurl=False, limit=1
                         rows_to_sure.append(row_data)
                     else:
                         rows_to_not_sure.append(row_data)
-
+                # except
                 except Exception as e:
                     st.error(f"Error processing URL '{url}': {e}")
                     error_row = [url, "Error", "Error", "", "Error", source, "", "", "", timestamp]
