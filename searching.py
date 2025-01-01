@@ -181,7 +181,7 @@ def calculate_score(title, description, url, languages, good_keywords, bad_keywo
 
 # Function to filter out ignored URLs
 def filter_ignored_urls(classified_urls):
-    ignored_urls = ["https://x.com", "https://en.wiktionary.org", "https://www.reddit.com", "https://www.amazon.com", "https://twitter.com", "https://www.facebook.com", "https://en.wikipedia.org", "https://www.youtube.com", "https://www.instagram.com", "https://books.google.com", "https://en.wikivoyage.org", "https://www.tiktok.com", "https://www.pinterest.com"]
+    ignored_urls = ["https://www.linkedin.com", "https://x.com", "https://en.wiktionary.org", "https://www.reddit.com", "https://www.amazon.com", "https://twitter.com", "https://www.facebook.com", "https://en.wikipedia.org", "https://www.youtube.com", "https://www.instagram.com", "https://books.google.com", "https://en.wikivoyage.org", "https://www.tiktok.com", "https://www.pinterest.com"]
     ignored_set = set(ignored_urls)  # Convert to set for faster lookups
     filtered_urls = [(url, source) for url, source in classified_urls if url not in ignored_set]
     return filtered_urls
