@@ -271,9 +271,9 @@ def process_keywords(client, sheet_id, keywords, lang="en", inurl=False, limit=1
                     title = get_title(url)
                     description = get_description(url)
                     languages = detect_language(title, description)
+                    lang_text = ", ".join(languages) if languages else "unknown"
                     score, details, good_count, bad_count = calculate_score(title, description, url, languages, good_keywords, bad_keywords)
-                    #row_data = [url, title, description, score, details, source, ", ".join(languages), good_count, bad_count, timestamp]
-                    row_data = [url, title, description, score, details, source, "ee", good_count, bad_count, timestamp]
+                    row_data = [url, title, description, score, details, source, lang_text, good_count, bad_count, timestamp]
 
                     if score in ["A", "B"]:
                         rows_to_sure.append(row_data)
