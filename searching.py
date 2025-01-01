@@ -151,7 +151,6 @@ def translate_to_english(title, description):
         description_translated = description_translated_result.text if description_translated_result else description
         return title_translated, description_translated
     except Exception as e:
-        error_handler("translating title", title, e)
         return title, description
 
 
