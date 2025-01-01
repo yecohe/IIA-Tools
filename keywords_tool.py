@@ -60,7 +60,7 @@ def run(client):
         )
 
                 # Include inurl checkbox
-        homapage_only = st.checkbox(
+        homepage_only = st.checkbox(
             "Include only homapages results",
             value=False,
             help="Check this box if you want to search only for pages that are homapages (domain or subdomain)."
@@ -78,7 +78,7 @@ def run(client):
             keywords_query = keywords_query.split(",")  # Split by commas
             keywords_query = [kw.strip() for kw in keywords_query]  # Remove extra spaces around words
 
-            st.write(f"**Keywords List:** {keywords_query} | **Language:** {language} | **Number of Results:** {limit} | **Include 'inurl':** {'Yes' if include_inurl else 'No'} | **Homapage only:** {'Yes' if homapage_only else 'No'}")
+            st.write(f"**Keywords List:** {keywords_query} | **Language:** {language} | **Number of Results:** {limit} | **Include 'inurl':** {'Yes' if include_inurl else 'No'} | **Homapage only:** {'Yes' if homepage_only else 'No'}")
 
             # Call the process_keywords function with the selected limit
             sheet_id = st.secrets["google_id"]
