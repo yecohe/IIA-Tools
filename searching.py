@@ -133,7 +133,10 @@ def detect_language(title, description):
 
 # Helper function to combine title and description text
 def combine_text(title, description):
-    return (title or "").lower() + " " + (description or "").lower()
+    try:
+        return (title or "").lower() + " " + (description or "").lower()
+    except Exception as e:
+        error_handler("combine text", title, e)
 
 def translate_to_english(title, description):
     try:
@@ -170,7 +173,8 @@ def count_keywords(title, description, good_keywords, bad_keywords):
 def calculate_score(url, title, description, languages, good_keywords, bad_keywords):
     if languages and languages[0] != 'english':
         title, description = translate_to_english(title, description)
-    good_count, bad_count, score, details = "Err", "Err", "C", "Error"
+    score = "C"
+    details = "Error"
     good_count, bad_count = count_keywords(title, description, good_keywords, bad_keywords)
     if url.endswith(".il") or url.endswith(".il/"):
         score = "A"
@@ -185,7 +189,6 @@ def calculate_score(url, title, description, languages, good_keywords, bad_keywo
         score = "C"
         details = "No good keywords"
     return score, details, good_count, bad_count
-
 
 
 # Function to filter out ignored URLs
