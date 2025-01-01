@@ -72,7 +72,7 @@ def google_search(query, num_results=100, language="en"):
 
 # Function to fetch title from a URL
 def get_title(url):
-    title = "t"
+    title = ""
     try:
         # Add scheme if missing
         if not re.match(r'^https?://', url):
@@ -81,8 +81,8 @@ def get_title(url):
         response.encoding = 'utf-8'
         soup = BeautifulSoup(response.text, 'html.parser')
         # Try to get the title
-        title = soup.title.string if soup.title else "t"
-        title = re.sub(r'[\r\n]+', ' ', title.strip()) if title else "t"
+        title = soup.title.string if soup.title else ""
+        title = re.sub(r'[\r\n]+', ' ', title.strip()) if title else ""
     except requests.exceptions.RequestException as e:
         # Handle connection errors
         title = "Error"
@@ -92,7 +92,7 @@ def get_title(url):
 
 # Function to fetch description from a URL
 def get_description(url):
-    description = "d"
+    description = ""
     try:
         # Add scheme if missing
         if not re.match(r'^https?://', url):
@@ -102,8 +102,8 @@ def get_description(url):
         soup = BeautifulSoup(response.text, 'html.parser')
         # Try to get the description
         description_tag = soup.find('meta', attrs={'name': 'description'}) or soup.find('meta', attrs={'property': 'og:description'})
-        description = description_tag['content'] if description_tag else "d"
-        description = re.sub(r'[\r\n]+', ' ', description.strip()) if description else "d"
+        description = description_tag['content'] if description_tag else ""
+        description = re.sub(r'[\r\n]+', ' ', description.strip()) if description else ""
     except requests.exceptions.RequestException as e:
         # Handle connection errors
         description = "Error"
