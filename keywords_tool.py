@@ -82,5 +82,5 @@ def run(client):
 
             # Call the process_keywords function with the selected limit
             sheet_id = st.secrets["google_id"]
-            process_keywords(client, sheet_id, keywords_query, lang=language, inurl=include_inurl, limit=limit, homepage_only=homepage_only)
+            process_keywords(client, sheet_id, keywords_query, lang=language, inurl=include_inurl, limit=limit, homepage=homepage_only)
             st.info("The URLs were added to the file.")
