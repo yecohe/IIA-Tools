@@ -7,7 +7,7 @@ pytz
 requests
 bs4
 pycld2
-googletrans
+googletrans==3.0.0
 SPARQLWrapper
 streamlit_option_menu
 requests_cache
