@@ -54,7 +54,6 @@ def google_search(query, num_results=100, language="en"):
 
             # Stop if no results are found on the current page
             if not result_divs:
-                st.warning(f"Not enough results found for the query: {query}")
                 break
 
             # Pause before the next request
