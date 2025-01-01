@@ -7,7 +7,7 @@ from collections import Counter
 from datetime import datetime
 import pytz
 import streamlit as st
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urlunparse
 import time
 import random
 import requests_cache
@@ -196,7 +196,7 @@ def search_and_filter_urls(query, num_results=100, language="en", homepage_only=
         else:
             # Strip URL to domain or subdomain
             stripped_url = urlunparse((parsed_url.scheme, parsed_url.netloc, "", "", "", ""))
-            source = f"{query} - root" if parsed_url.path in ("", "/") and not parsed_url.query and not parsed_url.fragment else f"{query} - page"
+            source = f"search for '{query}'" if parsed_url.path in ("", "/") and not parsed_url.query and not parsed_url.fragment else f"search for '{query}' (p)"
             result = stripped_url  # Replace result with stripped URL
         classified_urls.append((result, source))
     return classified_urls
@@ -244,7 +244,7 @@ def process_keywords(client, sheet_id, keywords, lang="en", inurl=False, limit=1
 
             for url, source in all_urls:
                 timestamp = datetime.now(pytz.timezone('Asia/Jerusalem')).strftime("%Y-%m-%d %H:%M:%S")
-                source = f"google search for '{source}'"
+                #source = f"google search for '{source}'"
                 try:
                     title = get_title(url)
                     description = get_description(url)
