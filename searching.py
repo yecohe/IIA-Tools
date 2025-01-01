@@ -63,9 +63,9 @@ def google_search(query, num_results=100, language="en"):
             break  # Stop the loop if there's an error
 
     if results:
-        st.info(f"Fetched {len(results)} results for the query '{query}'")
+        st.info(f"Fetched {len(results)} results for '{query}'")
     else:
-        st.error(f"No results found for the query '{query}'")
+        st.error(f"No results found for the '{query}'")
     return results
 
 
@@ -243,7 +243,7 @@ def process_keywords(client, sheet_id, keywords, lang="en", inurl=False, limit=1
     bad_keywords = [kw.lower() for kw in keywords_sheet.col_values(3)[1:]]  # Lowercase bad keywords
     
     for keyword in keywords:
-        st.success(f"Processing keyword: {keyword}")
+        st.success(f"Processing '{keyword}'...")
         check_and_add_headers(sure_sheet)
         check_and_add_headers(not_sure_sheet)
         rows_to_sure = []
@@ -286,10 +286,10 @@ def process_keywords(client, sheet_id, keywords, lang="en", inurl=False, limit=1
                     
             # Update Google Sheets after processing the keyword
             update_google_sheets(rows_to_sure, rows_to_not_sure, sure_sheet, not_sure_sheet)
-            st.success(f"Finished processing the query '{keyword}'")
+            st.success(f"Finished processing '{keyword}'")
         
         except Exception as e:
-            st.error(f"Error processing the query '{keyword}': {e}")
+            st.error(f"Error processing '{keyword}': {e}")
 
 
 # Main function to process keywords and URLs
@@ -320,7 +320,7 @@ def process_urls(client, sheet_id, urls, source_name):
 
         except Exception as e:
             st.error(f"Error processing URL '{url}': {e}")
-            error_row = [url, "Error", "Error", "", "Error", source, "", "", "", timestamp]
+            error_row = [url, "Error", "Error", "C", "Error", source, "", "", "", timestamp]
             rows_to_not_sure.append(error_row)
             
     # Update Google Sheets after processing the keyword
