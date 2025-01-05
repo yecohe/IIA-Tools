@@ -244,100 +244,87 @@ def check_and_add_headers(sheet):
     if len(sheet.get_all_values()) <= 1:  # Only the header exists
         sheet.insert_row(headers, 1)
 
-
-# Main function to process keywords and URLs
-def process_keywords(client, sheet_id, keywords, lang="en", inurl=False, limit=100, homepage=False):
+# Fetch sheets and extract keywords
+def fetch_and_get_keywords(client, sheet_id):
+    """Fetch necessary Google Sheets and extract good and bad keywords."""
     keywords_sheet = client.open_by_key(st.secrets["keywords_id"]).worksheet("Keywords")
     sure_sheet = client.open_by_key(sheet_id).worksheet("Sure")
     not_sure_sheet = client.open_by_key(sheet_id).worksheet("Not Sure")
+    
     good_keywords = [kw.lower() for kw in keywords_sheet.col_values(1)[1:]]  # Lowercase good keywords
     bad_keywords = [kw.lower() for kw in keywords_sheet.col_values(3)[1:]]  # Lowercase bad keywords
     
+    return keywords_sheet, sure_sheet, not_sure_sheet, good_keywords, bad_keywords
+
+# Process a single URL and evaluate it
+def process_single_url(url, source, good_keywords, bad_keywords):
+    """Process a single URL and return a row of data and its score."""
+    timestamp = datetime.now(pytz.timezone('Asia/Jerusalem')).strftime("%Y-%m-%d %H:%M:%S")
+    try:
+        title = get_title(url)
+        description = get_description(url)
+        languages = detect_language(title, description)
+        lang_text = ", ".join(languages) if languages else "unknown"
+        score, details, good_count, bad_count = calculate_score(url, title, description, languages, good_keywords, bad_keywords)
+        row_data = [url, title, description, score, details, source, lang_text, good_count, bad_count, timestamp]
+    except Exception as e:
+        st.error(f"Error processing URL '{url}': {e}")
+        row_data = [url, "Error", "Error", "C", "Error", source, "Error", "Error", "Error", timestamp]
+    
+    return row_data, score
+
+# Process keywords to fetch and evaluate URLs
+def process_keywords(client, sheet_id, keywords, lang="en", inurl=False, limit=100, homepage=False):
+    """Process a list of keywords to fetch and evaluate URLs."""
+    keywords_sheet, sure_sheet, not_sure_sheet, good_keywords, bad_keywords = fetch_and_get_keywords(client, sheet_id)
+
+    check_and_add_headers(sure_sheet)
+    check_and_add_headers(not_sure_sheet)
+
     for keyword in keywords:
         st.success(f"Processing '{keyword}'...")
-        check_and_add_headers(sure_sheet)
-        check_and_add_headers(not_sure_sheet)
-        rows_to_sure = []
-        rows_to_not_sure = []
+
+        
+        rows_to_sure, rows_to_not_sure = [], []
         delay = random.uniform(10, 60)
         time.sleep(delay)
+        
         try:
-            # Perform searches
             homepage_urls = search_and_filter_urls(keyword, num_results=limit, language=lang, homepage_only=homepage)
             inurl_urls = []
             if inurl:
                 inurl_urls = search_and_filter_urls(f"inurl:{keyword}", num_results=limit, language=lang, homepage_only=homepage)
-            # Combine and remove duplicates based on URL only
-            all_urls_dict = {}
-            for url, source in homepage_urls + inurl_urls:
-                if url not in all_urls_dict:
-                    all_urls_dict[url] = source
-            # Convert back to a list of tuples (url, source)
-            all_urls = [(url, source) for url, source in all_urls_dict.items()]
-            # get info for urls
-            for url, source in all_urls:
-                timestamp = datetime.now(pytz.timezone('Asia/Jerusalem')).strftime("%Y-%m-%d %H:%M:%S")
-                #source = f"google search for '{source}'"
-                try:
-                    title = get_title(url)
-                    description = get_description(url)
-                    languages = detect_language(title, description)
-                    details = "Error"
-                    lang_text = ", ".join(languages) if languages else "unknown"
-                    score, details, good_count, bad_count = calculate_score(url, title, description, languages, good_keywords, bad_keywords)
-                    row_data = [url, title, description, score, details, source, lang_text, good_count, bad_count, timestamp]
 
-                    if score in ["A", "B"]:
-                        rows_to_sure.append(row_data)
-                    else:
-                        rows_to_not_sure.append(row_data)
-                # except
-                except Exception as e:
-                    st.error(f"Error processing URL '{url}': {e}")
-                    error_row = [url, title if title else "Error", description if description else "Error", "C", details if details else "Error", source if source else "Error", lang_text if lang_text else "Error", "Error", "Error", timestamp if timestamp else "Error"]
-                    rows_to_not_sure.append(error_row)
-                    
-            # Update Google Sheets after processing the keyword
+            all_urls = list({url: source for url, source in homepage_urls + inurl_urls}.items())
+            for url, source in all_urls:
+                row_data, score = process_single_url(url, source, good_keywords, bad_keywords)
+                if score in ["A", "B"]:
+                    rows_to_sure.append(row_data)
+                else:
+                    rows_to_not_sure.append(row_data)
+
             update_google_sheets(rows_to_sure, rows_to_not_sure, sure_sheet, not_sure_sheet)
             st.success(f"Finished processing '{keyword}'")
-        
         except Exception as e:
             st.error(f"Error processing '{keyword}': {e}")
 
-
-# Main function to process keywords and URLs
+# Process URLs and classify them
 def process_urls(client, sheet_id, urls, source_name):
-    keywords_sheet = client.open_by_key(st.secrets["keywords_id"]).worksheet("Keywords")
-    sure_sheet = client.open_by_key(sheet_id).worksheet("Sure")
-    not_sure_sheet = client.open_by_key(sheet_id).worksheet("Not Sure")
-    good_keywords = [kw.lower() for kw in keywords_sheet.col_values(1)[1:]]  # Lowercase good keywords
-    bad_keywords = [kw.lower() for kw in keywords_sheet.col_values(3)[1:]]  # Lowercase bad keywords
+    """Process a list of URLs and classify them."""
+    try:
+        keywords_sheet, sure_sheet, not_sure_sheet, good_keywords, bad_keywords = fetch_and_get_keywords(client, sheet_id)
+        check_and_add_headers(sure_sheet)
+        check_and_add_headers(not_sure_sheet)
+        rows_to_sure, rows_to_not_sure = [], []
     
-    rows_to_sure = []
-    rows_to_not_sure = []
-
-    for url in urls:
-        timestamp = datetime.now(pytz.timezone('Asia/Jerusalem')).strftime("%Y-%m-%d %H:%M:%S")
-        source = source_name
-        try:
-            title = get_title(url)
-            description = get_description(url)
-            languages = detect_language(title, description)
-            details = "Error"
-            lang_text = ", ".join(languages) if languages else "unknown"
-            score, details, good_count, bad_count = calculate_score(url, title, description, languages, good_keywords, bad_keywords)
-            row_data = [url, title, description, score, details, source, lang_text, good_count, bad_count, timestamp]
-
+        for url in urls:
+            row_data, score = process_single_url(url, source_name, good_keywords, bad_keywords)
             if score in ["A", "B"]:
                 rows_to_sure.append(row_data)
             else:
                 rows_to_not_sure.append(row_data)
-
-        except Exception as e:
-            st.error(f"Error processing URL '{url}': {e}")
-            error_row = [url, title if title else "Error", description if description else "Error", "C", details if details else "Error", source if source else "Error", lang_text if lang_text else "Error", "Error", "Error", timestamp if timestamp else "Error"]
-            rows_to_not_sure.append(error_row)
-            
-    # Update Google Sheets after processing the keyword
-    update_google_sheets(rows_to_sure, rows_to_not_sure, sure_sheet, not_sure_sheet)
+    
+        update_google_sheets(rows_to_sure, rows_to_not_sure, sure_sheet, not_sure_sheet)
+    except Exception as e:
+        st.error(f"Error processing '{source_name}': {e}")
 
