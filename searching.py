@@ -322,8 +322,10 @@ def process_urls(client, sheet_id, urls, source_name):
             title = get_title(url)
             description = get_description(url)
             languages = detect_language(title, description)
-            score, details, good_count, bad_count = calculate_score(title, description, url, languages, good_keywords, bad_keywords)
-            row_data = [url, title, description, score, details, source, ", ".join(languages), good_count, bad_count, timestamp]
+            details = "Error"
+            lang_text = ", ".join(languages) if languages else "unknown"
+            score, details, good_count, bad_count = calculate_score(url, title, description, languages, good_keywords, bad_keywords)
+            row_data = [url, title, description, score, details, source, lang_text, good_count, bad_count, timestamp]
 
             if score in ["A", "B"]:
                 rows_to_sure.append(row_data)
@@ -332,7 +334,7 @@ def process_urls(client, sheet_id, urls, source_name):
 
         except Exception as e:
             st.error(f"Error processing URL '{url}': {e}")
-            error_row = [url, "Error", "Error", "C", "Error", source, "", "", "", timestamp]
+            error_row = [url, title if title else "Error", description if description else "Error", "C", details if details else "Error", source if source else "Error", lang_text if lang_text else "Error", "Error", "Error", timestamp if timestamp else "Error"]
             rows_to_not_sure.append(error_row)
             
     # Update Google Sheets after processing the keyword
