@@ -140,18 +140,16 @@ def detect_language(title, description):
         return ["unknown"]
 
 
-def translate_to_english(title, description):
+def translate_to_english(text, url):
     try:
         translator = Translator()
         # Translate the title
-        title_translated_result = translator.translate(str(title), src='auto', dest='en')
-        title_translated = title_translated_result.text if title_translated_result else title
-        # Translate the description
-        description_translated_result = translator.translate(str(description), src='auto', dest='en')
-        description_translated = description_translated_result.text if description_translated_result else description
-        return title_translated, description_translated
+        translated_result = translator.translate(str(text), src='auto', dest='en')
+        translated = translated_result.text if translated_result else text
+        return translated
     except Exception as e:
-        return title, description
+        error_handler("translating", text, e)
+        return text
 
 
 def count_keywords(title, description, good_keywords, bad_keywords):
@@ -170,7 +168,8 @@ def count_keywords(title, description, good_keywords, bad_keywords):
 # Function to calculate score
 def calculate_score(url, title, description, languages, good_keywords, bad_keywords):
     if languages and languages[0] != 'english':
-        title, description = translate_to_english(title, description)
+        title = translate_to_english(title, url)
+        description = translate_to_english(description, url)
     score = "C"
     details = "Error"
     good_count, bad_count = 0, 0
