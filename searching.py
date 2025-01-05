@@ -167,26 +167,27 @@ def count_keywords(title, description, good_keywords, bad_keywords):
     
 # Function to calculate score
 def calculate_score(url, title, description, languages, good_keywords, bad_keywords):
-    if languages and languages[0] != 'english':
-        title = translate_to_english(title, url)
-        description = translate_to_english(description, url)
-    score = "C"
-    details = "Error"
-    good_count, bad_count = 0, 0
-    good_count, bad_count = count_keywords(title, description, good_keywords, bad_keywords)
-    if url.endswith(".il") or url.endswith(".il/"):
-        score = "A"
-        details = "Hebrew / .il"
-    elif "hebrew" in languages:
-        score = "A"
-        details = "Hebrew / .il"
-    elif good_count > 0:
-        score = "B"
-        details = "Good keywords"
-    else:
-        score = "C"
-        details = "No good keywords"
-    return score, details, good_count, bad_count
+    try:
+        if languages and languages[0] != 'english':
+            title = translate_to_english(title, url)
+            description = translate_to_english(description, url)
+        good_count, bad_count = count_keywords(title, description, good_keywords, bad_keywords)
+        if url.endswith(".il") or url.endswith(".il/"):
+            score = "A"
+            details = "Hebrew / .il"
+        elif "hebrew" in languages:
+            score = "A"
+            details = "Hebrew / .il"
+        elif good_count > 0:
+            score = "B"
+            details = "Good keywords"
+        else:
+            score = "C"
+            details = "No good keywords"
+        return score, details, good_count, bad_count
+    except Exception as e:
+        error_handler("counting keywords", title, e)
+        return "C", "Error", 0, 0
 
 
 # Function to filter out ignored URLs
