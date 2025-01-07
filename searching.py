@@ -142,6 +142,7 @@ def detect_language(title, description):
 
 def translate_to_english(text, url):
     try:
+        text = str(text)
         translator = Translator()
         # Translate the title
         translated_result = translator.translate(str(text), src='auto', dest='en')
