@@ -170,6 +170,7 @@ def count_keywords(title, description, good_keywords, bad_keywords):
     
 # Function to calculate score
 def calculate_score(url, title, description, languages, good_keywords, bad_keywords):
+    score = "C"
     try:
         if languages and languages[0] != 'english':
             title = translate_to_english(title, url)
@@ -292,7 +293,7 @@ def process_single_url(url, source, good_keywords, bad_keywords):
         row_data = [url, title, description, score, details, source, lang_text, good_count, bad_count, timestamp]
     except Exception as e:
         st.error(f"Error processing URL '{url}': {e}")
-        row_data = [url, "Error", "Error", "C", "Error", source, "Error", "Error", "Error", timestamp]
+        row_data = [url, title if title else "Error", description if description else "Error", score if score else "C", details if details else "Error", source if source else "Error", lang_text if lang_text else "Error", good_count if good_count else "Error", bad_count if bad_count else "Error", timestamp if timestamp else "Error"]
     
     return row_data, score
 
