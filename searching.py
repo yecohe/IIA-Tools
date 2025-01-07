@@ -115,10 +115,17 @@ def get_description(url):
 # Helper function to combine title and description text
 def combine_text(title, description):
     try:
-        return (title or "").lower() + " " + (description or "").lower()
+        # Handle missing title or description by replacing with empty string
+        title = (title or "").strip().lower()  # Use empty string if title is None or empty
+        description = (description or "").strip().lower()  # Use empty string if description is None or empty
+        
+        # Combine the title and description, ensuring no None values are included
+        combined_text = f"{title} {description}".strip()
+        return combined_text
     except Exception as e:
         error_handler("combine text", title, e)
         return title
+
 
 
 # Function to detect language using CLD2
@@ -153,7 +160,7 @@ def translate_to_english(text, url):
         return translated
     except Exception as e:
         error_handler("translating", text, e)
-        return translated if translated else text
+        return text
 
 
 def count_keywords(title, description, good_keywords, bad_keywords):
