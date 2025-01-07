@@ -149,18 +149,18 @@ def detect_language(title, description):
         return ["unknown"]
 
 
-def translate_to_english(text, url):
+def translate_to_english(input, url):
     try:
-        text = str(text)
+        input = str(input)
         translator = Translator()
         # Translate the title
-        translated_result = translator.translate(text, src='auto', dest='en')
-        translated = translated_result.text if translated_result else text
+        translated_result = translator.translate(input, src='auto', dest='en')
+        translated = translated_result.text if translated_result else input
         translated = str(translated)
         return translated
     except Exception as e:
-        error_handler("translating", text, e)
-        return text
+        error_handler("translating", input, e)
+        return input
 
 
 def count_keywords(title, description, good_keywords, bad_keywords):
