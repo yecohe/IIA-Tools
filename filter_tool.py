@@ -22,7 +22,7 @@ def run(client):
         source_name = st.text_input("List Name:", placeholder="E.g., 'My URL List'")
 
         # Submit button
-        submit_button = st.form_submit_button("Filter URLs")
+        submit_button = st.form_submit_button("Filter")
 
     # Handle form submission
     if submit_button:
