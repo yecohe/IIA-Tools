@@ -147,12 +147,13 @@ def translate_to_english(text, url):
         text = str(text)
         translator = Translator()
         # Translate the title
-        translated_result = translator.translate(str(text), src='auto', dest='en')
+        translated_result = translator.translate(text, src='auto', dest='en')
         translated = translated_result.text if translated_result else text
+        translated = str(translated)
         return translated
     except Exception as e:
         error_handler("translating", text, e)
-        return text
+        return translated 
 
 
 def count_keywords(title, description, good_keywords, bad_keywords):
