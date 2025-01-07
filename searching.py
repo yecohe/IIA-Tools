@@ -153,7 +153,7 @@ def translate_to_english(text, url):
         return translated
     except Exception as e:
         error_handler("translating", text, e)
-        return translated 
+        return translated if translated else text
 
 
 def count_keywords(title, description, good_keywords, bad_keywords):
