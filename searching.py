@@ -83,11 +83,12 @@ def get_title(url):
         # Try to get the title
         title = soup.title.string if soup.title else ""
         title = re.sub(r'[\r\n]+', ' ', title.strip()) if title else ""
+        return str(title)
     except requests.exceptions.RequestException as e:
         # Handle connection errors
         title = "Error"
         error_handler("get title", url, e)
-    return str(title)
+        return str(title)
 
 
 # Function to fetch description from a URL
@@ -104,11 +105,12 @@ def get_description(url):
         description_tag = soup.find('meta', attrs={'name': 'description'}) or soup.find('meta', attrs={'property': 'og:description'})
         description = description_tag['content'] if description_tag else ""
         description = re.sub(r'[\r\n]+', ' ', description.strip()) if description else ""
+        return str(description)
     except requests.exceptions.RequestException as e:
         # Handle connection errors
         description = "Error"
         error_handler("get description", url, e)
-    return str(description)
+        return str(description)
 
 # Helper function to combine title and description text
 def combine_text(title, description):
