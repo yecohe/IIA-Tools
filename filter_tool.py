@@ -1,4 +1,5 @@
 import streamlit as st
+import pandas as pd
 from searching import process_urls
 
 def run(client):
@@ -16,7 +17,7 @@ def run(client):
         urls_input = st.text_area("Insert a list of URLs (one per line):")
 
         # Option to upload a file
-        uploaded_file = st.file_uploader("Or upload a file (CSV / TXT / XLSX):", type=["csv", "txt", "xlsx"])
+        uploaded_file = st.file_uploader("Or upload a file (CSV / TXT / Excel):", type=["csv", "txt", "xlsx"])
 
         # Name for the source
         source_name = st.text_input("List Name:", placeholder="E.g., 'My URL List'")
@@ -33,12 +34,19 @@ def run(client):
         if uploaded_file:
             # Process uploaded file
             file_type = uploaded_file.name.split('.')[-1].lower()
-            if file_type == "csv":
-                urls = uploaded_file.read().decode("utf-8").splitlines()
-            elif file_type == "txt":
-                urls = uploaded_file.read().decode("utf-8").splitlines()
-            else:
-                st.error("Unsupported file type. Please upload a CSV or TXT file.")
+            try:
+                if file_type == "csv":
+                    urls = uploaded_file.read().decode("utf-8").splitlines()
+                elif file_type == "txt":
+                    urls = uploaded_file.read().decode("utf-8").splitlines()
+                elif file_type == "xlsx":
+                    df = pd.read_excel(uploaded_file)
+                    # Assuming the URLs are in the first column
+                    urls = df.iloc[:, 0].dropna().tolist()
+                else:
+                    st.error("Unsupported file type. Please upload a CSV, TXT, or Excel file.")
+            except Exception as e:
+                st.error(f"Error reading file: {e}")
         elif urls_input.strip():
             # Process manual input
             urls = urls_input.strip().splitlines()
@@ -47,7 +55,7 @@ def run(client):
 
         # Validate source name
         if not source_name:
-            st.error("Please provide a name for the list (source_name).")
+            st.error("Please provide a name for the list.")
         elif not urls:
             st.error("No valid URLs provided.")
         else:
@@ -55,5 +63,3 @@ def run(client):
             sheet_id = st.secrets["filter_id"]
             process_urls(client, sheet_id, urls, source_name)
             st.success(f"The process is done.")
-
-            
