@@ -16,7 +16,7 @@ def run(client):
         urls_input = st.text_area("Insert a list of URLs (one per line):")
 
         # Option to upload a file
-        uploaded_file = st.file_uploader("Or upload a file (CSV or TXT with URLs):", type=["csv", "txt"])
+        uploaded_file = st.file_uploader("Or upload a file (CSV / TXT / XLSX):", type=["csv", "txt", "xlsx"])
 
         # Name for the source
         source_name = st.text_input("List Name:", placeholder="E.g., 'My URL List'")
