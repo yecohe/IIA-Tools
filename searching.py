@@ -201,9 +201,10 @@ def filter_ignored_urls(classified_urls):
 
 # Function to search and filter URLs based on query
 def search_and_filter_urls(query, num_results=100, language="en", homepage_only=False):
-    #search_results = search(query, num_results, lang=language)
+    # Search results placeholder
     search_results = google_search(query, num_results, language)
     classified_urls = []
+    
     for result in search_results:
         parsed_url = urlparse(result)
         if homepage_only:
@@ -216,18 +217,34 @@ def search_and_filter_urls(query, num_results=100, language="en", homepage_only=
             source = f"search for '{query}' (d)" if parsed_url.path in ("", "/") and not parsed_url.query and not parsed_url.fragment else f"search for '{query}' (p)"
             result = stripped_url  # Replace result with stripped URL
         classified_urls.append((result, source))
-    # Deduplicate based on URL
-    seen_urls = set()
+
+    # Deduplicate, excluding www if root domain is present
+    seen_domains = set()
     deduplicated_urls = []
+
     for url, source in classified_urls:
-        if url not in seen_urls:
-            deduplicated_urls.append((url, source))
-            seen_urls.add(url)
-            
-     # Filter out ignored URLs if provided
+        parsed_url = urlparse(url)
+        netloc = parsed_url.netloc
+
+        # Check if it's a www domain
+        if netloc.startswith("www."):
+            root_domain = netloc[4:]  # Strip 'www.'
+        else:
+            root_domain = netloc
+
+        # Skip www.x.com if x.com is already seen
+        if netloc.startswith("www.") and root_domain in seen_domains:
+            continue
+
+        # Add both the full domain and root domain to the seen set
+        seen_domains.add(root_domain)
+        deduplicated_urls.append((url, source))
+
+    # Filter out ignored URLs if provided
     deduplicated_urls = filter_ignored_urls(deduplicated_urls)
-        
+    
     return deduplicated_urls
+
 
 
 # Function to update Google Sheets after processing each keyword
