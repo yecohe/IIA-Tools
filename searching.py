@@ -247,14 +247,17 @@ def check_and_add_headers(sheet):
 # Fetch sheets and extract keywords
 def fetch_and_get_keywords(client, sheet_id):
     """Fetch necessary Google Sheets and extract good and bad keywords."""
-    keywords_sheet = client.open_by_key(st.secrets["keywords_id"]).worksheet("Keywords")
-    sure_sheet = client.open_by_key(sheet_id).worksheet("Sure")
-    not_sure_sheet = client.open_by_key(sheet_id).worksheet("Not Sure")
-    
-    good_keywords = [kw.lower() for kw in keywords_sheet.col_values(1)[1:]]  # Lowercase good keywords
-    bad_keywords = [kw.lower() for kw in keywords_sheet.col_values(3)[1:]]  # Lowercase bad keywords
-    
-    return keywords_sheet, sure_sheet, not_sure_sheet, good_keywords, bad_keywords
+    try:
+        keywords_sheet = client.open_by_key(st.secrets["keywords_id"]).worksheet("Keywords")
+        sure_sheet = client.open_by_key(sheet_id).worksheet("Sure")
+        not_sure_sheet = client.open_by_key(sheet_id).worksheet("Not Sure")
+        
+        good_keywords = [kw.lower() for kw in keywords_sheet.col_values(1)[1:]]  # Lowercase good keywords
+        bad_keywords = [kw.lower() for kw in keywords_sheet.col_values(3)[1:]]  # Lowercase bad keywords
+        
+        return keywords_sheet, sure_sheet, not_sure_sheet, good_keywords, bad_keywords
+    except Exception as e:
+        error_handler("fetch and get keywords", sheet_id, e)
 
 # Process a single URL and evaluate it
 def process_single_url(url, source, good_keywords, bad_keywords):
@@ -325,6 +328,7 @@ def process_urls(client, sheet_id, urls, source_name):
                 rows_to_not_sure.append(row_data)
     
         update_google_sheets(rows_to_sure, rows_to_not_sure, sure_sheet, not_sure_sheet)
+        st.success(f"Finished processing '{source_name}'")
     except Exception as e:
         st.error(f"Error processing '{source_name}': {e}")
 
