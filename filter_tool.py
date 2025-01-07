@@ -40,9 +40,8 @@ def run(client):
                 elif file_type == "txt":
                     urls = uploaded_file.read().decode("utf-8").splitlines()
                 elif file_type == "xlsx":
-                    df = pd.read_excel(uploaded_file)
-                    # Assuming the URLs are in the first column
-                    urls = df.iloc[:, 0].dropna().tolist()
+                    df = pd.read_excel(uploaded_file, engine='openpyxl')
+                    urls = df.iloc[:, 0].dropna().tolist()  # Assuming URLs are in the first column
                 else:
                     st.error("Unsupported file type. Please upload a CSV, TXT, or Excel file.")
             except Exception as e:
