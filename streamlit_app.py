@@ -5,6 +5,7 @@ import gspread
 import keywords_tool
 import wikidata_tool
 import filter_tool
+import split_tool
 from streamlit_option_menu import option_menu
 
 # Sidebar: Upload Credentials File
