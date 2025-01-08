@@ -105,7 +105,7 @@ def get_description(url):
         description_tag = soup.find('meta', attrs={'name': 'description'}) or soup.find('meta', attrs={'property': 'og:description'})
         description = description_tag['content'] if description_tag else ""
         description = re.sub(r'[\r\n]+', ' ', description.strip()) if description else ""
-        it description is not str:
+        if description is not str:
             description = str(description)
         return description
     except requests.exceptions.RequestException as e:
