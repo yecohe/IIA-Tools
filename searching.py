@@ -290,12 +290,9 @@ def fetch_and_get_keywords(client, sheet_id):
     try:
         keywords_sheet = client.open_by_key(st.secrets["keywords_id"]).worksheet("Keywords")
         sure_sheet = client.open_by_key(sheet_id).worksheet("Sure")
-        not_sure_sheet = client.open_by_key(sheet_id).worksheet("Not Sure")
-        results_sheet = client.open_by_key(sheet_id).worksheet("Results")
-        
+        not_sure_sheet = client.open_by_key(sheet_id).worksheet("Not Sure")        
         good_keywords = [kw.lower() for kw in keywords_sheet.col_values(1)[1:]]  # Lowercase good keywords
         bad_keywords = [kw.lower() for kw in keywords_sheet.col_values(3)[1:]]  # Lowercase bad keywords
-        
         return keywords_sheet, sure_sheet, not_sure_sheet, good_keywords, bad_keywords
     except Exception as e:
         error_handler("fetch and get keywords", sheet_id, e)
