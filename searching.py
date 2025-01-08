@@ -1,4 +1,5 @@
 from googletrans import Translator
+import asyncio
 import requests
 from bs4 import BeautifulSoup
 import pycld2 as cld2
