@@ -366,7 +366,7 @@ def process_urls(client, sheet_id, urls, source_name):
 
 # Process URLs and classify them
 def domain_split(client, sheet_id, urls, source_name):
-    headers = ["URL", "Tier", "Details", "Words", ,"Good Keywords", "Bad Keywords", "Source", "Timestamp"]
+    headers = ["URL", "Tier", "Details", "Words", "Good Keywords", "Bad Keywords", "Source", "Timestamp"]
     if len(sheet.get_all_values()) <= 1:  # Only the header exists
         sheet.insert_row(headers, 1)
     try:
