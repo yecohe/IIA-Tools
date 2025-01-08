@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from searching import process_urls
+from searching import domain_splitter
 
 def run(client):
     # Main interface for URL filtering
