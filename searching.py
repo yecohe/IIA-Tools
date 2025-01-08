@@ -83,12 +83,12 @@ def get_title(url):
         # Try to get the title
         title = soup.title.string if soup.title else ""
         title = re.sub(r'[\r\n]+', ' ', title.strip()) if title else ""
-        return str(title)
+        it title is not str:
+            title = str(title)
+        return title
     except requests.exceptions.RequestException as e:
-        # Handle connection errors
-        title = "Error"
         error_handler("get title", url, e)
-        return str(title)
+        return "Error"
 
 
 # Function to fetch description from a URL
@@ -105,12 +105,12 @@ def get_description(url):
         description_tag = soup.find('meta', attrs={'name': 'description'}) or soup.find('meta', attrs={'property': 'og:description'})
         description = description_tag['content'] if description_tag else ""
         description = re.sub(r'[\r\n]+', ' ', description.strip()) if description else ""
-        return str(description)
+        it description is not str:
+            description = str(description)
+        return description
     except requests.exceptions.RequestException as e:
-        # Handle connection errors
-        description = "Error"
         error_handler("get description", url, e)
-        return str(description)
+        return "Error"
 
 # Helper function to combine title and description text
 def combine_text(title, description):
@@ -150,13 +150,13 @@ def detect_language(title, description):
 
 
 def translate_to_english(input, url):
-    try:
+    if input in not str:
         input = str(input)
+    try:
         translator = Translator()
         # Translate the title
         translated_result = translator.translate(input, src='auto', dest='en')
         translated = translated_result.text if translated_result else input
-        translated = str(translated)
         return translated
     except Exception as e:
         error_handler("translating", input, e)
