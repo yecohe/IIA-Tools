@@ -150,6 +150,8 @@ def detect_language(title, description):
         return ["unknown"]
 
 def translate_to_english(input, url):
+    if not text.strip():
+        return ""
     if not isinstance(input, str):
         input = str(input)
     translator = Translator()
