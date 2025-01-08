@@ -154,8 +154,7 @@ def translate_to_english(input, url):
         input = str(input)
     translator = Translator()
     try:
-        # Translate the text
-        translation = translator.translate(input, src=source_language, dest=target_language)
+        translation = translator.translate(input, src='auto', dest='en')
         return translation.text
     except Exception as e:
         error_handler("translating", input, e)
