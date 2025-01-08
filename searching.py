@@ -22,12 +22,12 @@ requests_cache.install_cache('http_cache', expire_after=3600)
 headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36"}
 
 # Load SpaCy models for supported languages
-nlp_models = {
-    "en": spacy.load("en_core_web_sm"),
-    "es": spacy.load("es_core_news_sm"),
-    "fr": spacy.load("fr_core_news_sm"),
-    "pt": spacy.load("pt_core_news_sm"),
-}
+#nlp_models = {
+#   "en": spacy.load("en_core_web_sm"),
+#   "es": spacy.load("es_core_news_sm"),
+#   "fr": spacy.load("fr_core_news_sm"),
+#   "pt": spacy.load("pt_core_news_sm"),
+#}
 
 
 # Error handler function to streamline error handling
