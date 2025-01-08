@@ -155,9 +155,9 @@ def translate_to_english(input, url):
     try:
       with Translator() as translator:
         translated_result = translator.translate(input, src='auto', dest='en')
-        if not isinstance(translated_result, str):
-            translated_result = str (translated_result)
-        return translated_result if translated_result else input
+        if not isinstance(translated_result.text, str):
+            translated_result.text = str(translated_result.text)
+        return translated_result.text if translated_result else input
     except Exception as e:
         print("translating", input, e)
         return input
