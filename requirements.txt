@@ -13,3 +13,4 @@ streamlit_option_menu
 requests_cache
 openpyxl
 pandas
+asyncio
