@@ -83,7 +83,7 @@ def get_title(url):
         # Try to get the title
         title = soup.title.string if soup.title else ""
         title = re.sub(r'[\r\n]+', ' ', title.strip()) if title else ""
-        it title is not str:
+        if title is not str:
             title = str(title)
         return title
     except requests.exceptions.RequestException as e:
