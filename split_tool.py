@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from searching import domain_splitter
+from searching import domain_split
 
 def run(client):
     # Main interface for URL filtering
@@ -60,5 +60,5 @@ def run(client):
         else:
             # Process URLs
             sheet_id = st.secrets["split_id"]
-            domain_splitter(client, sheet_id, urls, source_name)
+            domain_split(client, sheet_id, urls, source_name)
             st.success(f"The process is done.")
