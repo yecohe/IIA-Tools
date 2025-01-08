@@ -12,7 +12,7 @@ from urllib.parse import urlparse, urlunparse
 import time
 import random
 import requests_cache
-import spacy
+#import spacy
 
 
 
