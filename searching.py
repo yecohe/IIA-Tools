@@ -150,7 +150,7 @@ def detect_language(title, description):
 
 
 def translate_to_english(input, url):
-    if input in not str:
+    if input is not str:
         input = str(input)
     try:
         translator = Translator()
