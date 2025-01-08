@@ -159,7 +159,7 @@ def translate_to_english(input, url):
             translated_result.text = str(translated_result.text)
         return translated_result.text if translated_result else input
     except Exception as e:
-        print("translating", input, e)
+        error_handler("translating", input, e)
         return input
 
 
