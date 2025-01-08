@@ -152,12 +152,11 @@ def detect_language(title, description):
 def translate_to_english(input, url):
     if not isinstance(input, str):
         input = str(input)
+    translator = Translator()
     try:
-      with Translator() as translator:
-        translated_result = translator.translate(input, src='auto', dest='en')
-        if not isinstance(translated_result.text, str):
-            translated_result.text = str(translated_result.text)
-        return translated_result.text if translated_result else input
+        # Translate the text
+        translation = translator.translate(text, src=source_language, dest=target_language)
+        return translation.text
     except Exception as e:
         error_handler("translating", input, e)
         return input
