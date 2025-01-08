@@ -154,7 +154,7 @@ def translate_to_english(input, url):
         input = str(input)
     try:
       with Translator() as translator:
-        translated_result = await translator.translate(input, src='auto', dest='en')
+        translated_result = translator.translate(input, src='auto', dest='en')
         if not isinstance(translated_result, str):
             translated_result = str (translated_result)
         return translated_result if translated_result else input
