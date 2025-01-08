@@ -12,6 +12,8 @@ from urllib.parse import urlparse, urlunparse
 import time
 import random
 import requests_cache
+import spacy
+
 
 
 # Install cache for HTTP requests
@@ -280,6 +282,7 @@ def fetch_and_get_keywords(client, sheet_id):
         keywords_sheet = client.open_by_key(st.secrets["keywords_id"]).worksheet("Keywords")
         sure_sheet = client.open_by_key(sheet_id).worksheet("Sure")
         not_sure_sheet = client.open_by_key(sheet_id).worksheet("Not Sure")
+        results_sheet = client.open_by_key(sheet_id).worksheet("Results")
         
         good_keywords = [kw.lower() for kw in keywords_sheet.col_values(1)[1:]]  # Lowercase good keywords
         bad_keywords = [kw.lower() for kw in keywords_sheet.col_values(3)[1:]]  # Lowercase bad keywords
@@ -361,3 +364,20 @@ def process_urls(client, sheet_id, urls, source_name):
     except Exception as e:
         st.error(f"Error processing '{source_name}': {e}")
 
+# Process URLs and classify them
+def domain_split(client, sheet_id, urls, source_name):
+    headers = ["URL", "Tier", "Details", "Words", ,"Good Keywords", "Bad Keywords", "Source", "Timestamp"]
+    if len(sheet.get_all_values()) <= 1:  # Only the header exists
+        sheet.insert_row(headers, 1)
+    try:
+        keywords_sheet, sure_sheet, not_sure_sheet, good_keywords, bad_keywords = fetch_and_get_keywords(client, sheet_id)
+        rows = []
+    
+        for url in urls:
+            
+            row_data, score = process_single_url(url, source_name, good_keywords, bad_keywords)
+            rows.append(row_data)
+        results_sheet.append_rows(rows, value_input_option='RAW')
+        st.success(f"Finished processing '{source_name}'")
+    except Exception as e:
+        st.error(f"Error processing '{source_name}': {e}")
