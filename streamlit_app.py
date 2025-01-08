@@ -45,9 +45,10 @@ if credentials_file is not None:
 if authenticated:
     # Define apps
     apps = {
-        "Keywords Search Tool": keywords_tool.run if callable(keywords_tool.run) else None,
-        "Wikidata Tool": wikidata_tool.run if callable(wikidata_tool.run) else None,
+        "Keywords Search Tool": keywords_tool.run if callable(keywords_tool.run) else None,        
         "Automatic Filter Tool": filter_tool.run if callable(filter_tool.run) else None,
+        "Split URL Tool": filter_tool.run if callable(split_tool.run) else None,
+        "Wikidata Tool": wikidata_tool.run if callable(wikidata_tool.run) else None,
     }
     apps = {k: v for k, v in apps.items() if v}  # Filter out invalid entries
 
@@ -55,7 +56,7 @@ if authenticated:
     selected_app_name = option_menu(
         "Israeli Internet Archive",
         options=list(apps.keys()),
-        icons=["search", "database", "filter"],  # Customize icons
+        icons=["search", "filter", "internet", "database"],  # Customize icons
         menu_icon="cast",
         default_index=0,
         orientation="horizontal"  # Horizontal menu at the top
