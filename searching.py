@@ -149,16 +149,17 @@ def detect_language(title, description):
         error_handler("detecting language", title, e)
         return ["unknown"]
 
-
-def translate_to_english(input, url):
-    if input is not str:
+async def translate_to_english(input, url):
+    if not isinstance(input, str):
         input = str(input)
     try:
-        translator = Translator()
-        translated_result = translator.translate(input, src='auto', dest='en')
+      async with Translator() as translator:
+        translated_result = await translator.translate(input, src='auto', dest='en')
+        if not isinstance(translated_result, str):
+            translated_result = str (translated_result)
         return translated_result if translated_result else input
     except Exception as e:
-        error_handler("translating", input, e)
+        print("translating", input, e)
         return input
 
 
