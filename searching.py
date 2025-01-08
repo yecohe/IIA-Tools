@@ -21,6 +21,15 @@ requests_cache.install_cache('http_cache', expire_after=3600)
 
 headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36"}
 
+# Load SpaCy models for supported languages
+nlp_models = {
+    "en": spacy.load("en_core_web_sm"),
+    "es": spacy.load("es_core_news_sm"),
+    "fr": spacy.load("fr_core_news_sm"),
+    "pt": spacy.load("pt_core_news_sm"),
+}
+
+
 # Error handler function to streamline error handling
 def error_handler(function, item, error_message):
     st.error(f"Error processing {function} for '{item}': {error_message}")
@@ -308,6 +317,30 @@ def process_single_url(url, source, good_keywords, bad_keywords):
     
     return row_data, score
 
+# Function to extract domain from URL
+def extract_domain_from_url(url):
+    domain = urlparse(url).netloc
+    domain = domain.replace('www.', '')
+    return domain
+
+# Function to guess words from the domain using SpaCy NLP models
+def guess_words_from_domain(domain):
+    extracted_words = set()
+    for lang, model in nlp_models.items():
+        doc = model(domain)
+        extracted_words.update(token.text.lower() for token in doc if token.is_alpha)
+    return extracted_words
+
+# Function to calculate score based on keyword matching
+def calculate_url_score(domain, keywords):
+    words = guess_words_from_domain(domain)
+    matching_words = set(words).intersection(keywords)
+    return len(matching_words)
+
+def count_j_in_domain(url):
+    domain = extract_domain_from_url(url)
+    return domain.count('j')
+
 # Process keywords to fetch and evaluate URLs
 def process_keywords(client, sheet_id, keywords, lang="en", inurl=False, limit=100, homepage=False):
     """Process a list of keywords to fetch and evaluate URLs."""
@@ -318,8 +351,6 @@ def process_keywords(client, sheet_id, keywords, lang="en", inurl=False, limit=1
 
     for keyword in keywords:
         st.success(f"Processing '{keyword}'...")
-
-        
         rows_to_sure, rows_to_not_sure = [], []
         delay = random.uniform(10, 60)
         time.sleep(delay)
@@ -366,7 +397,7 @@ def process_urls(client, sheet_id, urls, source_name):
 
 # Process URLs and classify them
 def domain_split(client, sheet_id, urls, source_name):
-    headers = ["URL", "Tier", "Details", "Words", "Good Keywords", "Bad Keywords", "Source", "Timestamp"]
+    headers = ["URL", "Tier", "Details", "Words", "Matching Keywords", "Source", "Timestamp"]
     if len(sheet.get_all_values()) <= 1:  # Only the header exists
         sheet.insert_row(headers, 1)
     try:
@@ -374,9 +405,14 @@ def domain_split(client, sheet_id, urls, source_name):
         rows = []
     
         for url in urls:
-            
-            row_data, score = process_single_url(url, source_name, good_keywords, bad_keywords)
+            timestamp = datetime.now(pytz.timezone('Asia/Jerusalem')).strftime("%Y-%m-%d %H:%M:%S")
+            words = guess_words_from_domain(url)
+            j_count = count_j_in_domain(url)
+            matching_keywords = calculate_url_score(url, good_keywords)
+            details = "a"
+            row_data = [url, details, words, matching_keywords, j_count, source, timestamp]
             rows.append(row_data)
+            
         results_sheet.append_rows(rows, value_input_option='RAW')
         st.success(f"Finished processing '{source_name}'")
     except Exception as e:
