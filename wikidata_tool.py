@@ -1,5 +1,6 @@
 import streamlit as st
 from SPARQLWrapper import SPARQLWrapper, JSON
+import time
 
 # Function to convert ID (e.g., "P27") to Label (e.g., "country of citizenship")
 def id_to_label(wikidata_id):
@@ -77,7 +78,8 @@ def run(client):
             # Set up Google Sheets
             websites_sheet = client.open_by_key(st.secrets["wikidata_id"]).worksheet("Websites")
             names_sheet = client.open_by_key(st.secrets["wikidata_id"]).worksheet("Names")
-            
+            timestamp = datetime.now(pytz.timezone('Asia/Jerusalem')).strftime("%Y-%m-%d %H:%M:%S")
+        
             # Add headers if the sheets are empty
             if len(websites_sheet.get_all_values()) <= 1:  # Only the header exists
                 websites_sheet.append_row(["Name", "Website", "Source", "Timestamp"])
@@ -106,9 +108,9 @@ def run(client):
                             website = result.get("website", {}).get("value", "")
     
                             if website:
-                                websites_batch.append([name_en, website, explanation])
+                                websites_batch.append([name_en, website, explanation, timestamp])
                             else:
-                                names_batch.append([name_en, explanation])
+                                names_batch.append([name_en, explanation, timestamp])
     
                         # Write results to Google Sheets
                         if websites_batch:
