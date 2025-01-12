@@ -53,15 +53,16 @@ if authenticated:
     }
     apps = {k: v for k, v in apps.items() if v}  # Filter out invalid entries
 
-    # Display menu using streamlit-option-menu
-    selected_app_name = option_menu(
-        "Israeli Internet Archive",
-        options=list(apps.keys()),
-        icons=["search", "filter", "link", "database"],  # Customize icons
-        menu_icon="cast",
-        default_index=0,
-        orientation="horizontal"  # Horizontal menu at the top
-    )
+    # Sidebar menu using streamlit-option-menu
+    with st.sidebar:
+        selected_app_name = option_menu(
+            "Select Tool",
+            options=list(apps.keys()),
+            icons=["search", "filter", "link", "database"],  # Customize icons
+            menu_icon="tools",
+            default_index=0,
+            orientation="vertical"  # Sidebar menu
+        )
 
     # Render the selected app
     app_function = apps[selected_app_name]
