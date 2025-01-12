@@ -12,22 +12,11 @@ from urllib.parse import urlparse, urlunparse
 import time
 import random
 import requests_cache
-#import spacy
-
-
 
 # Install cache for HTTP requests
 requests_cache.install_cache('http_cache', expire_after=3600)
 
 headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36"}
-
-# Load SpaCy models for supported languages
-#nlp_models = {
-#   "en": spacy.load("en_core_web_sm"),
-#   "es": spacy.load("es_core_news_sm"),
-#   "fr": spacy.load("fr_core_news_sm"),
-#   "pt": spacy.load("pt_core_news_sm"),
-#}
 
 
 # Error handler function to streamline error handling
@@ -160,7 +149,7 @@ def detect_language(title, description):
         error_handler("detecting language", title, e)
         return ["unknown"]
 
-def translate_to_english(input, url):
+def translate_to_english(input):
     if not input.strip():
         return ""
     if not isinstance(input, str):
@@ -192,8 +181,8 @@ def calculate_score(url, title, description, languages, good_keywords, bad_keywo
     score = "C"
     try:
         if languages and languages[0] != 'english':
-            title = translate_to_english(title, url)
-            description = translate_to_english(description, url)
+            title = translate_to_english(title)
+            description = translate_to_english(description)
         good_count, bad_count = count_keywords(title, description, good_keywords, bad_keywords)
         if url.endswith(".il") or url.endswith(".il/"):
             score = "A"
