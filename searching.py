@@ -12,6 +12,8 @@ from urllib.parse import urlparse, urlunparse
 import time
 import random
 import requests_cache
+import spacy
+
 
 # Install cache for HTTP requests
 requests_cache.install_cache('http_cache', expire_after=3600)
@@ -23,7 +25,89 @@ headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/
 def error_handler(function, item, error_message):
     st.error(f"Error processing {function} for '{item}': {error_message}")
     return "Error", "Error"
+
+def extract_domain_from_url(url):
+    domain = urlparse(url).netloc
+    domain = domain.replace('www.', '')
+
+    # Regular expression to remove common domain suffixes
+    domain = re.sub(r'\.(com|org|net|gov|edu|co|co\.[a-z]{2,2}|[a-z]{2,})$', '', domain)
+
+    return domain
+
+def guess_words(concatenated_sentence):
+    """
+    Splits a concatenated sentence into all possible valid words using all available spaCy language models.
+    Only returns words with more than 3 letters and removes duplicates.
     
+    :param concatenated_sentence: A string with no spaces (e.g., 'colegiohebreounion').
+    :return: A list of unique valid words.
+    """
+    def is_valid_word(nlp, word):
+        """Checks if a word is valid using spaCy's lexeme and word probabilities."""
+        lexeme = nlp.vocab[word]
+        return lexeme.is_alpha and len(word) > 3 and (not lexeme.is_oov or lexeme.prob > -20)
+
+    def find_all_splits(sentence):
+        """Recursively finds all valid word splits for a given sentence."""
+        if not sentence:
+            return [[]]  # Return a list with an empty list when sentence is empty
+
+        all_splits = []
+        for i in range(1, len(sentence) + 1):
+            word_candidate = sentence[:i]
+            # Only consider splits where the word is longer than 3 letters
+            if len(word_candidate) > 3:
+                remaining_sentence = sentence[i:]
+                remaining_splits = find_all_splits(remaining_sentence)
+                for split in remaining_splits:
+                    all_splits.append([word_candidate] + split)
+        return all_splits
+
+    # Load all the language models
+    models = {
+        "English": spacy.load("en_core_web_md"),
+        "Spanish": spacy.load("es_core_news_md"),
+        "French": spacy.load("fr_core_news_md"),
+        "Portuguese": spacy.load("pt_core_news_md"),
+        "Italian": spacy.load("it_core_news_md")
+    }
+
+    # First, split the concatenated sentence once
+    splits = find_all_splits(concatenated_sentence)
+
+    # Flatten the list of splits into a list of word candidates
+    word_candidates = [word for split in splits for word in split]
+
+    # Set to collect all valid words
+    all_valid_words = set()
+
+    # Check each word_candidate in all languages
+    for word_candidate in word_candidates:
+        for language, nlp in models.items():
+            if is_valid_word(nlp, word_candidate):
+                all_valid_words.add(word_candidate)
+                break  # If valid in any language, add and stop checking further languages
+
+    # Translate each word to English and check validity
+    for word in list(all_valid_words):
+        translated_word = translate_to_english(word).lower()
+        for nlp in [spacy.load("en_core_web_md")]:  # Check translation only in English
+            if is_valid_word(nlp, translated_word):
+                all_valid_words.add(translated_word)
+
+    # Convert set to a list and return it
+    return list(all_valid_words)
+
+
+# Function to calculate score based on keyword matching
+def calculate_url_score(words, keywords):
+    matching_words = set(words).intersection(keywords)
+    return len(matching_words), matching_words
+
+def count_j_in_domain(url):
+    domain = extract_domain_from_url(url)
+    return domain.count('j')
 
 def google_search(query, num_results=100, language="en"):
     results = []
@@ -383,20 +467,21 @@ def process_urls(client, sheet_id, urls, source_name):
 
 # Process URLs and classify them
 def domain_split(client, sheet_id, urls, source_name):
-    headers = ["URL", "Tier", "Details", "Words", "Matching Keywords", "Source", "Timestamp"]
-    if len(sheet.get_all_values()) <= 1:  # Only the header exists
-        sheet.insert_row(headers, 1)
+    keywords_sheet = client.open_by_key(st.secrets["keywords_id"]).worksheet("Keywords")  
+    good_keywords = [kw.lower() for kw in keywords_sheet.col_values(1)[1:]]  # Lowercase good keywords
+    bad_keywords = [kw.lower() for kw in keywords_sheet.col_values(3)[1:]]  # Lowercase bad keywords
+    headers = ["URL", "Matching Count", "Matching Words", "J Count", "Words", "Source", "Timestamp"]
+    results_sheet = client.open_by_key(sheet_id).worksheet("Results")
+    if len(results_sheet.get_all_values()) <= 1:  # Only the header exists
+        results_sheet.insert_row(headers, 1)
     try:
-        keywords_sheet, sure_sheet, not_sure_sheet, good_keywords, bad_keywords = fetch_and_get_keywords(client, sheet_id)
         rows = []
-    
         for url in urls:
             timestamp = datetime.now(pytz.timezone('Asia/Jerusalem')).strftime("%Y-%m-%d %H:%M:%S")
-            words = guess_words_from_domain(url)
+            words = guess_words(extract_domain_from_url(url))
+            matching_count, matching_keywords = calculate_url_score(words, good_keywords)
             j_count = count_j_in_domain(url)
-            matching_keywords = calculate_url_score(url, good_keywords)
-            details = "a"
-            row_data = [url, details, words, matching_keywords, j_count, source, timestamp]
+            row_data = [url, matching_count, ", ".join(matching_keywords), j_count, ", ".join(words), source_name, timestamp]
             rows.append(row_data)
             
         results_sheet.append_rows(rows, value_input_option='RAW')
