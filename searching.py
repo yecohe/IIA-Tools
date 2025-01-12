@@ -14,6 +14,12 @@ import random
 import requests_cache
 import spacy
 
+nlp_es = spacy.load("es_core_news_md")
+nlp_pt = spacy.load("pt_core_news_md")
+nlp_fr = spacy.load("fr_core_news_md")
+nlp_it = spacy.load("it_core_news_md")
+if nlp_es:
+    st.error("good")
 
 # Install cache for HTTP requests
 requests_cache.install_cache('http_cache', expire_after=3600)
