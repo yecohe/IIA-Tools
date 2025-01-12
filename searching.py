@@ -96,13 +96,13 @@ def guess_words(concatenated_sentence):
                 if is_valid_word(nlp, word_candidate):
                     all_valid_words.add(word_candidate)
                     break  # If valid in any language, add and stop checking further languages
-    
+        
         # Translate each word to English and check validity
-#        for word in list(all_valid_words):
-#            translated_word = translate_to_english(word).lower()
-#            for nlp in [spacy.load("en_core_web_md")]:  # Check translation only in English
-#                if is_valid_word(nlp, translated_word):
-#                    all_valid_words.add(translated_word)
+        for word in list(all_valid_words):
+            translated_word = translate_to_english(word).lower()
+            st.info(translated_word)
+            if is_valid_word(models["English"], translated_word):
+                all_valid_words.add(translated_word)
     
         # Convert set to a list and return it
         return list(all_valid_words)
@@ -464,7 +464,7 @@ def domain_split(client, sheet_id, urls, source_name):
     try:
         rows = []
         for url in urls:
-            st.info(f"Working on '{url}")
+            st.info(f"Working on '{url}'")
             timestamp = datetime.now(pytz.timezone('Asia/Jerusalem')).strftime("%Y-%m-%d %H:%M:%S")
             words = guess_words(extract_domain_from_url(url))
             matching_count, matching_keywords = calculate_url_score(words, good_keywords)
