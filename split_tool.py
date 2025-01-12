@@ -10,7 +10,6 @@ def run(client):
 
     # Inputs for URL Filtering
     with st.form("url_filter_form"):
-        st.subheader("Domain Splitter")
 
         # Option to insert URLs manually
         split_urls_input = st.text_area("Insert a list of URLs (one per line):")
