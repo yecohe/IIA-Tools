@@ -13,13 +13,12 @@ apps = {}
 authenticated = False
 client = None
 
-# Sidebar Header
+# Sidebar Logic
 with st.sidebar:
     st.header("Israeli Internet Archive")
 
-# Handle credentials upload
-if not authenticated:
-    with st.sidebar:
+    # Conditional Rendering: Show upload UI if not authenticated
+    if not authenticated:
         st.subheader("Upload Credentials File")
         credentials_file = st.file_uploader("Please upload your JSON credentials file", type="json")
 
@@ -40,42 +39,39 @@ if not authenticated:
 
                 # Authenticate with Google Sheets
                 client = gspread.authorize(credentials)
-                st.sidebar.success("Credentials uploaded and authenticated successfully!")
+                st.success("Credentials uploaded and authenticated successfully!")
                 authenticated = True
 
             except Exception as e:
-                st.sidebar.error(f"Error processing credentials: {e}")
-
-# Display the menu once authenticated
-if authenticated:
-    # Define apps
-    apps = {
-        "Keywords Search": keywords_tool.run if callable(keywords_tool.run) else None,        
-        "Automatic Filter": filter_tool.run if callable(filter_tool.run) else None,
-        "Split URL": split_tool.run if callable(split_tool.run) else None,
-        "Wikidata Search": wikidata_tool.run if callable(wikidata_tool.run) else None,
-    }
-    apps = {k: v for k, v in apps.items() if v}  # Filter out invalid entries
-
-    # Sidebar menu
-    with st.sidebar:
+                st.error(f"Error processing credentials: {e}")
+    else:
+        # Show the menu after successful authentication
         selected_app_name = option_menu(
-            "Tools Menu",
-            options=list(apps.keys()),
+            "Select Tool",
+            options=["Keywords Search Tool", "Automatic Filter Tool", "Split URL Tool", "Wikidata Tool"],
             icons=["search", "filter", "link", "database"],  # Customize icons
             menu_icon="tools",
             default_index=0,
             orientation="vertical"  # Sidebar menu
         )
 
+# Define and execute app logic
+if authenticated:
+    # Map app names to their respective functions
+    apps = {
+        "Keywords Search Tool": keywords_tool.run if callable(keywords_tool.run) else None,        
+        "Automatic Filter Tool": filter_tool.run if callable(filter_tool.run) else None,
+        "Split URL Tool": split_tool.run if callable(split_tool.run) else None,
+        "Wikidata Tool": wikidata_tool.run if callable(wikidata_tool.run) else None,
+    }
+    apps = {k: v for k, v in apps.items() if v}  # Filter out invalid entries
+
     # Render the selected app
-    app_function = apps[selected_app_name]
+    app_function = apps.get(selected_app_name)
     if callable(app_function):
         st.title(selected_app_name)
         app_function(client)  # Pass the client to the app function
     else:
         st.error(f"The app '{selected_app_name}' is not callable.")
-
-# If no credentials are uploaded yet
 else:
     st.warning("Please upload the credentials file to access the tools.")
