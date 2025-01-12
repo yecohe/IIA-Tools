@@ -65,6 +65,7 @@ def guess_words(concatenated_sentence):
                 remaining_splits = find_all_splits(remaining_sentence)
                 for split in remaining_splits:
                     all_splits.append([word_candidate] + split)
+        st.info(f"done splits: {all_splits}")
         return all_splits
 
     try:
@@ -76,8 +77,6 @@ def guess_words(concatenated_sentence):
             "Portuguese": spacy.load("pt_core_news_md"),
             "Italian": spacy.load("it_core_news_md")
         }
-
-        st.info("Loaded models")
         
         # First, split the concatenated sentence once
         splits = find_all_splits(concatenated_sentence)
@@ -462,7 +461,7 @@ def domain_split(client, sheet_id, urls, source_name):
     try:
         rows = []
         for url in urls:
-            st.status(f"Working on '{url}")
+            st.info(f"Working on '{url}")
             timestamp = datetime.now(pytz.timezone('Asia/Jerusalem')).strftime("%Y-%m-%d %H:%M:%S")
             words = guess_words(extract_domain_from_url(url))
             matching_count, matching_keywords = calculate_url_score(words, good_keywords)
