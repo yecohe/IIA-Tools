@@ -5,8 +5,7 @@ from searching import domain_split
 def run(client):
     # Main interface for URL filtering
     st.write(
-        "This tool processes a list of URLs for automatic filtering based on the URL itself. The results are saved in this file: "
-        "[Google Sheet](https://docs.google.com/spreadsheets/d/1v9uETjmM6QR94WPem745RlNJHX_IdzMhQhNDNWAujI0/)."
+        "This tool processes a list of URLs for automatic filtering based on the URL itself. The results are saved [here](https://docs.google.com/spreadsheets/d/1v9uETjmM6QR94WPem745RlNJHX_IdzMhQhNDNWAujI0/)."
     )
 
     # Inputs for URL Filtering
