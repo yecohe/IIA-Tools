@@ -12,6 +12,7 @@ from streamlit_option_menu import option_menu
 apps = {}
 authenticated = False
 client = None
+selected_app_name = None  # Initialize variable outside the conditional blocks
 
 # Sidebar Logic
 with st.sidebar:
@@ -55,9 +56,9 @@ with st.sidebar:
             orientation="vertical"  # Sidebar menu
         )
 
-# Define and execute app logic
+# Define and execute app logic only if authenticated
 if authenticated:
-    # Map app names to their respective functions
+    # Define apps
     apps = {
         "Keywords Search Tool": keywords_tool.run if callable(keywords_tool.run) else None,        
         "Automatic Filter Tool": filter_tool.run if callable(filter_tool.run) else None,
@@ -67,11 +68,8 @@ if authenticated:
     apps = {k: v for k, v in apps.items() if v}  # Filter out invalid entries
 
     # Render the selected app
-    app_function = apps.get(selected_app_name)
-    if callable(app_function):
-        st.title(selected_app_name)
-        app_function(client)  # Pass the client to the app function
-    else:
-        st.error(f"The app '{selected_app_name}' is not callable.")
-else:
-    st.warning("Please upload the credentials file to access the tools.")
+    if selected_app_name:
+        app_function = apps.get(selected_app_name)
+        if callable(app_function):
+            st.title(selected_app_name)
+            app_function(client)  # Pas
