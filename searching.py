@@ -434,17 +434,19 @@ def process_keywords(client, sheet_id, keywords, lang="en", inurl=False, limit=1
 def process_urls(client, sheet_id, urls, source_name):
     """Process a list of URLs and classify them."""
     try:
-        keywords_sheet, sure_sheet, not_sure_sheet, good_keywords, bad_keywords = fetch_and_get_keywords(client, sheet_id)
-        check_and_add_headers(sure_sheet)
-        check_and_add_headers(not_sure_sheet)
-        rows_to_sure, rows_to_not_sure = [], []
-    
-        for url in urls:
-            row_data, score = process_single_url(url, source_name, good_keywords, bad_keywords)
-            if score in ["A", "B"]:
-                rows_to_sure.append(row_data)
-            else:
-                rows_to_not_sure.append(row_data)
+        with st.status("Working..."):
+            keywords_sheet, sure_sheet, not_sure_sheet, good_keywords, bad_keywords = fetch_and_get_keywords(client, sheet_id)
+            check_and_add_headers(sure_sheet)
+            check_and_add_headers(not_sure_sheet)
+            rows_to_sure, rows_to_not_sure = [], []
+        
+            for url in urls:
+                st.write(f"Working on '{url}'")
+                row_data, score = process_single_url(url, source_name, good_keywords, bad_keywords)
+                if score in ["A", "B"]:
+                    rows_to_sure.append(row_data)
+                else:
+                    rows_to_not_sure.append(row_data)
     
         update_google_sheets(rows_to_sure, rows_to_not_sure, sure_sheet, not_sure_sheet)
         st.success(f"Finished processing '{source_name}'")
