@@ -60,7 +60,7 @@ if authenticated:
     # Sidebar menu
     with st.sidebar:
         selected_app_name = option_menu(
-            "Select Tool",
+            "Tools Menu",
             options=list(apps.keys()),
             icons=["search", "filter", "link", "database"],  # Customize icons
             menu_icon="tools",
