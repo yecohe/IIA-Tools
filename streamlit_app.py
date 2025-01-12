@@ -8,41 +8,45 @@ import filter_tool
 import split_tool
 from streamlit_option_menu import option_menu
 
-# Sidebar: Upload Credentials File
-with st.sidebar:
-    st.header("Israeli Internet Archive")
-    st.subheader("Upload Credentials File")
-    credentials_file = st.file_uploader("Please upload your JSON credentials file", type="json")
-
-# Initialize app options and flag
+# Initialize app options and authentication flag
 apps = {}
 authenticated = False
+client = None
+
+# Sidebar Header
+with st.sidebar:
+    st.header("Israeli Internet Archive")
 
 # Handle credentials upload
-if credentials_file is not None:
-    try:
-        # Define the scope for Google API
-        scope = [
-            "https://spreadsheets.google.com/feeds", 
-            "https://www.googleapis.com/auth/spreadsheets", 
-            "https://www.googleapis.com/auth/drive"
-        ]
-        
-        # Read credentials
-        credentials = service_account.Credentials.from_service_account_info(
-            json.loads(credentials_file.read().decode("utf-8")), 
-            scopes=scope
-        )
-        
-        # Authenticate with Google Sheets
-        client = gspread.authorize(credentials)
-        st.sidebar.success("Credentials uploaded and authenticated successfully!")
-        authenticated = True
+if not authenticated:
+    with st.sidebar:
+        st.subheader("Upload Credentials File")
+        credentials_file = st.file_uploader("Please upload your JSON credentials file", type="json")
 
-    except Exception as e:
-        st.sidebar.error(f"Error processing credentials: {e}")
+        if credentials_file is not None:
+            try:
+                # Define the scope for Google API
+                scope = [
+                    "https://spreadsheets.google.com/feeds", 
+                    "https://www.googleapis.com/auth/spreadsheets", 
+                    "https://www.googleapis.com/auth/drive"
+                ]
 
-# Menu Logic
+                # Read credentials
+                credentials = service_account.Credentials.from_service_account_info(
+                    json.loads(credentials_file.read().decode("utf-8")), 
+                    scopes=scope
+                )
+
+                # Authenticate with Google Sheets
+                client = gspread.authorize(credentials)
+                st.sidebar.success("Credentials uploaded and authenticated successfully!")
+                authenticated = True
+
+            except Exception as e:
+                st.sidebar.error(f"Error processing credentials: {e}")
+
+# Display the menu once authenticated
 if authenticated:
     # Define apps
     apps = {
@@ -53,7 +57,7 @@ if authenticated:
     }
     apps = {k: v for k, v in apps.items() if v}  # Filter out invalid entries
 
-    # Sidebar menu using streamlit-option-menu
+    # Sidebar menu
     with st.sidebar:
         selected_app_name = option_menu(
             "Select Tool",
@@ -72,5 +76,6 @@ if authenticated:
     else:
         st.error(f"The app '{selected_app_name}' is not callable.")
 
+# If no credentials are uploaded yet
 else:
     st.warning("Please upload the credentials file to access the tools.")
