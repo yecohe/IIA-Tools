@@ -80,9 +80,9 @@ def run(client):
             
             # Add headers if the sheets are empty
             if len(websites_sheet.get_all_values()) <= 1:  # Only the header exists
-                websites_sheet.append_row(["Name", "Website", "Source"])
+                websites_sheet.append_row(["Name", "Website", "Source", "Timestamp"])
             if len(names_sheet.get_all_values()) <= 1:  # Only the header exists
-                names_sheet.append_row(["Name", "Source"])
+                names_sheet.append_row(["Name", "Source", "Timestamp"])
     
             if property_label and value_label:
                 try:
