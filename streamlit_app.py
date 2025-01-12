@@ -57,7 +57,7 @@ if authenticated:
     selected_app_name = option_menu(
         "Israeli Internet Archive",
         options=list(apps.keys()),
-        icons=["search", "filter", "internet", "database"],  # Customize icons
+        icons=["search", "filter", "link", "database"],  # Customize icons
         menu_icon="cast",
         default_index=0,
         orientation="horizontal"  # Horizontal menu at the top
