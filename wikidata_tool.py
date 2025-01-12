@@ -50,7 +50,7 @@ def query_wikidata(property_id, value_id):
 
 # Streamlit app logic
 def run(client):
-    st.write("This tool searches Wikidata for enteries. The results are here: https://docs.google.com/spreadsheets/d/1s1J1QRMnJukdvVhNU5EM_O625VGg198XwC6MTobb0SM/")
+    st.write("This tool searches Wikidata for enteries. The results are saved [here](https://docs.google.com/spreadsheets/d/1s1J1QRMnJukdvVhNU5EM_O625VGg198XwC6MTobb0SM/).")
 
     # Display examples table
     st.subheader("Examples")
