@@ -92,18 +92,18 @@ def guess_words(concatenated_sentence):
     
         # Check each word_candidate in all languages
         for word_candidate in word_candidates:
-            st.info(word_candidate)
             for language, nlp in models.items():
                 if is_valid_word(nlp, word_candidate):
                     all_valid_words.add(word_candidate)
+                    st.info(all_valid_words)
                     break  # If valid in any language, add and stop checking further languages
     
         # Translate each word to English and check validity
-        for word in list(all_valid_words):
-            translated_word = translate_to_english(word).lower()
-            for nlp in [spacy.load("en_core_web_md")]:  # Check translation only in English
-                if is_valid_word(nlp, translated_word):
-                    all_valid_words.add(translated_word)
+#        for word in list(all_valid_words):
+#            translated_word = translate_to_english(word).lower()
+#            for nlp in [spacy.load("en_core_web_md")]:  # Check translation only in English
+#                if is_valid_word(nlp, translated_word):
+#                    all_valid_words.add(translated_word)
     
         # Convert set to a list and return it
         return list(all_valid_words)
