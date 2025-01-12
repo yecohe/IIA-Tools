@@ -3,7 +3,7 @@ from searching import process_keywords
 
 def run(client):
     # Main interface for keyword processing (only accessible if credentials are uploaded)
-    st.write("This tool searches Google for keywords. The results are here: https://docs.google.com/spreadsheets/d/1qqupnQ5nSVRRF04giVNzq8NaSdaiTVrgXc2ISH5Ib3Q/")
+    st.write("This tool searches Google for keywords. The results are saved [here](https://docs.google.com/spreadsheets/d/1qqupnQ5nSVRRF04giVNzq8NaSdaiTVrgXc2ISH5Ib3Q/).")
 
     # Language options and descriptions
     language_options = {
