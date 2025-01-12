@@ -48,8 +48,12 @@ def guess_words(concatenated_sentence):
     """
     def is_valid_word(nlp, word):
         """Checks if a word is valid using spaCy's lexeme and word probabilities."""
-        lexeme = nlp.vocab[word]
-        return lexeme.is_alpha and len(word) > 3 and (not lexeme.is_oov or lexeme.prob > -20)
+        try:
+            lexeme = nlp.vocab[word]
+            return lexeme.is_alpha and len(word) > 3 and (not lexeme.is_oov or lexeme.prob > -20)
+        except Exception as e:
+            error_handler("is valid word", word, e)
+            return False
 
     def find_all_splits(sentence):
         """Recursively finds all valid word splits for a given sentence."""
@@ -65,7 +69,6 @@ def guess_words(concatenated_sentence):
                 remaining_splits = find_all_splits(remaining_sentence)
                 for split in remaining_splits:
                     all_splits.append([word_candidate] + split)
-        st.info(f"done splits: {all_splits}")
         return all_splits
 
     try:
@@ -89,6 +92,7 @@ def guess_words(concatenated_sentence):
     
         # Check each word_candidate in all languages
         for word_candidate in word_candidates:
+            st.info(word_candidate)
             for language, nlp in models.items():
                 if is_valid_word(nlp, word_candidate):
                     all_valid_words.add(word_candidate)
