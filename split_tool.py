@@ -5,7 +5,7 @@ from searching import domain_split
 def run(client):
     # Main interface for URL filtering
     st.write(
-        "This tool processes a list of URLs for automatic filtering based on the URL itself. The results are saved [here](https://docs.google.com/spreadsheets/d/1v9uETjmM6QR94WPem745RlNJHX_IdzMhQhNDNWAujI0/)."
+        "This tool processes a list of URLs and split them into words. The results are saved [here](https://docs.google.com/spreadsheets/d/1v9uETjmM6QR94WPem745RlNJHX_IdzMhQhNDNWAujI0/)."
     )
 
     # Inputs for URL Filtering
@@ -21,7 +21,7 @@ def run(client):
         source_name = st.text_input("List Name:", placeholder="E.g., 'My URL List'")
 
         # Submit button
-        submit_button = st.form_submit_button("Filter")
+        submit_button = st.form_submit_button("Split URLs")
 
     # Handle form submission
     if submit_button:
