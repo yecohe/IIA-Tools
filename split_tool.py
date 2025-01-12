@@ -27,7 +27,6 @@ def run(client):
 
     # Handle form submission
     if submit_button:
-        st.success(f"The URLs from '{source_name}' are being processed...")
         # Validate inputs
         urls = []
 
@@ -60,5 +59,5 @@ def run(client):
         else:
             # Process URLs
             sheet_id = st.secrets["split_id"]
+            st.success(f"The URLs from '{source_name}' are being processed...")
             domain_split(client, sheet_id, urls, source_name)
-            st.success(f"The process is done.")
