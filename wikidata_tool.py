@@ -61,63 +61,64 @@ def run(client):
         {"Property": "instance of", "Matching Value": "Jewish organization"},
         {"Property": "instance of", "Matching Value": "yeshiva"}
     ])
-
-    # Input fields for one property and value
-    col1, col2 = st.columns(2)
-    with col1:
-        property_label = st.text_input("Property")
-    with col2:
-        value_label = st.text_input("Matching Value")
-
-    # Process filters and query Wikidata
-    if st.button("Run Query"):
-        # Set up Google Sheets
-        websites_sheet = client.open_by_key(st.secrets["wikidata_id"]).worksheet("Websites")
-        names_sheet = client.open_by_key(st.secrets["wikidata_id"]).worksheet("Names")
-        
-        # Add headers if the sheets are empty
-        if len(websites_sheet.get_all_values()) <= 1:  # Only the header exists
-            websites_sheet.append_row(["Name", "Website", "Source"])
-        if len(names_sheet.get_all_values()) <= 1:  # Only the header exists
-            names_sheet.append_row(["Name", "Source"])
-
-        if property_label and value_label:
-            try:
-                # Convert labels to IDs
-                property_id = label_to_id(property_label)
-                value_id = label_to_id(value_label)
-                explanation = f"{property_label} - {value_label}"
-
-                # Query Wikidata
-                st.info("Querying Wikidata...")
-                results = query_wikidata(property_id, value_id)
-                st.success("Query completed!")
-
-                # Process results
-                if results and "results" in results and "bindings" in results["results"]:
-                    websites_batch = []
-                    names_batch = []
-
-                    for result in results["results"]["bindings"]:
-                        name_en = result["entityLabel"]["value"]
-                        website = result.get("website", {}).get("value", "")
-
-                        if website:
-                            websites_batch.append([name_en, website, explanation])
-                        else:
-                            names_batch.append([name_en, explanation])
-
-                    # Write results to Google Sheets
-                    if websites_batch:
-                        websites_sheet.append_rows(websites_batch)
-                    if names_batch:
-                        names_sheet.append_rows(names_batch)
-
-                    st.success("Results written to Google Sheets!")
-                else:
-                    st.warning("No results found!")
-            except Exception as e:
-                st.error(f"Error: {e}")
-        else:
-            st.error("Please enter both a property and a value.")
+    
+    with st.form("wikitada_form"):
+        # Input fields for one property and value
+        col1, col2 = st.columns(2)
+        with col1:
+            property_label = st.text_input("Property")
+        with col2:
+            value_label = st.text_input("Matching Value")
+    
+        # Process filters and query Wikidata
+        if st.button("Run Query"):
+            # Set up Google Sheets
+            websites_sheet = client.open_by_key(st.secrets["wikidata_id"]).worksheet("Websites")
+            names_sheet = client.open_by_key(st.secrets["wikidata_id"]).worksheet("Names")
+            
+            # Add headers if the sheets are empty
+            if len(websites_sheet.get_all_values()) <= 1:  # Only the header exists
+                websites_sheet.append_row(["Name", "Website", "Source"])
+            if len(names_sheet.get_all_values()) <= 1:  # Only the header exists
+                names_sheet.append_row(["Name", "Source"])
+    
+            if property_label and value_label:
+                try:
+                    # Convert labels to IDs
+                    property_id = label_to_id(property_label)
+                    value_id = label_to_id(value_label)
+                    explanation = f"{property_label} - {value_label}"
+    
+                    # Query Wikidata
+                    st.info("Querying Wikidata...")
+                    results = query_wikidata(property_id, value_id)
+                    st.success("Query completed!")
+    
+                    # Process results
+                    if results and "results" in results and "bindings" in results["results"]:
+                        websites_batch = []
+                        names_batch = []
+    
+                        for result in results["results"]["bindings"]:
+                            name_en = result["entityLabel"]["value"]
+                            website = result.get("website", {}).get("value", "")
+    
+                            if website:
+                                websites_batch.append([name_en, website, explanation])
+                            else:
+                                names_batch.append([name_en, explanation])
+    
+                        # Write results to Google Sheets
+                        if websites_batch:
+                            websites_sheet.append_rows(websites_batch)
+                        if names_batch:
+                            names_sheet.append_rows(names_batch)
+    
+                        st.success("Results written to Google Sheets!")
+                    else:
+                        st.warning("No results found!")
+                except Exception as e:
+                    st.error(f"Error: {e}")
+            else:
+                st.error("Please enter both a property and a value.")
 
