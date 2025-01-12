@@ -477,14 +477,13 @@ def domain_split(client, sheet_id, urls, source_name):
     try:
         rows = []
         for url in urls:
+            st.status(f"Working on '{url}")
             timestamp = datetime.now(pytz.timezone('Asia/Jerusalem')).strftime("%Y-%m-%d %H:%M:%S")
             words = guess_words(extract_domain_from_url(url))
             matching_count, matching_keywords = calculate_url_score(words, good_keywords)
             j_count = count_j_in_domain(url)
             row_data = [url, matching_count, ", ".join(matching_keywords), j_count, ", ".join(words), source_name, timestamp]
-            rows.append(row_data)
-            
-        results_sheet.append_rows(rows, value_input_option='RAW')
+            results_sheet.append_rows(row_data, value_input_option='RAW')
         st.success(f"Finished processing '{source_name}'")
     except Exception as e:
         st.error(f"Error processing '{source_name}': {e}")
