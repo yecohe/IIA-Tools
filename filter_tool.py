@@ -5,8 +5,7 @@ from searching import process_urls
 def run(client):
     # Main interface for URL filtering
     st.write(
-        "This tool processes a list of URLs for automatic filtering. The results are saved in this file: "
-        "[Google Sheet](https://docs.google.com/spreadsheets/d/1FH2IBeA4HePPBt6PopWTN3QXemxXc5EKcEH3_C5UP4c/)."
+        "This tool processes a list of URLs for automatic filtering. The results are saved [here](https://docs.google.com/spreadsheets/d/1FH2IBeA4HePPBt6PopWTN3QXemxXc5EKcEH3_C5UP4c/)."
     )
 
     # Inputs for URL Filtering
