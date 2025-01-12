@@ -100,7 +100,6 @@ def guess_words(concatenated_sentence):
         # Translate each word to English and check validity
         for word in list(all_valid_words):
             translated_word = translate_to_english(word).lower()
-            st.info(translated_word)
             if is_valid_word(models["English"], translated_word):
                 all_valid_words.add(translated_word)
     
