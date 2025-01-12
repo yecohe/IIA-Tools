@@ -14,12 +14,6 @@ import random
 import requests_cache
 import spacy
 
-nlp_es = spacy.load("es_core_news_md")
-nlp_pt = spacy.load("pt_core_news_md")
-nlp_fr = spacy.load("fr_core_news_md")
-nlp_it = spacy.load("it_core_news_md")
-if nlp_es:
-    st.error("good")
 
 # Install cache for HTTP requests
 requests_cache.install_cache('http_cache', expire_after=3600)
@@ -33,13 +27,16 @@ def error_handler(function, item, error_message):
     return "Error", "Error"
 
 def extract_domain_from_url(url):
-    domain = urlparse(url).netloc
-    domain = domain.replace('www.', '')
-
-    # Regular expression to remove common domain suffixes
-    domain = re.sub(r'\.(com|org|net|gov|edu|co|co\.[a-z]{2,2}|[a-z]{2,})$', '', domain)
-
-    return domain
+    try:
+        domain = urlparse(url).netloc
+        domain = domain.replace('www.', '')
+    
+        # Regular expression to remove common domain suffixes
+        domain = re.sub(r'\.(com|org|net|gov|edu|co|co\.[a-z]{2,2}|[a-z]{2,})$', '', domain)
+        return domain
+    except Exception as e:
+        error_handler("extract domain", url, e)
+        return url
 
 def guess_words(concatenated_sentence):
     """
@@ -70,41 +67,44 @@ def guess_words(concatenated_sentence):
                     all_splits.append([word_candidate] + split)
         return all_splits
 
-    # Load all the language models
-    models = {
-        "English": spacy.load("en_core_web_md"),
-        "Spanish": spacy.load("es_core_news_md"),
-        "French": spacy.load("fr_core_news_md"),
-        "Portuguese": spacy.load("pt_core_news_md"),
-        "Italian": spacy.load("it_core_news_md")
-    }
-
-    # First, split the concatenated sentence once
-    splits = find_all_splits(concatenated_sentence)
-
-    # Flatten the list of splits into a list of word candidates
-    word_candidates = [word for split in splits for word in split]
-
-    # Set to collect all valid words
-    all_valid_words = set()
-
-    # Check each word_candidate in all languages
-    for word_candidate in word_candidates:
-        for language, nlp in models.items():
-            if is_valid_word(nlp, word_candidate):
-                all_valid_words.add(word_candidate)
-                break  # If valid in any language, add and stop checking further languages
-
-    # Translate each word to English and check validity
-    for word in list(all_valid_words):
-        translated_word = translate_to_english(word).lower()
-        for nlp in [spacy.load("en_core_web_md")]:  # Check translation only in English
-            if is_valid_word(nlp, translated_word):
-                all_valid_words.add(translated_word)
-
-    # Convert set to a list and return it
-    return list(all_valid_words)
-
+    try:
+        # Load all the language models
+        models = {
+            "English": spacy.load("en_core_web_md"),
+            "Spanish": spacy.load("es_core_news_md"),
+            "French": spacy.load("fr_core_news_md"),
+            "Portuguese": spacy.load("pt_core_news_md"),
+            "Italian": spacy.load("it_core_news_md")
+        }
+    
+        # First, split the concatenated sentence once
+        splits = find_all_splits(concatenated_sentence)
+    
+        # Flatten the list of splits into a list of word candidates
+        word_candidates = [word for split in splits for word in split]
+    
+        # Set to collect all valid words
+        all_valid_words = set()
+    
+        # Check each word_candidate in all languages
+        for word_candidate in word_candidates:
+            for language, nlp in models.items():
+                if is_valid_word(nlp, word_candidate):
+                    all_valid_words.add(word_candidate)
+                    break  # If valid in any language, add and stop checking further languages
+    
+        # Translate each word to English and check validity
+        for word in list(all_valid_words):
+            translated_word = translate_to_english(word).lower()
+            for nlp in [spacy.load("en_core_web_md")]:  # Check translation only in English
+                if is_valid_word(nlp, translated_word):
+                    all_valid_words.add(translated_word)
+    
+        # Convert set to a list and return it
+        return list(all_valid_words)
+    except Exception as e:
+        error_handler("guess words", url, e)
+        return "Error"
 
 # Function to calculate score based on keyword matching
 def calculate_url_score(words, keywords):
@@ -393,29 +393,6 @@ def process_single_url(url, source, good_keywords, bad_keywords):
     
     return row_data, score
 
-# Function to extract domain from URL
-def extract_domain_from_url(url):
-    domain = urlparse(url).netloc
-    domain = domain.replace('www.', '')
-    return domain
-
-# Function to guess words from the domain using SpaCy NLP models
-def guess_words_from_domain(domain):
-    extracted_words = set()
-    for lang, model in nlp_models.items():
-        doc = model(domain)
-        extracted_words.update(token.text.lower() for token in doc if token.is_alpha)
-    return extracted_words
-
-# Function to calculate score based on keyword matching
-def calculate_url_score(domain, keywords):
-    words = guess_words_from_domain(domain)
-    matching_words = set(words).intersection(keywords)
-    return len(matching_words)
-
-def count_j_in_domain(url):
-    domain = extract_domain_from_url(url)
-    return domain.count('j')
 
 # Process keywords to fetch and evaluate URLs
 def process_keywords(client, sheet_id, keywords, lang="en", inurl=False, limit=100, homepage=False):
