@@ -69,7 +69,9 @@ def run(client):
             property_label = st.text_input("Property")
         with col2:
             value_label = st.text_input("Matching Value")
-    
+            
+        submit_button = st.form_submit_button("Search Wikidata")
+        
         # Process filters and query Wikidata
         if st.button("Run Query"):
             # Set up Google Sheets
