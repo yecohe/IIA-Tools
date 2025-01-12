@@ -461,16 +461,17 @@ def domain_split(client, sheet_id, urls, source_name):
     if len(results_sheet.get_all_values()) <= 1:  # Only the header exists
         results_sheet.insert_row(headers, 1)
     try:
-        rows = []
-        for url in urls:
-            st.info(f"Working on '{url}'")
-            timestamp = datetime.now(pytz.timezone('Asia/Jerusalem')).strftime("%Y-%m-%d %H:%M:%S")
-            words = guess_words(extract_domain_from_url(url))
-            matching_count, matching_keywords = calculate_url_score(words, good_keywords)
-            j_count = count_j_in_domain(url)
-            row_data = [url, matching_count, ", ".join(matching_keywords), j_count, ", ".join(words), source_name, timestamp]
-            rows.append(row_data)    
-        results_sheet.append_rows(rows, value_input_option='RAW')
+        with st.status("Working..."):
+            rows = []
+            for url in urls:
+                st.write(f"Working on '{url}'")
+                timestamp = datetime.now(pytz.timezone('Asia/Jerusalem')).strftime("%Y-%m-%d %H:%M:%S")
+                words = guess_words(extract_domain_from_url(url))
+                matching_count, matching_keywords = calculate_url_score(words, good_keywords)
+                j_count = count_j_in_domain(url)
+                row_data = [url, matching_count, ", ".join(matching_keywords), j_count, ", ".join(words), source_name, timestamp]
+                rows.append(row_data)    
+            results_sheet.append_rows(rows, value_input_option='RAW')
         st.success(f"Finished processing '{source_name}'")
     except Exception as e:
         st.error(f"Error processing '{source_name}': {e}")
