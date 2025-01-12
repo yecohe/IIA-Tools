@@ -95,7 +95,6 @@ def guess_words(concatenated_sentence):
             for language, nlp in models.items():
                 if is_valid_word(nlp, word_candidate):
                     all_valid_words.add(word_candidate)
-                    st.info(all_valid_words)
                     break  # If valid in any language, add and stop checking further languages
     
         # Translate each word to English and check validity
@@ -471,7 +470,8 @@ def domain_split(client, sheet_id, urls, source_name):
             matching_count, matching_keywords = calculate_url_score(words, good_keywords)
             j_count = count_j_in_domain(url)
             row_data = [url, matching_count, ", ".join(matching_keywords), j_count, ", ".join(words), source_name, timestamp]
-            results_sheet.append_rows(row_data, value_input_option='RAW')
+            rows.append(row_data)    
+        results_sheet.append_rows(rows, value_input_option='RAW')
         st.success(f"Finished processing '{source_name}'")
     except Exception as e:
         st.error(f"Error processing '{source_name}': {e}")
