@@ -61,11 +61,13 @@ def run(client):
         {"Property": "instance of", "Matching Value": "Jewish organization"},
         {"Property": "instance of", "Matching Value": "yeshiva"}
     ])
-    
 
     # Input fields for one property and value
-    property_label = st.text_input("Property")
-    value_label = st.text_input("Matching Value")
+    col1, col2 = st.columns(2)
+    with col1:
+        property_label = st.text_input("Property")
+    with col2:
+        value_label = st.text_input("Matching Value")
 
     # Process filters and query Wikidata
     if st.button("Run Query"):
