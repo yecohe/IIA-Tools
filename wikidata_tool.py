@@ -1,6 +1,6 @@
 import streamlit as st
 from SPARQLWrapper import SPARQLWrapper, JSON
-import time
+from datetime import datetime
 
 # Function to convert ID (e.g., "P27") to Label (e.g., "country of citizenship")
 def id_to_label(wikidata_id):
