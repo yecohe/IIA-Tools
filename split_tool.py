@@ -14,7 +14,7 @@ def run(client):
         st.subheader("Domain Splitter")
 
         # Option to insert URLs manually
-        urls_input = st.text_area("Insert a list of URLs (one per line):")
+        split_urls_input = st.text_area("Insert a list of URLs (one per line):")
 
         # Option to upload a file
         uploaded_file = st.file_uploader("Or upload a file (CSV / TXT / Excel):", type=["csv", "txt", "xlsx"])
@@ -46,9 +46,9 @@ def run(client):
                     st.error("Unsupported file type. Please upload a CSV, TXT, or Excel file.")
             except Exception as e:
                 st.error(f"Error reading file: {e}")
-        elif urls_input.strip():
+        elif split_urls_input.strip():
             # Process manual input
-            urls = urls_input.strip().splitlines()
+            urls = split_urls_input.strip().splitlines()
         else:
             st.error("Please provide URLs either by input or file upload.")
 
