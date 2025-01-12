@@ -73,7 +73,7 @@ def run(client):
         submit_button = st.form_submit_button("Search Wikidata")
         
         # Process filters and query Wikidata
-        if st.button("Run Query"):
+        if submit_button:
             # Set up Google Sheets
             websites_sheet = client.open_by_key(st.secrets["wikidata_id"]).worksheet("Websites")
             names_sheet = client.open_by_key(st.secrets["wikidata_id"]).worksheet("Names")
