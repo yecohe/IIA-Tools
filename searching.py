@@ -76,7 +76,9 @@ def guess_words(concatenated_sentence):
             "Portuguese": spacy.load("pt_core_news_md"),
             "Italian": spacy.load("it_core_news_md")
         }
-    
+
+        st.info("Loaded models")
+        
         # First, split the concatenated sentence once
         splits = find_all_splits(concatenated_sentence)
     
