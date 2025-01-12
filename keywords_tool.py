@@ -27,8 +27,6 @@ def run(client):
 
     # Inputs for Keywords Search
     with st.form("keywords_search_form"):
-        st.subheader("Keywords Search")
-
         # Keywords input
         keywords_query = st.text_area(
             "Keywords List:",
