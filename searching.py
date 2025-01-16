@@ -405,7 +405,7 @@ def process_keywords(client, sheet_id, keywords, lang="en", inurl=False, limit=1
 
     check_and_add_headers(sure_sheet)
     check_and_add_headers(not_sure_sheet)
-    with st.status("Working..."):
+    st.info("Working...")
         for keyword in keywords:
             st.write(f"Processing '{keyword}'...")
             rows_to_sure, rows_to_not_sure = [], []
@@ -416,12 +416,10 @@ def process_keywords(client, sheet_id, keywords, lang="en", inurl=False, limit=1
                 homepage_urls = search_and_filter_urls(keyword, block_list, num_results=limit, language=lang, homepage_only=homepage)
                 inurl_urls = []
                 if inurl:
-                    st.write(f"Processing 'inurl:{keyword}'...")
                     inurl_urls = search_and_filter_urls(f"inurl:{keyword}", block_list, num_results=limit, language=lang, homepage_only=homepage)
     
                 all_urls = list({url: source for url, source in homepage_urls + inurl_urls}.items())
                 for url, source in all_urls:
-                    st.write(f"Processing {url}")
                     row_data, score = process_single_url(url, source, good_keywords, bad_keywords)
                     if score in ["A", "B"]:
                         rows_to_sure.append(row_data)
