@@ -406,30 +406,30 @@ def process_keywords(client, sheet_id, keywords, lang="en", inurl=False, limit=1
     check_and_add_headers(sure_sheet)
     check_and_add_headers(not_sure_sheet)
     st.info("Working...")
-        for keyword in keywords:
-            st.write(f"Processing '{keyword}'...")
-            rows_to_sure, rows_to_not_sure = [], []
-            delay = random.uniform(10, 60)
-            time.sleep(delay)
-            
-            try:
-                homepage_urls = search_and_filter_urls(keyword, block_list, num_results=limit, language=lang, homepage_only=homepage)
-                inurl_urls = []
-                if inurl:
-                    inurl_urls = search_and_filter_urls(f"inurl:{keyword}", block_list, num_results=limit, language=lang, homepage_only=homepage)
-    
-                all_urls = list({url: source for url, source in homepage_urls + inurl_urls}.items())
-                for url, source in all_urls:
-                    row_data, score = process_single_url(url, source, good_keywords, bad_keywords)
-                    if score in ["A", "B"]:
-                        rows_to_sure.append(row_data)
-                    else:
-                        rows_to_not_sure.append(row_data)
-    
-                update_google_sheets(rows_to_sure, rows_to_not_sure, sure_sheet, not_sure_sheet)
-                st.success(f"Finished processing '{keyword}'")
-            except Exception as e:
-                st.error(f"Error processing '{keyword}': {e}")
+    for keyword in keywords:
+        st.write(f"Processing '{keyword}'...")
+        rows_to_sure, rows_to_not_sure = [], []
+        delay = random.uniform(10, 60)
+        time.sleep(delay)
+        
+        try:
+            homepage_urls = search_and_filter_urls(keyword, block_list, num_results=limit, language=lang, homepage_only=homepage)
+            inurl_urls = []
+            if inurl:
+                inurl_urls = search_and_filter_urls(f"inurl:{keyword}", block_list, num_results=limit, language=lang, homepage_only=homepage)
+
+            all_urls = list({url: source for url, source in homepage_urls + inurl_urls}.items())
+            for url, source in all_urls:
+                row_data, score = process_single_url(url, source, good_keywords, bad_keywords)
+                if score in ["A", "B"]:
+                    rows_to_sure.append(row_data)
+                else:
+                    rows_to_not_sure.append(row_data)
+
+            update_google_sheets(rows_to_sure, rows_to_not_sure, sure_sheet, not_sure_sheet)
+            st.success(f"Finished processing '{keyword}'")
+        except Exception as e:
+            st.error(f"Error processing '{keyword}': {e}")
 
 # Process URLs and classify them
 def process_urls(client, sheet_id, urls, source_name):
