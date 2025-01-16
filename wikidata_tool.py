@@ -55,7 +55,7 @@ def query_wikidata(property_id, value_id):
         query = f"""
         SELECT DISTINCT ?entity ?entityLabel ?website WHERE {{
             ?entity p:{property_id} ?statement.
-            ?statement (ps:{property_id}/(wdt:P279*)) wd:{value_id}.
+            ?statement0 (ps:{property_id}/(wdt:P279*)) wd:{value_id}.
             OPTIONAL {{ ?entity wdt:P856 ?website }}  # Personal website
             SERVICE wikibase:label {{ bd:serviceParam wikibase:language "en". }}
         }}
@@ -125,10 +125,10 @@ def run(client):
                     # Query Wikidata
                     st.info("Querying Wikidata...")
                     results = query_wikidata(property_id, value_id)
-                    st.success("Query completed!")
-    
+                    
                     # Process results
                     if results and "results" in results and "bindings" in results["results"]:
+                        st.success("Query completed!")
                         websites_batch = []
                         names_batch = []
     
