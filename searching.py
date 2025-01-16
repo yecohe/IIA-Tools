@@ -159,7 +159,7 @@ def google_search(query, num_results=100, language="en"):
     if results:
         st.info(f"Fetched {len(results)} results for '{query}'")
     else:
-        st.error(f"No results found for the '{query}'")
+        st.error(f"No results found for the query '{query}'")
     return results
 
 
