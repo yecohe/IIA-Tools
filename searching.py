@@ -456,7 +456,7 @@ def process_urls(client, sheet_id, urls, source_name):
 
             # Final update for any remaining rows
             if rows_to_sure or rows_to_not_sure:
-                update_google_sheets(rows_to_sure, rows_to_not_sure)
+                update_google_sheets(rows_to_sure, rows_to_not_sure, sure_sheet, not_sure_sheet)
         st.success(f"Finished processing '{source_name}'")
     except Exception as e:
         st.error(f"Error processing '{source_name}': {e}")
