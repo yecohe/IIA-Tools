@@ -49,7 +49,7 @@ def label_to_id(label):
         error_handler("label to id", url, e)
         return label
 
-# Query Wikidata dynamically, including subclasses
+# Query Wikidata dynamically, including subclasses and handling empty results
 def query_wikidata(property_id, value_id):
     try:
         query = f"""
@@ -63,9 +63,19 @@ def query_wikidata(property_id, value_id):
         sparql = SPARQLWrapper("https://query.wikidata.org/sparql")
         sparql.setQuery(query)
         sparql.setReturnFormat(JSON)
-        return sparql.query().convert()
+        results = sparql.query().convert()
+
+        # Check if results are empty
+        if "results" in results and "bindings" in results["results"]:
+            bindings = results["results"]["bindings"]
+            if not bindings:  # Empty bindings
+                return {"error": "No results found for the given property and value."}
+            return results
+        else:
+            return {"error": "Unexpected response structure from Wikidata."}
     except Exception as e:
         error_handler("query wikidata", property_id, e)
+
 
 
 # Streamlit app logic
