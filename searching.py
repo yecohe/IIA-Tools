@@ -449,9 +449,9 @@ def process_urls(client, sheet_id, urls, source_name):
                     rows_to_not_sure.append(row_data)
                     
                 # Update Google Sheets when there are 50 rows in either list
-                if len(rows_to_not_sure) >= 20:
+                if len(rows_to_not_sure) >= 20 or len(rows_to_sure) >= 20:
                     update_google_sheets(rows_to_sure, rows_to_not_sure, sure_sheet, not_sure_sheet)
-                    st.write("Updated not sure")
+                    st.write("Updated google sheets")
                     rows_to_sure, rows_to_not_sure = [], []  # Clear the list after updating
 
             # Final update for any remaining rows
