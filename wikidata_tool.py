@@ -49,12 +49,13 @@ def label_to_id(label):
         error_handler("label to id", url, e)
         return label
 
-# Query Wikidata dynamically
+# Query Wikidata dynamically, including subclasses
 def query_wikidata(property_id, value_id):
     try:
         query = f"""
-        SELECT ?entity ?entityLabel ?website WHERE {{
-            ?entity wdt:{property_id} wd:{value_id}.
+        SELECT DISTINCT ?entity ?entityLabel ?website WHERE {{
+            ?entity p:{property_id} ?statement.
+            ?statement (ps:{property_id}/(wdt:P279*)) wd:{value_id}.
             OPTIONAL {{ ?entity wdt:P856 ?website }}  # Personal website
             SERVICE wikibase:label {{ bd:serviceParam wikibase:language "en". }}
         }}
@@ -64,7 +65,8 @@ def query_wikidata(property_id, value_id):
         sparql.setReturnFormat(JSON)
         return sparql.query().convert()
     except Exception as e:
-        error_handler("query wikidata", url, e)
+        error_handler("query wikidata", property_id, e)
+
 
 # Streamlit app logic
 def run(client):
