@@ -447,8 +447,16 @@ def process_urls(client, sheet_id, urls, source_name):
                     rows_to_sure.append(row_data)
                 else:
                     rows_to_not_sure.append(row_data)
-    
-        update_google_sheets(rows_to_sure, rows_to_not_sure, sure_sheet, not_sure_sheet)
+                    
+                # Update Google Sheets when there are 50 rows in either list
+                if len(rows_to_not_sure) >= 20:
+                    update_google_sheets(rows_to_sure, rows_to_not_sure, sure_sheet, not_sure_sheet)
+                    st.write("Updated not sure")
+                    rows_to_sure, rows_to_not_sure = [], []  # Clear the list after updating
+
+            # Final update for any remaining rows
+            if rows_to_sure or rows_to_not_sure:
+                update_google_sheets(rows_to_sure, rows_to_not_sure)
         st.success(f"Finished processing '{source_name}'")
     except Exception as e:
         st.error(f"Error processing '{source_name}': {e}")
