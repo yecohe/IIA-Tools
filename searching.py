@@ -152,7 +152,7 @@ def google_search(query, num_results=100, language="en"):
             delay = random.uniform(2, 10) 
             time.sleep(delay)
 
-        except requests.exceptions.RequestException as e:
+        except Exception as e:
             error_handler("google search", query, e)
             break  # Stop the loop if there's an error
 
