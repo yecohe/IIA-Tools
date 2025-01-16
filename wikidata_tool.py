@@ -3,53 +3,68 @@ from SPARQLWrapper import SPARQLWrapper, JSON
 from datetime import datetime
 import pytz
 
+# Error handler function to streamline error handling
+def error_handler(function, item, error_message):
+    st.error(f"Error processing {function} for '{item}': {error_message}")
+    return "Error", "Error"
 
 # Function to convert ID (e.g., "P27") to Label (e.g., "country of citizenship")
 def id_to_label(wikidata_id):
-    sparql = SPARQLWrapper("https://query.wikidata.org/sparql")
-    sparql.setQuery(f"""
-    SELECT ?label WHERE {{
-        wd:{wikidata_id} rdfs:label ?label.
-        FILTER(LANG(?label) = "en")
-    }}
-    """)
-    sparql.setReturnFormat(JSON)
-    results = sparql.query().convert()
-
-    if results["results"]["bindings"]:
-        return results["results"]["bindings"][0]["label"]["value"]
-    else:
+    try:
+        sparql = SPARQLWrapper("https://query.wikidata.org/sparql")
+        sparql.setQuery(f"""
+        SELECT ?label WHERE {{
+            wd:{wikidata_id} rdfs:label ?label.
+            FILTER(LANG(?label) = "en")
+        }}
+        """)
+        sparql.setReturnFormat(JSON)
+        results = sparql.query().convert()
+    
+        if results["results"]["bindings"]:
+            return results["results"]["bindings"][0]["label"]["value"]
+        else:
+            return wikidata_id
+    except Exception as e:
+        error_handler("id to label", url, e)
         return wikidata_id
 
 # Function to convert Label (e.g., "country of citizenship") to ID (e.g., "P27")
 def label_to_id(label):
-    sparql = SPARQLWrapper("https://query.wikidata.org/sparql")
-    sparql.setQuery(f"""
-    SELECT ?entity WHERE {{
-        ?entity rdfs:label "{label}"@en.
-    }}
-    """)
-    sparql.setReturnFormat(JSON)
-    results = sparql.query().convert()
-
-    if results["results"]["bindings"]:
-        return results["results"]["bindings"][0]["entity"]["value"].split("/")[-1]
-    else:
+    try:
+        sparql = SPARQLWrapper("https://query.wikidata.org/sparql")
+        sparql.setQuery(f"""
+        SELECT ?entity WHERE {{
+            ?entity rdfs:label "{label}"@en.
+        }}
+        """)
+        sparql.setReturnFormat(JSON)
+        results = sparql.query().convert()
+    
+        if results["results"]["bindings"]:
+            return results["results"]["bindings"][0]["entity"]["value"].split("/")[-1]
+        else:
+            return label
+    except Exception as e:
+        error_handler("label to id", url, e)
         return label
 
 # Query Wikidata dynamically
 def query_wikidata(property_id, value_id):
-    query = f"""
-    SELECT ?entity ?entityLabel ?website WHERE {{
-        ?entity wdt:{property_id} wd:{value_id}.
-        OPTIONAL {{ ?entity wdt:P856 ?website }}  # Personal website
-        SERVICE wikibase:label {{ bd:serviceParam wikibase:language "en". }}
-    }}
-    """
-    sparql = SPARQLWrapper("https://query.wikidata.org/sparql")
-    sparql.setQuery(query)
-    sparql.setReturnFormat(JSON)
-    return sparql.query().convert()
+    try:
+        query = f"""
+        SELECT ?entity ?entityLabel ?website WHERE {{
+            ?entity wdt:{property_id} wd:{value_id}.
+            OPTIONAL {{ ?entity wdt:P856 ?website }}  # Personal website
+            SERVICE wikibase:label {{ bd:serviceParam wikibase:language "en". }}
+        }}
+        """
+        sparql = SPARQLWrapper("https://query.wikidata.org/sparql")
+        sparql.setQuery(query)
+        sparql.setReturnFormat(JSON)
+        return sparql.query().convert()
+    except Exception as e:
+        error_handler("query wikidata", url, e)
 
 # Streamlit app logic
 def run(client):
