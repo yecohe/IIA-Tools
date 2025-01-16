@@ -296,15 +296,14 @@ def calculate_score(url, title, description, languages, good_keywords, bad_keywo
 
 
 # Function to filter out ignored URLs
-def filter_ignored_urls(classified_urls):
-    ignored_urls = ["https://www.linkedin.com", "https://x.com", "https://en.wiktionary.org", "https://www.reddit.com", "https://www.amazon.com", "https://twitter.com", "https://www.facebook.com", "https://en.wikipedia.org", "https://www.youtube.com", "https://www.instagram.com", "https://books.google.com", "https://en.wikivoyage.org", "https://www.tiktok.com", "https://www.pinterest.com"]
-    ignored_set = set(ignored_urls)  # Convert to set for faster lookups
+def filter_ignored_urls(block_list, classified_urls):
+    ignored_set = set(block_list)  # Convert to set for faster lookups
     filtered_urls = [(url, source) for url, source in classified_urls if url not in ignored_set]
     return filtered_urls
     
 
 # Function to search and filter URLs based on query
-def search_and_filter_urls(query, num_results=100, language="en", homepage_only=False):
+def search_and_filter_urls(query, num_results=100, language="en", homepage_only=False, block_list):
     # Search results placeholder
     search_results = google_search(query, num_results, language)
     classified_urls = []
@@ -345,7 +344,7 @@ def search_and_filter_urls(query, num_results=100, language="en", homepage_only=
         deduplicated_urls.append((url, source))
 
     # Filter out ignored URLs if provided
-    deduplicated_urls = filter_ignored_urls(deduplicated_urls)
+    deduplicated_urls = filter_ignored_urls(block_list, deduplicated_urls)
     
     return deduplicated_urls
 
@@ -371,11 +370,13 @@ def fetch_and_get_keywords(client, sheet_id):
     """Fetch necessary Google Sheets and extract good and bad keywords."""
     try:
         keywords_sheet = client.open_by_key(st.secrets["keywords_id"]).worksheet("Keywords")
+        block_sheet = client.open_by_key(st.secrets["keywords_id"]).worksheet("Block")
         sure_sheet = client.open_by_key(sheet_id).worksheet("Sure")
         not_sure_sheet = client.open_by_key(sheet_id).worksheet("Not Sure")        
         good_keywords = [kw.lower() for kw in keywords_sheet.col_values(1)[1:]]  # Lowercase good keywords
         bad_keywords = [kw.lower() for kw in keywords_sheet.col_values(3)[1:]]  # Lowercase bad keywords
-        return keywords_sheet, sure_sheet, not_sure_sheet, good_keywords, bad_keywords
+        block_list = keywords_sheet.col_values(1)[1:]]
+        return keywords_sheet, sure_sheet, not_sure_sheet, good_keywords, bad_keywords, block_list
     except Exception as e:
         error_handler("fetch and get keywords", sheet_id, e)
 
@@ -400,7 +401,7 @@ def process_single_url(url, source, good_keywords, bad_keywords):
 # Process keywords to fetch and evaluate URLs
 def process_keywords(client, sheet_id, keywords, lang="en", inurl=False, limit=100, homepage=False):
     """Process a list of keywords to fetch and evaluate URLs."""
-    keywords_sheet, sure_sheet, not_sure_sheet, good_keywords, bad_keywords = fetch_and_get_keywords(client, sheet_id)
+    keywords_sheet, sure_sheet, not_sure_sheet, good_keywords, bad_keywords, block_list = fetch_and_get_keywords(client, sheet_id)
 
     check_and_add_headers(sure_sheet)
     check_and_add_headers(not_sure_sheet)
@@ -412,10 +413,10 @@ def process_keywords(client, sheet_id, keywords, lang="en", inurl=False, limit=1
         time.sleep(delay)
         
         try:
-            homepage_urls = search_and_filter_urls(keyword, num_results=limit, language=lang, homepage_only=homepage)
+            homepage_urls = search_and_filter_urls(keyword, num_results=limit, language=lang, homepage_only=homepage, block_list)
             inurl_urls = []
             if inurl:
-                inurl_urls = search_and_filter_urls(f"inurl:{keyword}", num_results=limit, language=lang, homepage_only=homepage)
+                inurl_urls = search_and_filter_urls(f"inurl:{keyword}", num_results=limit, language=lang, homepage_only=homepage, block_list,)
 
             all_urls = list({url: source for url, source in homepage_urls + inurl_urls}.items())
             for url, source in all_urls:
@@ -435,7 +436,7 @@ def process_urls(client, sheet_id, urls, source_name):
     """Process a list of URLs and classify them."""
     try:
         with st.status("Working..."):
-            keywords_sheet, sure_sheet, not_sure_sheet, good_keywords, bad_keywords = fetch_and_get_keywords(client, sheet_id)
+            keywords_sheet, sure_sheet, not_sure_sheet, good_keywords, bad_keywords, block_list = fetch_and_get_keywords(client, sheet_id)
             check_and_add_headers(sure_sheet)
             check_and_add_headers(not_sure_sheet)
             rows_to_sure, rows_to_not_sure = [], []
