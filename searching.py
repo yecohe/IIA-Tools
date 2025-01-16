@@ -303,7 +303,7 @@ def filter_ignored_urls(block_list, classified_urls):
     
 
 # Function to search and filter URLs based on query
-def search_and_filter_urls(query, num_results=100, language="en", homepage_only=False, block_list):
+def search_and_filter_urls(query, block_list, num_results=100, language="en", homepage_only=False):
     # Search results placeholder
     search_results = google_search(query, num_results, language)
     classified_urls = []
@@ -413,10 +413,10 @@ def process_keywords(client, sheet_id, keywords, lang="en", inurl=False, limit=1
         time.sleep(delay)
         
         try:
-            homepage_urls = search_and_filter_urls(keyword, num_results=limit, language=lang, homepage_only=homepage, block_list)
+            homepage_urls = search_and_filter_urls(keyword, block_list, num_results=limit, language=lang, homepage_only=homepage)
             inurl_urls = []
             if inurl:
-                inurl_urls = search_and_filter_urls(f"inurl:{keyword}", num_results=limit, language=lang, homepage_only=homepage, block_list,)
+                inurl_urls = search_and_filter_urls(f"inurl:{keyword}", block_list, num_results=limit, language=lang, homepage_only=homepage)
 
             all_urls = list({url: source for url, source in homepage_urls + inurl_urls}.items())
             for url, source in all_urls:
