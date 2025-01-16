@@ -54,7 +54,7 @@ def query_wikidata(property_id, value_id):
     try:
         query = f"""
         SELECT DISTINCT ?entity ?entityLabel ?website WHERE {{
-            ?entity p:{property_id} ?statement.
+            ?entity p:{property_id} ?statement0.
             ?statement0 (ps:{property_id}/(wdt:P279*)) wd:{value_id}.
             OPTIONAL {{ ?entity wdt:P856 ?website }}  # Personal website
             SERVICE wikibase:label {{ bd:serviceParam wikibase:language "en". }}
