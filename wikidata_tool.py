@@ -10,24 +10,30 @@ def error_handler(function, item, error_message):
 
 # Function to convert ID (e.g., "P27") to Label (e.g., "country of citizenship")
 def id_to_label(wikidata_id):
+    languages = ["en", "he", "es", "ar"]  # Order of fallback languages  
     try:
         sparql = SPARQLWrapper("https://query.wikidata.org/sparql")
-        sparql.setQuery(f"""
-        SELECT ?label WHERE {{
-            wd:{wikidata_id} rdfs:label ?label.
-            FILTER(LANG(?label) = "en")
-        }}
-        """)
-        sparql.setReturnFormat(JSON)
-        results = sparql.query().convert()
+        
+        for language in languages:
+            sparql.setQuery(f"""
+            SELECT ?label WHERE {{
+                wd:{wikidata_id} rdfs:label ?label.
+                FILTER(LANG(?label) = "{language}")
+            }}
+            """)
+            sparql.setReturnFormat(JSON)
+            results = sparql.query().convert()
 
-        if results["results"]["bindings"]:
-            return results["results"]["bindings"][0]["label"]["value"]
-        else:
-            return wikidata_id
+            if results["results"]["bindings"]:
+                return results["results"]["bindings"][0]["label"]["value"]
+        
+        # If no label is found in any of the languages
+        return wikidata_id
+    
     except Exception as e:
         error_handler("id to label", wikidata_id, e)
         return wikidata_id
+
 
 # Function to convert Label (e.g., "country of citizenship") to ID (e.g., "P27")
 def label_to_id(label):
