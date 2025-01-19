@@ -66,6 +66,7 @@ def query_wikidata(property_id, value_id, language="en"):
             SELECT DISTINCT ?item WHERE {{
               ?item p:{property_id} ?statement0.
               ?statement0 (ps:{property_id}/(wdt:P279*)) wd:{value_id}.
+              ?item p:P31 ?statement1.
             }}
           }}
           OPTIONAL {{ ?item wdt:P856 ?website }}  # Personal website
