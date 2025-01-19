@@ -132,12 +132,12 @@ def run(client):
                                                 
                 # Query Wikidata for all possible IDs
                 if isinstance(property_id, list) and property_id:
-                    st.info(f"Found {len(property_id)} possible Property IDs. Searching for all...")
+                    st.info(f"Found {len(property_id)} possible Property IDs for '{property_label}'.")
                 else:
                     st.info(f"Found 1 Property ID: {property_id}")
                 
                 if isinstance(value_id, list) and value_id:
-                    st.info(f"Found {len(value_id)} possible Value IDs. Searching for all...")
+                    st.info(f"Found {len(value_id)} possible IDs for '{value_label}'.")
                 else:
                     st.info(f"Found 1 Value ID: {value_id}")
 
