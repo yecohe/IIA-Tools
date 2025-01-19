@@ -130,7 +130,14 @@ def run(client):
                 # Convert labels to IDs
                 property_id = label_to_id(property_label)
                 value_id = label_to_id(value_label)
-                                
+                
+                # Fetch the labels for the property and value
+                property_label_text = id_to_label(property_id) if not isinstance(property_id, list) else ", ".join([id_to_label(p) for p in property_id])
+                value_label_text = id_to_label(value_id) if not isinstance(value_id, list) else ", ".join([id_to_label(v) for v in value_id])
+                
+                # Explanation format
+                explanation = f"{property_label_text} ({property_id}) - {value_label_text} ({value_id})"
+                
                 # Query Wikidata for all possible IDs
                 if isinstance(property_id, list) and property_id:
                     st.info(f"Found {len(property_id)} possible Property IDs. Searching for all...")
@@ -153,8 +160,6 @@ def run(client):
                 # Process results
                 if results:
                     st.success("Query completed!")
-                    #explanation = f"{id_to_label(property_id)} - {id_to_label(value_id)}"
-                    explanation = "a"
                     websites_batch = []
                     names_batch = []
                     
@@ -171,6 +176,7 @@ def run(client):
                         
                             website = result.get("website", {}).get("value", "")
                     
+                            # Add the row to the correct batch (websites or names)
                             if website:
                                 websites_batch.append([name_en, website, explanation, timestamp])
                             else:
@@ -189,3 +195,4 @@ def run(client):
                 st.error(f"Error: {e}")
         else:
             st.error("Please enter both a property and a value.")
+
