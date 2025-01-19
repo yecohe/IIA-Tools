@@ -57,6 +57,7 @@ def label_to_id(label):
         return []
 
 
+
 # Query Wikidata dynamically, including subclasses and handling empty results
 def query_wikidata(property_id, value_id, language="en"):
     if not property_id or not value_id:
@@ -134,11 +135,18 @@ def run(client):
                 value_id = label_to_id(value_label)
                 explanation = f"{id_to_label(property_id)} - {id_to_label(value_id)}"
                 
-                # If there are multiple possible IDs, let the user choose one
+                # If there are multiple possible IDs for property or value, let the user choose
                 if isinstance(property_id, list) and len(property_id) > 1:
                     property_id = st.selectbox("Select the correct Property ID", [p['id'] for p in property_id])
+                elif isinstance(property_id, list) and len(property_id) == 0:
+                    st.error("No results found for the given property.")
+                    return
+                
                 if isinstance(value_id, list) and len(value_id) > 1:
                     value_id = st.selectbox("Select the correct Value ID", [v['id'] for v in value_id])
+                elif isinstance(value_id, list) and len(value_id) == 0:
+                    st.error("No results found for the given value.")
+                    return
     
                 # Query Wikidata
                 st.info("Querying Wikidata...")
@@ -179,4 +187,5 @@ def run(client):
             except Exception as e:
                 st.error(f"Error: {e}")
         else:
-            st.error("Please enter both a property and a value.")
+            st.error("Please enter both a 
+
