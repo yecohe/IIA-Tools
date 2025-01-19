@@ -167,16 +167,17 @@ def run(client):
                         st.success("Query completed!")
                         websites_batch = []
                         names_batch = []
-    
+                    
                         for result in results["results"]["bindings"]:
-                            name_en = result["entityLabel"]["value"]
+                            # Use ?itemLabel instead of ?entityLabel
+                            name_en = result.get("itemLabel", {}).get("value", "Unknown")
                             website = result.get("website", {}).get("value", "")
-    
+                    
                             if website:
                                 websites_batch.append([name_en, website, explanation, timestamp])
                             else:
                                 names_batch.append([name_en, explanation, timestamp])
-    
+                    
                         # Write results to Google Sheets
                         if websites_batch:
                             websites_sheet.append_rows(websites_batch)
