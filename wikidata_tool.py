@@ -36,7 +36,6 @@ def label_to_id(label):
         sparql.setQuery(f"""
         SELECT ?entity WHERE {{
             ?entity rdfs:label "{label}"@en.
-            FILTER(STRSTARTS(STR(?entity), "http://www.wikidata.org/entity/"))  # Exclude non-Wikidata entities
         }}
         """)
         sparql.setReturnFormat(JSON)
@@ -45,10 +44,10 @@ def label_to_id(label):
         if results["results"]["bindings"]:
             return results["results"]["bindings"][0]["entity"]["value"].split("/")[-1]
         else:
-            return None  # Return None if no matching ID is found
+            return label
     except Exception as e:
-        error_handler("label to id", label, str(e))
-        return None
+        error_handler("label to id", url, e)
+        return label
 
 
 # Query Wikidata dynamically, including subclasses and handling empty results
