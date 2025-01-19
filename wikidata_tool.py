@@ -138,8 +138,15 @@ def run(client):
                         names_batch = []
                     
                         for result in results["results"]["bindings"]:
-                            # Use ?itemLabel instead of ?entityLabel
-                            name_en = result.get("itemLabel", {}).get("value", "")
+                            # Attempt to get the English label
+                            name_en = ""
+                            if "itemLabel" in result:
+                                name_en = result["itemLabel"].get("value", "")
+                            
+                            # If no English label, fallback to the item's value or any available label
+                            if not name_en and "item" in result:
+                                name_en = result["item"].get("value", "").split("/")[-1]  # Fallback to item ID as label
+                        
                             website = result.get("website", {}).get("value", "")
                     
                             if website:
