@@ -71,7 +71,6 @@ def query_wikidata(property_id, value_id, language="en"):
           OPTIONAL {{ ?item wdt:P856 ?website }}  # Personal website
           OPTIONAL {{ ?item rdfs:label ?itemLabel_he. FILTER(LANG(?itemLabel_he) = "he") }}  # Hebrew label
           OPTIONAL {{ ?item wdt:P31 ?instance_of. }}  # Instance of
-          OPTIONAL {{ ?instance_of rdfs:label ?instance_of_label. FILTER(LANG(?instance_of_label) = "{language}") }}  # Instance of label
         }}
         """
         sparql = SPARQLWrapper("https://query.wikidata.org/sparql")
