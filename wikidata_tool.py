@@ -45,16 +45,14 @@ def label_to_id(label):
         entities = []
         if results["results"]["bindings"]:
             for binding in results["results"]["bindings"]:
-                entities.append({
-                    'id': binding["entity"]["value"].split("/")[-1],
-                    'label': binding["label"]["value"]
-                })
+                entities.append(binding["entity"]["value"].split("/")[-1])  # Extract ID from the URL
             return entities
         else:
             return []
     except Exception as e:
         error_handler("label to id", label, str(e))
         return []
+
 
 
 # Query Wikidata dynamically, including subclasses and handling empty results
