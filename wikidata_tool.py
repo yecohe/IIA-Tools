@@ -9,7 +9,6 @@ def error_handler(function, item, error_message):
     return "Error", "Error"
 
 # Function to convert ID (e.g., "P27") to Label (e.g., "country of citizenship")
-# Function to convert ID (e.g., "P27") to Label (e.g., "country of citizenship")
 def id_to_label(wikidata_id):
     languages = ["en", "he", "es", "ar"]  # Order of fallback languages
     labels = {}
