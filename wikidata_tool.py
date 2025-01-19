@@ -9,35 +9,25 @@ def error_handler(function, item, error_message):
     return "Error", "Error"
 
 # Function to convert ID (e.g., "P27") to Label (e.g., "country of citizenship")
-# Function to convert ID (e.g., "P27") to Label (e.g., "country of citizenship")
 def id_to_label(wikidata_id):
-    languages = ["en", "he", "es", "ar"]  # Order of fallback languages
-    labels = {}
-
     try:
         sparql = SPARQLWrapper("https://query.wikidata.org/sparql")
-        
-        for language in languages:
-            sparql.setQuery(f"""
-            SELECT ?label WHERE {{
-                wd:{wikidata_id} rdfs:label ?label.
-                FILTER(LANG(?label) = "{language}")
-            }}
-            """)
-            sparql.setReturnFormat(JSON)
-            results = sparql.query().convert()
+        sparql.setQuery(f"""
+        SELECT ?label WHERE {{
+            wd:{wikidata_id} rdfs:label ?label.
+            FILTER(LANG(?label) = "en")
+        }}
+        """)
+        sparql.setReturnFormat(JSON)
+        results = sparql.query().convert()
 
-            if results["results"]["bindings"]:
-                labels[language] = results["results"]["bindings"][0]["label"]["value"]
-            else:
-                labels[language] = None
-        
-        return labels
-    
+        if results["results"]["bindings"]:
+            return results["results"]["bindings"][0]["label"]["value"]
+        else:
+            return wikidata_id
     except Exception as e:
         error_handler("id to label", wikidata_id, e)
-        return {}
-
+        return wikidata_id
 
 # Function to convert Label (e.g., "country of citizenship") to ID (e.g., "P27")
 def label_to_id(label):
@@ -64,14 +54,13 @@ def label_to_id(label):
         return []
 
 
-
-# Query Wikidata dynamically, including subclasses and handling empty results
+# Query Wikidata dynamically, including Hebrew label and instance of
 def query_wikidata(property_id, value_id, language="en"):
     if not property_id or not value_id:
         return {"error": "Property ID and Value ID must be provided."}  
     try:
         query = f"""
-        SELECT DISTINCT ?item ?itemLabel ?website WHERE {{
+        SELECT DISTINCT ?item ?itemLabel ?itemLabel_he ?website ?instance_of_label WHERE {{
           SERVICE wikibase:label {{ bd:serviceParam wikibase:language "{language}". }}
           {{
             SELECT DISTINCT ?item WHERE {{
@@ -80,6 +69,9 @@ def query_wikidata(property_id, value_id, language="en"):
             }}
           }}
           OPTIONAL {{ ?item wdt:P856 ?website }}  # Personal website
+          OPTIONAL {{ ?item rdfs:label ?itemLabel_he. FILTER(LANG(?itemLabel_he) = "he") }}  # Hebrew label
+          OPTIONAL {{ ?item wdt:P31 ?instance_of. }}  # Instance of
+          OPTIONAL {{ ?instance_of rdfs:label ?instance_of_label. FILTER(LANG(?instance_of_label) = "{language}") }}  # Instance of label
         }}
         """
         sparql = SPARQLWrapper("https://query.wikidata.org/sparql")
@@ -97,6 +89,7 @@ def query_wikidata(property_id, value_id, language="en"):
         return {"error": f"Value error: {ve}"}
     except Exception as e:
         return {"error": f"Unexpected error: {str(e)}"}
+
 
 
 def run(client):
@@ -130,9 +123,9 @@ def run(client):
         
         # Add headers if the sheets are empty
         if len(websites_sheet.get_all_values()) <= 1:  # Only the header exists
-            websites_sheet.append_row(["Name", "Wikidata ID", "Website", "Property Label", "Value Label", "Property ID", "Value ID", "Timestamp"])
+            websites_sheet.append_row(["Name", "Wikidata ID", "Website", "Property Label", "Value Label", "Property ID", "Value ID", "Hebrew Label", "Instance Of", "Timestamp"])
         if len(names_sheet.get_all_values()) <= 1:  # Only the header exists
-            names_sheet.append_row(["Name", "Wikidata ID", "Property Label", "Value Label", "Property ID", "Value ID", "Timestamp"])
+            names_sheet.append_row(["Name", "Wikidata ID", "Property Label", "Value Label", "Property ID", "Value ID", "Hebrew Label", "Instance Of", "Timestamp"])
     
         if property_label and value_label:
             try:
@@ -178,23 +171,27 @@ def run(client):
                         value_label = result_data["value_label"]
                         
                         for result in result_data["results"]:
-                            # Get the English label for the item
-                            name_en = ""
-                            if "itemLabel" in result:
-                                name_en = result["itemLabel"].get("value", "")
+                            # Get the English and Hebrew labels for the item
+                            name_en = result["itemLabel"].get("value", "")
+                            name_he = result.get("itemLabel_he", {}).get("value", "")
                             
                             # If no English label, fallback to the item's value or any available label
                             if not name_en and "item" in result:
                                 name_en = result["item"].get("value", "").split("/")[-1]  # Fallback to item ID as label
-                        
+                            
                             website = result.get("website", {}).get("value", "")
                             wikidata_id = result["item"].get("value", "").split("/")[-1]
+                            
+                            # Get the Instance Of value (P31)
+                            instance_of = result.get("instance_of_label", {}).get("value", "Unknown")
                             
                             # Prepare the row data
                             row_data = [
                                 name_en,
-                                wikidata_id,
+                                name_he,
                                 website,
+                                wikidata_id,
+                                instance_of,
                                 f"{property_label} ({p_id})",
                                 f"{value_label} ({v_id})",
                                 timestamp
@@ -207,7 +204,9 @@ def run(client):
                                 # Exclude website column for Names sheet
                                 names_batch.append([
                                     name_en,
+                                    name_he,
                                     wikidata_id,
+                                    instance_of,
                                     f"{property_label} ({p_id})",
                                     f"{value_label} ({v_id})",
                                     timestamp
