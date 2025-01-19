@@ -50,7 +50,7 @@ def label_to_id(label):
         return label
 
 # Query Wikidata dynamically, including subclasses and handling empty results
-def query_wikidata(property_id, value_id, language="AUTO_LANGUAGE"):
+def query_wikidata(property_id, value_id, language="en"):
     if not property_id or not value_id:
         return {"error": "Property ID and Value ID must be provided."}  
     try:
