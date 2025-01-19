@@ -129,12 +129,19 @@ def run(client):
                 # Convert labels to IDs
                 property_id = label_to_id(property_label)
                 value_id = label_to_id(value_label)
+                                                
+                # Query Wikidata for all possible IDs
+                if isinstance(property_id, list) and property_id:
+                    st.info(f"Found {len(property_id)} possible Property IDs. Searching for all...")
+                else:
+                    st.info(f"Found 1 Property ID: {property_id}")
                 
-                # Fetch the labels for the property and value
-                property_label_text = id_to_label(property_id) if not isinstance(property_id, list) else [id_to_label(p) for p in property_id]
-                value_label_text = id_to_label(value_id) if not isinstance(value_id, list) else [id_to_label(v) for v in value_id]
-                
-                # Query Wikidata for all possible combinations of property and value IDs
+                if isinstance(value_id, list) and value_id:
+                    st.info(f"Found {len(value_id)} possible Value IDs. Searching for all...")
+                else:
+                    st.info(f"Found 1 Value ID: {value_id}")
+
+                # Query Wikidata for all possible combinations
                 results = []
                 for p_id in (property_id if isinstance(property_id, list) else [property_id]):
                     for v_id in (value_id if isinstance(value_id, list) else [value_id]):
@@ -150,7 +157,11 @@ def run(client):
                     
                     for result_set in results:
                         for result in result_set["results"]["bindings"]:
-                            # Attempt to get the English label
+                            # Get the English label for property and value
+                            property_en = id_to_label(property_id) if isinstance(property_id, str) else ", ".join([id_to_label(id) for id in property_id])
+                            value_en = id_to_label(value_id) if isinstance(value_id, str) else ", ".join([id_to_label(id) for id in value_id])
+
+                            # Attempt to get the English label for item
                             name_en = ""
                             if "itemLabel" in result:
                                 name_en = result["itemLabel"].get("value", "")
@@ -160,15 +171,15 @@ def run(client):
                                 name_en = result["item"].get("value", "").split("/")[-1]  # Fallback to item ID as label
                         
                             website = result.get("website", {}).get("value", "")
-                    
-                            # Add rows for each property-value pair
-                            for prop, value in zip(property_label_text, value_label_text):
-                                explanation = f"{prop} ({property_id}) - {value} ({value_id})"
-                                
-                                if website:
-                                    websites_batch.append([name_en, website, explanation, timestamp])
-                                else:
-                                    names_batch.append([name_en, explanation, timestamp])
+                            
+                            # Prepare the explanation
+                            explanation = f"{property_en} ({property_id}) - {value_en} ({value_id})"
+
+                            # Write results to Google Sheets
+                            if website:
+                                websites_batch.append([name_en, website, explanation, timestamp])
+                            else:
+                                names_batch.append([name_en, explanation, timestamp])
                     
                     # Write results to Google Sheets
                     if websites_batch:
