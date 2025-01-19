@@ -50,37 +50,6 @@ def label_to_id(label):
         return label
 
 # Query Wikidata dynamically, including subclasses and handling empty results
-def query_wikidata_old(property_id, value_id):
-    try:
-        query = f"""
-        SELECT DISTINCT ?item ?itemLabel ?website WHERE {{
-          SERVICE wikibase:label {{ bd:serviceParam wikibase:language "[AUTO_LANGUAGE]". }}
-          {{
-            SELECT DISTINCT ?item WHERE {{
-              ?item p:{property_id} ?statement0.
-              ?statement0 (ps:{property_id}/(wdt:P279*)) wd:{value_id}.
-              OPTIONAL {{ ?entity wdt:P856 ?website }}  # Personal website
-            }}
-          }}
-        }}
-        """
-        sparql = SPARQLWrapper("https://query.wikidata.org/sparql")
-        sparql.setQuery(query)
-        sparql.setReturnFormat(JSON)
-        results = sparql.query().convert()
-       
-        # Check if results are empty
-        if "results" in results and "bindings" in results["results"]:
-            bindings = results["results"]["bindings"]
-            if not bindings:  # Empty bindings
-                return {"error": "No results found for the given property and value."}
-            return results
-        else:
-            return {"error": "Unexpected response structure from Wikidata."}
-    except Exception as e:
-        error_handler("query wikidata", property_id, e)
-
-
 def query_wikidata(property_id, value_id, language="AUTO_LANGUAGE"):
     if not property_id or not value_id:
         return {"error": "Property ID and Value ID must be provided."}  
@@ -170,7 +139,7 @@ def run(client):
                     
                         for result in results["results"]["bindings"]:
                             # Use ?itemLabel instead of ?entityLabel
-                            name_en = result.get("itemLabel", {}).get("value", "Unknown")
+                            name_en = result.get("itemLabel", {}).get("value", "")
                             website = result.get("website", {}).get("value", "")
                     
                             if website:
