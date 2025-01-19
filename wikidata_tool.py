@@ -80,12 +80,10 @@ def query_wikidata_old(property_id, value_id):
     except Exception as e:
         error_handler("query wikidata", property_id, e)
 
-from SPARQLWrapper import SPARQLWrapper, JSON
 
 def query_wikidata(property_id, value_id, language="AUTO_LANGUAGE"):
     if not property_id or not value_id:
-        return {"error": "Property ID and Value ID must be provided."}
-    
+        return {"error": "Property ID and Value ID must be provided."}  
     try:
         query = f"""
         SELECT DISTINCT ?item ?itemLabel ?website WHERE {{
@@ -99,7 +97,6 @@ def query_wikidata(property_id, value_id, language="AUTO_LANGUAGE"):
           OPTIONAL {{ ?item wdt:P856 ?website }}  # Personal website
         }}
         """
-        
         sparql = SPARQLWrapper("https://query.wikidata.org/sparql")
         sparql.setQuery(query)
         sparql.setReturnFormat(JSON)
