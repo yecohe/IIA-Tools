@@ -57,7 +57,7 @@ def query_wikidata(property_id, value_id):
             ?item p:{property_id} ?statement0.
             ?statement0 (ps:{property_id}/(wdt:P279*)) wd:{value_id}.
             OPTIONAL {{ ?entity wdt:P856 ?website }}  # Personal website
-            SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE]". }}
+            SERVICE wikibase:label {{ bd:serviceParam wikibase:language "[AUTO_LANGUAGE]". }}
         }}
         """
         sparql = SPARQLWrapper("https://query.wikidata.org/sparql")
