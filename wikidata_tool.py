@@ -20,7 +20,7 @@ def id_to_label(wikidata_id):
         """)
         sparql.setReturnFormat(JSON)
         results = sparql.query().convert()
-    
+
         if results["results"]["bindings"]:
             return results["results"]["bindings"][0]["label"]["value"]
         else:
@@ -54,17 +54,17 @@ def query_wikidata(property_id, value_id):
     try:
         query = f"""
         SELECT DISTINCT ?entity ?entityLabel ?website WHERE {{
-            ?entity p:{property_id} ?statement0.
+            ?item p:{property_id} ?statement0.
             ?statement0 (ps:{property_id}/(wdt:P279*)) wd:{value_id}.
             OPTIONAL {{ ?entity wdt:P856 ?website }}  # Personal website
-            SERVICE wikibase:label {{ bd:serviceParam wikibase:language "en". }}
+            SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE]". }}
         }}
         """
         sparql = SPARQLWrapper("https://query.wikidata.org/sparql")
         sparql.setQuery(query)
         sparql.setReturnFormat(JSON)
         results = sparql.query().convert()
-
+       
         # Check if results are empty
         if "results" in results and "bindings" in results["results"]:
             bindings = results["results"]["bindings"]
