@@ -26,7 +26,7 @@ def id_to_label(wikidata_id):
         else:
             return wikidata_id
     except Exception as e:
-        error_handler("id to label", url, e)
+        error_handler("id to label", wikidata_id, e)
         return wikidata_id
 
 # Function to convert Label (e.g., "country of citizenship") to ID (e.g., "P27")
