@@ -120,9 +120,9 @@ def run(client):
         
         # Add headers if the sheets are empty
         if len(websites_sheet.get_all_values()) <= 1:  # Only the header exists
-            websites_sheet.append_row(["Name", "Website", "Source", "Timestamp"])
+            websites_sheet.append_row(["Name", "Wikidata ID", "Website", "Property Label", "Value Label", "Property ID", "Value ID", "Timestamp"])
         if len(names_sheet.get_all_values()) <= 1:  # Only the header exists
-            names_sheet.append_row(["Name", "Source", "Timestamp"])
+            names_sheet.append_row(["Name", "Wikidata ID", "Property Label", "Value Label", "Property ID", "Value ID", "Timestamp"])
     
         if property_label and value_label:
             try:
@@ -132,12 +132,12 @@ def run(client):
                                                 
                 # Query Wikidata for all possible IDs
                 if isinstance(property_id, list) and property_id:
-                    st.info(f"Found {len(property_id)} possible Property IDs. Searching for all...")
+                    st.info(f"Found {len(property_id)} possible IDs for {property_label}.")
                 else:
                     st.info(f"Found 1 Property ID: {property_id}")
                 
                 if isinstance(value_id, list) and value_id:
-                    st.info(f"Found {len(value_id)} possible Value IDs. Searching for all...")
+                    st.info(f"Found {len(value_id)} possible IDs for {value_label}.")
                 else:
                     st.info(f"Found 1 Value ID: {value_id}")
 
@@ -147,7 +147,13 @@ def run(client):
                     for v_id in (value_id if isinstance(value_id, list) else [value_id]):
                         query_results = query_wikidata(p_id, v_id)
                         if query_results and "results" in query_results and "bindings" in query_results["results"]:
-                            results.append(query_results)
+                            results.append({
+                                "p_id": p_id,
+                                "v_id": v_id,
+                                "property_label": id_to_label(p_id),
+                                "value_label": id_to_label(v_id),
+                                "results": query_results["results"]["bindings"]
+                            })
 
                 # Process results
                 if results:
@@ -155,13 +161,14 @@ def run(client):
                     websites_batch = []
                     names_batch = []
                     
-                    for result_set in results:
-                        for result in result_set["results"]["bindings"]:
-                            # Get the English label for property and value
-                            property_en = id_to_label(property_id) if isinstance(property_id, str) else ", ".join([id_to_label(id) for id in property_id])
-                            value_en = id_to_label(value_id) if isinstance(value_id, str) else ", ".join([id_to_label(id) for id in value_id])
-
-                            # Attempt to get the English label for item
+                    for result_data in results:
+                        p_id = result_data["p_id"]
+                        v_id = result_data["v_id"]
+                        property_label = result_data["property_label"]
+                        value_label = result_data["value_label"]
+                        
+                        for result in result_data["results"]:
+                            # Get the English label for the item
                             name_en = ""
                             if "itemLabel" in result:
                                 name_en = result["itemLabel"].get("value", "")
@@ -171,15 +178,25 @@ def run(client):
                                 name_en = result["item"].get("value", "").split("/")[-1]  # Fallback to item ID as label
                         
                             website = result.get("website", {}).get("value", "")
+                            wikidata_id = result["item"].get("value", "").split("/")[-1]
                             
-                            # Prepare the explanation
-                            explanation = f"{property_en} ({property_id}) - {value_en} ({value_id})"
-
-                            # Write results to Google Sheets
+                            # Prepare the row data
+                            row_data = [
+                                name_en,
+                                wikidata_id,
+                                website,
+                                property_label,
+                                value_label,
+                                p_id,
+                                v_id,
+                                timestamp
+                            ]
+                            
+                            # Write to appropriate sheet
                             if website:
-                                websites_batch.append([name_en, website, explanation, timestamp])
+                                websites_batch.append(row_data)
                             else:
-                                names_batch.append([name_en, explanation, timestamp])
+                                names_batch.append(row_data)
                     
                     # Write results to Google Sheets
                     if websites_batch:
