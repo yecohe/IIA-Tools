@@ -66,12 +66,10 @@ def query_wikidata(property_id, value_id, language="en"):
             SELECT DISTINCT ?item WHERE {{
               ?item p:{property_id} ?statement0.
               ?statement0 (ps:{property_id}/(wdt:P279*)) wd:{value_id}.
-              ?item p:P31 ?statement1.
             }}
           }}
           OPTIONAL {{ ?item wdt:P856 ?website }}  # Personal website
           OPTIONAL {{ ?item rdfs:label ?itemLabel_he. FILTER(LANG(?itemLabel_he) = "he") }}  # Hebrew label
-          OPTIONAL {{ ?item wdt:P31 ?instance_of. }}  # Instance of
         }}
         """
         sparql = SPARQLWrapper("https://query.wikidata.org/sparql")
@@ -182,17 +180,13 @@ def run(client):
                             
                             website = result.get("website", {}).get("value", "")
                             wikidata_id = result["item"].get("value", "").split("/")[-1]
-                            
-                            # Get the Instance Of value (P31)
-                            instance_of = result.get("instance_of", {}).get("value", "Unknown")
-                            
+                                                        
                             # Prepare the row data
                             row_data = [
                                 name_en,
                                 name_he,
                                 website,
                                 wikidata_id,
-                                instance_of,
                                 f"{property_label} ({p_id})",
                                 f"{value_label} ({v_id})",
                                 timestamp
@@ -207,7 +201,6 @@ def run(client):
                                     name_en,
                                     name_he,
                                     wikidata_id,
-                                    instance_of,
                                     f"{property_label} ({p_id})",
                                     f"{value_label} ({v_id})",
                                     timestamp
