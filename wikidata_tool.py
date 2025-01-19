@@ -187,8 +187,6 @@ def run(client):
                                 website,
                                 f"{property_label} ({p_id})",
                                 f"{value_label} ({v_id})",
-                                p_id,
-                                v_id,
                                 timestamp
                             ]
                             
