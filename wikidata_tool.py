@@ -200,7 +200,7 @@ def run(client):
                                 names_batch.append([
                                     name_en,
                                     wikidata_id,
-                                    f"{property_label} ({p_id}}",
+                                    f"{property_label} ({p_id})",
                                     f"{value_label} ({v_id})",
                                     timestamp
                                 ])
