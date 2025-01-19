@@ -185,7 +185,7 @@ def run(client):
                                 name_en,
                                 wikidata_id,
                                 website,
-                                f"{property_label} ({p_id}}",
+                                f"{property_label} ({p_id})",
                                 f"{value_label} ({v_id})",
                                 p_id,
                                 v_id,
