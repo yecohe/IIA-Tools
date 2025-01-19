@@ -57,7 +57,6 @@ def label_to_id(label):
         return []
 
 
-
 # Query Wikidata dynamically, including subclasses and handling empty results
 def query_wikidata(property_id, value_id, language="en"):
     if not property_id or not value_id:
@@ -135,45 +134,48 @@ def run(client):
                 value_id = label_to_id(value_label)
                 explanation = f"{id_to_label(property_id)} - {id_to_label(value_id)}"
                 
-                # If there are multiple possible IDs for property or value, let the user choose
-                if isinstance(property_id, list) and len(property_id) > 1:
-                    property_id = st.selectbox("Select the correct Property ID", [p['id'] for p in property_id])
-                elif isinstance(property_id, list) and len(property_id) == 0:
-                    st.error("No results found for the given property.")
-                    return
+                # Query Wikidata for all possible IDs
+                if isinstance(property_id, list) and property_id:
+                    st.info(f"Found {len(property_id)} possible Property IDs. Searching for all...")
+                else:
+                    st.info(f"Found 1 Property ID: {property_id}")
                 
-                if isinstance(value_id, list) and len(value_id) > 1:
-                    value_id = st.selectbox("Select the correct Value ID", [v['id'] for v in value_id])
-                elif isinstance(value_id, list) and len(value_id) == 0:
-                    st.error("No results found for the given value.")
-                    return
-    
-                # Query Wikidata
-                st.info("Querying Wikidata...")
-                results = query_wikidata(property_id, value_id)
-                
+                if isinstance(value_id, list) and value_id:
+                    st.info(f"Found {len(value_id)} possible Value IDs. Searching for all...")
+                else:
+                    st.info(f"Found 1 Value ID: {value_id}")
+
+                # Query Wikidata for all possible combinations
+                results = []
+                for p_id in (property_id if isinstance(property_id, list) else [property_id]):
+                    for v_id in (value_id if isinstance(value_id, list) else [value_id]):
+                        query_results = query_wikidata(p_id, v_id)
+                        if query_results and "results" in query_results and "bindings" in query_results["results"]:
+                            results.append(query_results)
+
                 # Process results
-                if results and "results" in results and "bindings" in results["results"]:
+                if results:
                     st.success("Query completed!")
                     websites_batch = []
                     names_batch = []
                     
-                    for result in results["results"]["bindings"]:
-                        # Attempt to get the English label
-                        name_en = ""
-                        if "itemLabel" in result:
-                            name_en = result["itemLabel"].get("value", "")
+                    for result_set in results:
+                        for result in result_set["results"]["bindings"]:
+                            # Attempt to get the English label
+                            name_en = ""
+                            if "itemLabel" in result:
+                                name_en = result["itemLabel"].get("value", "")
+                            
+                            # If no English label, fallback to the item's value or any available label
+                            if not name_en and "item" in result:
+                                name_en = result["item"].get("value", "").split("/")[-1]  # Fallback to item ID as label
                         
-                        # If no English label, fallback to the item's value or any available label
-                        if not name_en and "item" in result:
-                            name_en = result["item"].get("value", "").split("/")[-1]  # Fallback to item ID as label
-                        
-                        website = result.get("website", {}).get("value", "")
-                
-                        if website:
-                            websites_batch.append([name_en, website, explanation, timestamp])
-                        else:
-                            names_batch.append([name_en, explanation, timestamp])
+                            website = result.get("website", {}).get("value", "")
+                    
+                            if website:
+                                websites_batch.append([name_en, website, explanation, timestamp])
+                            else:
+                                names_batch.append([name_en, explanation, timestamp])
                     
                     # Write results to Google Sheets
                     if websites_batch:
@@ -188,4 +190,3 @@ def run(client):
                 st.error(f"Error: {e}")
         else:
             st.error("Please enter both a property and a value.")
-
