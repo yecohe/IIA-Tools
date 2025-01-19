@@ -184,7 +184,7 @@ def run(client):
                             wikidata_id = result["item"].get("value", "").split("/")[-1]
                             
                             # Get the Instance Of value (P31)
-                            instance_of = result.get("instance_ofLabel", {}).get("value", "Unknown")
+                            instance_of = result.get("instance_of", {}).get("value", "Unknown")
                             
                             # Prepare the row data
                             row_data = [
