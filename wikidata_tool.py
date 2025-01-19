@@ -131,21 +131,10 @@ def run(client):
                 value_id = label_to_id(value_label)
                 
                 # Fetch the labels for the property and value
-                property_label_text = id_to_label(property_id) if not isinstance(property_id, list) else ", ".join([id_to_label(p) for p in property_id])
-                value_label_text = id_to_label(value_id) if not isinstance(value_id, list) else ", ".join([id_to_label(v) for v in value_id])
+                property_label_text = id_to_label(property_id) if not isinstance(property_id, list) else [id_to_label(p) for p in property_id]
+                value_label_text = id_to_label(value_id) if not isinstance(value_id, list) else [id_to_label(v) for v in value_id]
                 
-                # Query Wikidata for all possible IDs
-                if isinstance(property_id, list) and property_id:
-                    st.info(f"Found {len(property_id)} possible IDs for {property_label}.")
-                else:
-                    st.info(f"Found 1 Property ID: {property_id}")
-                
-                if isinstance(value_id, list) and value_id:
-                    st.info(f"Found {len(value_id)} possible IDs for {value_label}.")
-                else:
-                    st.info(f"Found 1 Value ID: {value_id}")
-
-                # Query Wikidata for all possible combinations
+                # Query Wikidata for all possible combinations of property and value IDs
                 results = []
                 for p_id in (property_id if isinstance(property_id, list) else [property_id]):
                     for v_id in (value_id if isinstance(value_id, list) else [value_id]):
@@ -172,11 +161,14 @@ def run(client):
                         
                             website = result.get("website", {}).get("value", "")
                     
-                            # Add the row to the correct batch (websites or names)
-                            if website:
-                                websites_batch.append([name_en, website, f"{property_label_text} ({property_id}) - {value_label_text} ({value_id})", timestamp])
-                            else:
-                                names_batch.append([name_en, f"{property_label_text} ({property_id}) - {value_label_text} ({value_id})", timestamp])
+                            # Add rows for each property-value pair
+                            for prop, value in zip(property_label_text, value_label_text):
+                                explanation = f"{prop} ({property_id}) - {value} ({value_id})"
+                                
+                                if website:
+                                    websites_batch.append([name_en, website, explanation, timestamp])
+                                else:
+                                    names_batch.append([name_en, explanation, timestamp])
                     
                     # Write results to Google Sheets
                     if websites_batch:
