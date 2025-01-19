@@ -50,7 +50,7 @@ def label_to_id(label):
         return label
 
 # Query Wikidata dynamically, including subclasses and handling empty results
-def query_wikidata(property_id, value_id):
+def query_wikidata_old(property_id, value_id):
     try:
         query = f"""
         SELECT DISTINCT ?item ?itemLabel ?website WHERE {{
@@ -80,6 +80,41 @@ def query_wikidata(property_id, value_id):
     except Exception as e:
         error_handler("query wikidata", property_id, e)
 
+from SPARQLWrapper import SPARQLWrapper, JSON
+
+def query_wikidata(property_id, value_id, language="AUTO_LANGUAGE"):
+    if not property_id or not value_id:
+        return {"error": "Property ID and Value ID must be provided."}
+    
+    try:
+        query = f"""
+        SELECT DISTINCT ?item ?itemLabel ?website WHERE {{
+          SERVICE wikibase:label {{ bd:serviceParam wikibase:language "{language}". }}
+          {{
+            SELECT DISTINCT ?item WHERE {{
+              ?item p:{property_id} ?statement0.
+              ?statement0 (ps:{property_id}/(wdt:P279*)) wd:{value_id}.
+            }}
+          }}
+          OPTIONAL {{ ?item wdt:P856 ?website }}  # Personal website
+        }}
+        """
+        
+        sparql = SPARQLWrapper("https://query.wikidata.org/sparql")
+        sparql.setQuery(query)
+        sparql.setReturnFormat(JSON)
+        results = sparql.query().convert()
+        
+        # Check if results are empty
+        if results.get("results", {}).get("bindings"):
+            return results
+        else:
+            return {"error": "No results found for the given property and value."}
+    
+    except ValueError as ve:
+        return {"error": f"Value error: {ve}"}
+    except Exception as e:
+        return {"error": f"Unexpected error: {str(e)}"}
 
 
 # Streamlit app logic
