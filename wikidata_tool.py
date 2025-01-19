@@ -130,8 +130,7 @@ def run(client):
                 # Convert labels to IDs
                 property_id = label_to_id(property_label)
                 value_id = label_to_id(value_label)
-                explanation = f"{id_to_label(property_id)} - {id_to_label(value_id)}"
-                
+                                
                 # Query Wikidata for all possible IDs
                 if isinstance(property_id, list) and property_id:
                     st.info(f"Found {len(property_id)} possible Property IDs. Searching for all...")
@@ -154,6 +153,8 @@ def run(client):
                 # Process results
                 if results:
                     st.success("Query completed!")
+                    #explanation = f"{id_to_label(property_id)} - {id_to_label(value_id)}"
+                    explanation = "a"
                     websites_batch = []
                     names_batch = []
                     
