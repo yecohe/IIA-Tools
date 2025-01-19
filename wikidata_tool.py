@@ -187,5 +187,5 @@ def run(client):
             except Exception as e:
                 st.error(f"Error: {e}")
         else:
-            st.error("Please enter both a 
+            st.error("Please enter both a property and a value.")
 
