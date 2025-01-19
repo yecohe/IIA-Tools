@@ -132,12 +132,12 @@ def run(client):
                                                 
                 # Query Wikidata for all possible IDs
                 if isinstance(property_id, list) and property_id:
-                    st.info(f"Found {len(property_id)} possible IDs for {property_label}.")
+                    st.info(f"Found {len(property_id)} possible Property IDs. Searching for all...")
                 else:
                     st.info(f"Found 1 Property ID: {property_id}")
                 
                 if isinstance(value_id, list) and value_id:
-                    st.info(f"Found {len(value_id)} possible IDs for {value_label}.")
+                    st.info(f"Found {len(value_id)} possible Value IDs. Searching for all...")
                 else:
                     st.info(f"Found 1 Value ID: {value_id}")
 
@@ -185,8 +185,8 @@ def run(client):
                                 name_en,
                                 wikidata_id,
                                 website,
-                                property_label,
-                                value_label,
+                                f"{property_label} ({p_id}}",
+                                f"{value_label} ({v_id})",
                                 p_id,
                                 v_id,
                                 timestamp
@@ -196,7 +196,14 @@ def run(client):
                             if website:
                                 websites_batch.append(row_data)
                             else:
-                                names_batch.append(row_data)
+                                # Exclude website column for Names sheet
+                                names_batch.append([
+                                    name_en,
+                                    wikidata_id,
+                                    f"{property_label} ({p_id}}",
+                                    f"{value_label} ({v_id})",
+                                    timestamp
+                                ])
                     
                     # Write results to Google Sheets
                     if websites_batch:
