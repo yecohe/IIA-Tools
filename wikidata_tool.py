@@ -89,7 +89,6 @@ def query_wikidata(property_id, value_id, language="en"):
         return {"error": f"Unexpected error: {str(e)}"}
 
 
-# Streamlit app logic
 def run(client):
     st.write("This tool searches Wikidata for entries. The results are saved [here](https://docs.google.com/spreadsheets/d/1s1J1QRMnJukdvVhNU5EM_O625VGg198XwC6MTobb0SM/).")
 
@@ -135,17 +134,14 @@ def run(client):
                 property_label_text = id_to_label(property_id) if not isinstance(property_id, list) else ", ".join([id_to_label(p) for p in property_id])
                 value_label_text = id_to_label(value_id) if not isinstance(value_id, list) else ", ".join([id_to_label(v) for v in value_id])
                 
-                # Explanation format
-                explanation = f"{property_label_text} ({property_id}) - {value_label_text} ({value_id})"
-                
                 # Query Wikidata for all possible IDs
                 if isinstance(property_id, list) and property_id:
-                    st.info(f"Found {len(property_id)} possible Property IDs. Searching for all...")
+                    st.info(f"Found {len(property_id)} possible IDs for {property_label}.")
                 else:
                     st.info(f"Found 1 Property ID: {property_id}")
                 
                 if isinstance(value_id, list) and value_id:
-                    st.info(f"Found {len(value_id)} possible Value IDs. Searching for all...")
+                    st.info(f"Found {len(value_id)} possible IDs for {value_label}.")
                 else:
                     st.info(f"Found 1 Value ID: {value_id}")
 
@@ -178,9 +174,9 @@ def run(client):
                     
                             # Add the row to the correct batch (websites or names)
                             if website:
-                                websites_batch.append([name_en, website, explanation, timestamp])
+                                websites_batch.append([name_en, website, f"{property_label_text} ({property_id}) - {value_label_text} ({value_id})", timestamp])
                             else:
-                                names_batch.append([name_en, explanation, timestamp])
+                                names_batch.append([name_en, f"{property_label_text} ({property_id}) - {value_label_text} ({value_id})", timestamp])
                     
                     # Write results to Google Sheets
                     if websites_batch:
@@ -195,4 +191,3 @@ def run(client):
                 st.error(f"Error: {e}")
         else:
             st.error("Please enter both a property and a value.")
-
