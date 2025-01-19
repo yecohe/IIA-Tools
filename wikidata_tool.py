@@ -34,20 +34,27 @@ def label_to_id(label):
     try:
         sparql = SPARQLWrapper("https://query.wikidata.org/sparql")
         sparql.setQuery(f"""
-        SELECT ?entity WHERE {{
+        SELECT ?entity ?label WHERE {{
             ?entity rdfs:label "{label}"@en.
+            FILTER(STRSTARTS(STR(?entity), "http://www.wikidata.org/entity/"))
         }}
         """)
         sparql.setReturnFormat(JSON)
         results = sparql.query().convert()
     
+        entities = []
         if results["results"]["bindings"]:
-            return results["results"]["bindings"][0]["entity"]["value"].split("/")[-1]
+            for binding in results["results"]["bindings"]:
+                entities.append({
+                    'id': binding["entity"]["value"].split("/")[-1],
+                    'label': binding["label"]["value"]
+                })
+            return entities
         else:
-            return label
+            return []
     except Exception as e:
-        error_handler("label to id", url, e)
-        return label
+        error_handler("label to id", label, str(e))
+        return []
 
 
 # Query Wikidata dynamically, including subclasses and handling empty results
@@ -86,11 +93,11 @@ def query_wikidata(property_id, value_id, language="en"):
 
 # Streamlit app logic
 def run(client):
-    st.write("This tool searches Wikidata for enteries. The results are saved [here](https://docs.google.com/spreadsheets/d/1s1J1QRMnJukdvVhNU5EM_O625VGg198XwC6MTobb0SM/).")
+    st.write("This tool searches Wikidata for entries. The results are saved [here](https://docs.google.com/spreadsheets/d/1s1J1QRMnJukdvVhNU5EM_O625VGg198XwC6MTobb0SM/).")
 
     # Display examples table
     st.subheader("Examples")
-    st.table([
+    st.table([ 
         {"Property": "country of citizenship", "Matching Value": "Israel"},
         {"Property": "religion or worldview", "Matching Value": "Judaism"},
         {"Property": "ethnic group", "Matching Value": "Jewish people"},
@@ -108,64 +115,68 @@ def run(client):
             
         submit_button = st.form_submit_button("Search Wikidata")
         
-        # Process filters and query Wikidata
+    # Process filters and query Wikidata
     if submit_button:
-            # Set up Google Sheets
-            websites_sheet = client.open_by_key(st.secrets["wikidata_id"]).worksheet("Websites")
-            names_sheet = client.open_by_key(st.secrets["wikidata_id"]).worksheet("Names")
-            timestamp = datetime.now(pytz.timezone('Asia/Jerusalem')).strftime("%Y-%m-%d %H:%M:%S")
+        websites_sheet = client.open_by_key(st.secrets["wikidata_id"]).worksheet("Websites")
+        names_sheet = client.open_by_key(st.secrets["wikidata_id"]).worksheet("Names")
+        timestamp = datetime.now(pytz.timezone('Asia/Jerusalem')).strftime("%Y-%m-%d %H:%M:%S")
         
-            # Add headers if the sheets are empty
-            if len(websites_sheet.get_all_values()) <= 1:  # Only the header exists
-                websites_sheet.append_row(["Name", "Website", "Source", "Timestamp"])
-            if len(names_sheet.get_all_values()) <= 1:  # Only the header exists
-                names_sheet.append_row(["Name", "Source", "Timestamp"])
+        # Add headers if the sheets are empty
+        if len(websites_sheet.get_all_values()) <= 1:  # Only the header exists
+            websites_sheet.append_row(["Name", "Website", "Source", "Timestamp"])
+        if len(names_sheet.get_all_values()) <= 1:  # Only the header exists
+            names_sheet.append_row(["Name", "Source", "Timestamp"])
     
-            if property_label and value_label:
-                try:
-                    # Convert labels to IDs
-                    property_id = label_to_id(property_label)
-                    value_id = label_to_id(value_label)
-                    explanation = f"{id_to_label(property_id)} - {id_to_label(value_id)}"
+        if property_label and value_label:
+            try:
+                # Convert labels to IDs
+                property_id = label_to_id(property_label)
+                value_id = label_to_id(value_label)
+                explanation = f"{id_to_label(property_id)} - {id_to_label(value_id)}"
+                
+                # If there are multiple possible IDs, let the user choose one
+                if isinstance(property_id, list) and len(property_id) > 1:
+                    property_id = st.selectbox("Select the correct Property ID", [p['id'] for p in property_id])
+                if isinstance(value_id, list) and len(value_id) > 1:
+                    value_id = st.selectbox("Select the correct Value ID", [v['id'] for v in value_id])
     
-                    # Query Wikidata
-                    st.info("Querying Wikidata...")
-                    results = query_wikidata(property_id, value_id)
+                # Query Wikidata
+                st.info("Querying Wikidata...")
+                results = query_wikidata(property_id, value_id)
+                
+                # Process results
+                if results and "results" in results and "bindings" in results["results"]:
+                    st.success("Query completed!")
+                    websites_batch = []
+                    names_batch = []
                     
-                    # Process results
-                    if results and "results" in results and "bindings" in results["results"]:
-                        st.success("Query completed!")
-                        websites_batch = []
-                        names_batch = []
-                    
-                        for result in results["results"]["bindings"]:
-                            # Attempt to get the English label
-                            name_en = ""
-                            if "itemLabel" in result:
-                                name_en = result["itemLabel"].get("value", "")
-                            
-                            # If no English label, fallback to the item's value or any available label
-                            if not name_en and "item" in result:
-                                name_en = result["item"].get("value", "").split("/")[-1]  # Fallback to item ID as label
+                    for result in results["results"]["bindings"]:
+                        # Attempt to get the English label
+                        name_en = ""
+                        if "itemLabel" in result:
+                            name_en = result["itemLabel"].get("value", "")
                         
-                            website = result.get("website", {}).get("value", "")
+                        # If no English label, fallback to the item's value or any available label
+                        if not name_en and "item" in result:
+                            name_en = result["item"].get("value", "").split("/")[-1]  # Fallback to item ID as label
+                        
+                        website = result.get("website", {}).get("value", "")
+                
+                        if website:
+                            websites_batch.append([name_en, website, explanation, timestamp])
+                        else:
+                            names_batch.append([name_en, explanation, timestamp])
                     
-                            if website:
-                                websites_batch.append([name_en, website, explanation, timestamp])
-                            else:
-                                names_batch.append([name_en, explanation, timestamp])
-                    
-                        # Write results to Google Sheets
-                        if websites_batch:
-                            websites_sheet.append_rows(websites_batch)
-                        if names_batch:
-                            names_sheet.append_rows(names_batch)
+                    # Write results to Google Sheets
+                    if websites_batch:
+                        websites_sheet.append_rows(websites_batch)
+                    if names_batch:
+                        names_sheet.append_rows(names_batch)
     
-                        st.success("Results written to Google Sheets!")
-                    else:
-                        st.warning("No results found!")
-                except Exception as e:
-                    st.error(f"Error: {e}")
-            else:
-                st.error("Please enter both a property and a value.")
-
+                    st.success("Results written to Google Sheets!")
+                else:
+                    st.warning("No results found!")
+            except Exception as e:
+                st.error(f"Error: {e}")
+        else:
+            st.error("Please enter both a property and a value.")
