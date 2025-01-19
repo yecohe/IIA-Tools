@@ -117,6 +117,7 @@ def run(client):
         
     # Process filters and query Wikidata
     if submit_button:
+        st.info(f"Working...")
         websites_sheet = client.open_by_key(st.secrets["wikidata_id"]).worksheet("Websites")
         names_sheet = client.open_by_key(st.secrets["wikidata_id"]).worksheet("Names")
         timestamp = datetime.now(pytz.timezone('Asia/Jerusalem')).strftime("%Y-%m-%d %H:%M:%S")
