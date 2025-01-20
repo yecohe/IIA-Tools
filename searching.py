@@ -421,9 +421,8 @@ def process_keywords(client, sheet_id, keywords, lang="en", inurl=False, limit=1
 
     check_and_add_headers(sure_sheet)
     check_and_add_headers(not_sure_sheet)
-    st.info("Working...")
     for keyword in keywords:
-        st.write(f"Processing '{keyword}'...")
+        st.info(f"Processing '{keyword}'...")
         rows_to_sure, rows_to_not_sure = [], []
         delay = random.uniform(10, 60)
         time.sleep(delay)
