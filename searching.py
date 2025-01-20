@@ -13,7 +13,7 @@ import time
 import random
 import requests_cache
 import spacy
-from googlesearch import search
+#from googlesearch import search
 from googleapiclient.discovery import build
 
 
@@ -170,7 +170,8 @@ def google_search(query, num_results=100, language="en"):
     cse_id = st.secrets["cse_id"]
     try:
         service = build("customsearch", "v1", developerKey=api_key)
-        res = service.cse().list(q=query, cx=cse_id, num=num_results, hl=language).execute()
+        #res = service.cse().list(q=query, cx=cse_id, num=num_results, hl=language).execute()
+        res = service.cse().list(q=query, cx=cse_id).execute()
         results = [item["link"] for item in res.get("items", [])]
         st.info(f"Fetched {len(results)} results for '{query}'")
         return results
