@@ -165,17 +165,14 @@ def google_search_homemade(query, num_results=100, language="en"):
 
 def google_search(query, num_results=100, language="en"):
     results_list = []
+    api_key = st.secrets["cse_key"]
+    cse_id = st.secrets["cse_id"]
     try:
-        results = search(query, lang=language)
-        if results:
-            for result in results:
-                  results_list.append(result)
-                  if len(results_list) >= num_results:  # Stop if we've reached the desired number
-                      break
-            st.info(f"Fetched {len(results_list)} results for '{query}'")
-            return results_list
-        else:
-            st.error(f"No results found for the query '{query}'")
+        service = build("customsearch", "v1", developerKey=api_key)
+        res = service.cse().list(q=query, cx=cse_id, num=num_results, hl=language).execute()
+        results = [item["link"] for item in res.get("items", [])]
+        st.info(f"Fetched {len(results)} results for '{query}'")
+        return results
     except Exception as e:
         st.error(f"An error occurred during the search: {e}")
         return []
