@@ -13,6 +13,7 @@ import time
 import random
 import requests_cache
 import spacy
+from googlesearch import search
 
 
 # Install cache for HTTP requests
@@ -118,7 +119,7 @@ def count_j_in_domain(url):
     domain = extract_domain_from_url(url)
     return domain.count('j')
 
-def google_search(query, num_results=100, language="en"):
+def google_search_homemade(query, num_results=100, language="en"):
     results = []
     start = 0  # Google uses `start` parameter for pagination
 
@@ -162,7 +163,13 @@ def google_search(query, num_results=100, language="en"):
         st.error(f"No results found for the query '{query}'")
     return results
 
-
+def google_search(query, num_results=100, language="en"):
+    try:
+        results = search(query, lang=language)
+        return results
+    except Exception as e:
+        print(f"An error occurred during the search: {e}")
+        return []
 
 # Function to fetch title from a URL
 def get_title(url):
