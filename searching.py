@@ -165,16 +165,36 @@ def google_search_homemade(query, num_results=100, language="en"):
     return results
 
 def google_search(query, num_results=100, language="en"):
-    results_list = []
     api_key = st.secrets["cse_key"]
     cse_id = st.secrets["cse_id"]
     try:
+        # Build the service
         service = build("customsearch", "v1", developerKey=api_key)
-        #res = service.cse().list(q=query, cx=cse_id, num=num_results, hl=language).execute()
-        res = service.cse().list(q=query, cx=cse_id).execute()
-        results = [item["link"] for item in res.get("items", [])]
-        st.info(f"Fetched {len(results)} results for '{query}'")
-        return results
+        start_index = 1
+        all_results = []
+
+        # Fetch results in pages of 10
+        while len(all_results) < num_results:
+            # Adjust the number of results on each page (10 at most)
+            results = service.cse().list(
+                q=query,
+                cx=cse_id,
+                num=10,
+                start=start_index,
+                hl=language
+            ).execute()
+
+            # Extract URLs from results
+            items = results.get("items", [])
+            for item in items:
+                all_results.append(item["link"])
+                if len(all_results) >= num_results:
+                    break
+
+            # Update start index for the next page of results
+            start_index += 10
+        st.info(f"Fetched {len(all_results)} results for '{query}'")
+        return all_results
     except Exception as e:
         st.error(f"An error occurred during the search: {e}")
         return []
