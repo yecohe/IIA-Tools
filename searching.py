@@ -181,7 +181,8 @@ def google_search(query, num_results=100, language="en"):
                 cx=cse_id,
                 num=10,
                 start=start_index,
-                hl=language
+                hl=language,
+                lr=f"lang_{language}"
             ).execute()
 
             # Extract URLs from results
