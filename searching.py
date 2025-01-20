@@ -164,11 +164,16 @@ def google_search_homemade(query, num_results=100, language="en"):
     return results
 
 def google_search(query, num_results=100, language="en"):
+    results_list = []
     try:
         results = search(query, lang=language)
         if results:
             st.info(f"Fetched {len(list(results))} results for '{query}'")
-            return list(results)
+            for result in search_results:
+                  results_list.append(result)
+                  if len(results_list) >= num_results:  # Stop if we've reached the desired number
+                      break
+            return results_list
         else:
             st.error(f"No results found for the query '{query}'")
     except Exception as e:
