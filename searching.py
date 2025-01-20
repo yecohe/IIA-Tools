@@ -166,9 +166,13 @@ def google_search_homemade(query, num_results=100, language="en"):
 def google_search(query, num_results=100, language="en"):
     try:
         results = search(query, lang=language)
-        return results
+        if results:
+            st.info(f"Fetched {len(results)} results for '{query}'")
+            return results
+        else:
+        st.error(f"No results found for the query '{query}'")
     except Exception as e:
-        print(f"An error occurred during the search: {e}")
+        st.error(f"An error occurred during the search: {e}")
         return []
 
 # Function to fetch title from a URL
