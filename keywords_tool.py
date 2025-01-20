@@ -45,7 +45,7 @@ def run(client):
         with col2:
             limit = st.selectbox(
                 "Max Results:",
-                options=[200, 100, 50, 10],
+                options=[100, 50, 10],
                 index=0,
                 help="Choose the max number of results to retrieve."
             )
