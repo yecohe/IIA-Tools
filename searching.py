@@ -167,8 +167,8 @@ def google_search(query, num_results=100, language="en"):
     try:
         results = search(query, lang=language)
         if results:
-            st.info(f"Fetched {len(results)} results for '{query}'")
-            return results
+            st.info(f"Fetched {len(list(results))} results for '{query}'")
+            return list(results)
         else:
             st.error(f"No results found for the query '{query}'")
     except Exception as e:
