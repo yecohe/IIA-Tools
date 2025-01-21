@@ -75,8 +75,8 @@ def run(client):
         if not keywords_query:
             st.error("Please provide at least one keyword.")
         else:
-            keywords_query = keywords_query.split(",")  # Split by commas
-            keywords_query = [kw.strip() for kw in keywords_query]  # Remove extra spaces around words
+            keywords_query = re.split(r"[,\n]", keywords_query) # Split by commas and linebreaks
+            keywords_query = [kw.strip() for kw in keywords_query if kw.strip()]  # Remove extra spaces and ignore empty strings
 
             st.write(f"**Keywords List:** {keywords_query} | **Language:** {language} | **Number of Results:** {limit} | **Include 'inurl':** {'Yes' if include_inurl else 'No'} | **Homapage only:** {'Yes' if homepage_only else 'No'}")
 
