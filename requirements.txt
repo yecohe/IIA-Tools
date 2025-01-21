@@ -1,5 +1,4 @@
 pip
-re
 streamlit
 gspread
 oauth2client
