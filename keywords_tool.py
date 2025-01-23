@@ -26,7 +26,7 @@ def run(client):
         "Polish (pl)": "pl"
     }
 
-    engine_options: {
+    engine_options = {
         "API Service": "API",
         "Scraping": "homemade"
     }
