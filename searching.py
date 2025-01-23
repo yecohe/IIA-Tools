@@ -451,10 +451,10 @@ def process_keywords(client, sheet_id, keywords, lang="en", inurl=False, limit=1
         time.sleep(delay)
         
         try:
-            homepage_urls = search_and_filter_urls(keyword, block_list, num_results=limit, language=lang, homepage_only=homepage, engine)
+            homepage_urls = search_and_filter_urls(keyword, block_list, num_results=limit, language=lang, homepage_only=homepage, engine=engine)
             inurl_urls = []
             if inurl:
-                inurl_urls = search_and_filter_urls(f"inurl:{keyword}", block_list, num_results=limit, language=lang, homepage_only=homepage, engine)
+                inurl_urls = search_and_filter_urls(f"inurl:{keyword}", block_list, num_results=limit, language=lang, homepage_only=homepage, engine=engine)
 
             all_urls = list({url: source for url, source in homepage_urls + inurl_urls}.items())
             for url, source in all_urls:
