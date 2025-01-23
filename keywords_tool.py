@@ -29,7 +29,8 @@ def run(client):
     engine_options = {
         "API Service": "API",
         "Scraping": "homemade",
-        "Pip Library": "library"
+        "Pip Library": "library",
+        "Selenium": "selenium"
     }
 
     # Inputs for Keywords Search
