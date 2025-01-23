@@ -202,6 +202,14 @@ def google_search(query, num_results=100, language="en"):
         st.error(f"An error occurred during the search: {e}")
         return []
 
+def google_search_library(query, num_results=100, language="en"):
+    try:
+        results = search(query, num_results=num_results, lang=language)
+        return results
+    except Exception as e:
+        print(f"An error occurred during the search: {e}")
+        return []
+
 # Function to fetch title from a URL
 def get_title(url):
     title = ""
@@ -346,6 +354,8 @@ def search_and_filter_urls(query, block_list, num_results=100, language="en", ho
         search_results = google_search(query, num_results, language)
     if engine == "homemade":
         search_results = google_search_homemade(query, num_results, language)
+    if engine == "library":
+        search_results = google_search_library(query, num_results, language)
         
     classified_urls = []
     
