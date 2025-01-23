@@ -354,6 +354,7 @@ def search_and_filter_urls(query, block_list, num_results=100, language="en", ho
     if engine == "API":
         search_results = google_search(query, num_results, language)
     if engine == "homemade":
+        st.info("homemade")
         search_results = google_search_homemade(query, num_results, language)
     if engine == "library":
         search_results = google_search_library(query, num_results, language)
