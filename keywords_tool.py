@@ -30,7 +30,7 @@ def run(client):
         "API Service": "API",
         "Scraping": "homemade",
         "Pip Library": "library",
-        "Selenium": "selenium"
+        "Selenium Driver": "selenium"
     }
 
     # Inputs for Keywords Search
