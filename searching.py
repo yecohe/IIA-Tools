@@ -9,13 +9,14 @@ from datetime import datetime
 import pytz
 import streamlit as st
 from urllib.parse import urlparse, urlunparse
-import time
 import random
 import requests_cache
 import spacy
 from googlesearch import search
 from googleapiclient.discovery import build
-
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+import time
 
 # Install cache for HTTP requests
 requests_cache.install_cache('http_cache', expire_after=300)
@@ -166,6 +167,47 @@ def google_search_homemade(query, num_results=100, language="en"):
     else:
         st.error(f"No results found for the query '{query}'")
     return results
+
+def google_search_selenium(query, num_results=10, language="en"):
+    try:
+        # Setup headless browser options
+        chrome_options = Options()
+        chrome_options.add_argument("--headless")  # Run in headless mode
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--disable-dev-shm-usage")
+        
+        # Initialize WebDriver
+        driver = webdriver.Chrome(options=chrome_options)
+    
+        search_url = f"https://www.google.com/search?q={query}&hl={language}&num=10"
+        driver.get(search_url)
+    
+        time.sleep(2)  # Allow time for JavaScript to load
+    
+        # Get page source after JavaScript has rendered the results
+        html = driver.page_source
+    
+        # Parse HTML with BeautifulSoup
+        soup = BeautifulSoup(html, "html.parser")
+        
+        results = []
+        result_divs = soup.find_all("div", class_="tF2Cxc")
+        
+        for div in result_divs:
+            link_tag = div.find("a")
+            if link_tag and link_tag["href"]:
+                results.append(link_tag["href"])
+                if len(results) >= num_results:
+                    break
+    
+        driver.quit()  # Quit the browser session
+        
+        return results
+    except Exception as e:
+        error_handler("google search", query, e)
+        break  # Stop the loop if there's an error
+
+
 
 def google_search(query, num_results=100, language="en"):
     api_key = st.secrets["cse_key"]
@@ -353,11 +395,13 @@ def filter_ignored_urls(block_list, classified_urls):
 def search_and_filter_urls(query, block_list, num_results=100, language="en", homepage_only=False, engine="API"):
     if engine == "API":
         search_results = google_search(query, num_results, language)
-    if engine == "homemade":
+    elif engine == "homemade":
         st.info("homemade")
         search_results = google_search_homemade(query, num_results, language)
-    if engine == "library":
+    elif engine == "library":
         search_results = google_search_library(query, num_results, language)
+    elif engine == "selenium":
+        search_results = google_search_selenium(query, num_results, language)    
         
     classified_urls = []
     
