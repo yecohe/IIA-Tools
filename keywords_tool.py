@@ -37,10 +37,6 @@ def run(client):
         # Keywords input
         keywords_query = st.text_area("Keywords List:",
         help="Enter the keywords you want to search for. Use commas to separate multiple keywords.")
-
-        selected_engine = st.selectbox("Engine:",
-        options=list(engine_options.keys()), help="Choose the search engine technology.")
-        engine = engine_options[selected_engine]
         
         # Language and Max Results in the same row
         col1, col2 = st.columns(2)
@@ -74,11 +70,12 @@ def run(client):
                 help="Check this box if you want to search only for pages that are homepages (domain or subdomain)."
             )
 
-
+        selected_engine = st.selectbox("Engine:",
+        options=list(engine_options.keys()), help="Choose the search engine technology.")
+        engine = engine_options[selected_engine]
         
         # Submit button
         submit_button = st.form_submit_button("Search")
-
 
     # Handle form submission
     if submit_button:
