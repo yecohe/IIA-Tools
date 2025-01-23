@@ -438,7 +438,7 @@ def process_single_url(url, source, good_keywords, bad_keywords):
 
 
 # Process keywords to fetch and evaluate URLs
-def process_keywords(client, sheet_id, keywords, lang="en", inurl=False, limit=100, homepage=False, engine = "API"):
+def process_keywords(client, sheet_id, keywords, lang="en", inurl=False, limit=100, homepage=False, engine="API"):
     """Process a list of keywords to fetch and evaluate URLs."""
     keywords_sheet, sure_sheet, not_sure_sheet, good_keywords, bad_keywords, block_list = fetch_and_get_keywords(client, sheet_id)
 
