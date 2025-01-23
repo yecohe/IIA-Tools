@@ -342,7 +342,7 @@ def filter_ignored_urls(block_list, classified_urls):
 def search_and_filter_urls(query, block_list, num_results=100, language="en", homepage_only=False, engine="API"):
     if engine == "API":
         search_results = google_search(query, num_results, language)
-    if engine == "home":
+    if engine == "homemade":
         search_results = google_search_homemade(query, num_results, language)
         
     classified_urls = []
