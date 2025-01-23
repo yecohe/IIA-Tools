@@ -207,7 +207,6 @@ def google_search_selenium(query, num_results=10, language="en"):
         return results
     except Exception as e:
         error_handler("google search", query, e)
-        break  # Stop the loop if there's an error
 
 
 
