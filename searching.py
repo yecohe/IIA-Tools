@@ -479,13 +479,12 @@ def process_keywords(client, sheet_id, keywords, lang="en", inurl=False, limit=1
                 # Update Google Sheets when there are 20 rows in either list
                 if len(rows_to_not_sure) >= 10 or len(rows_to_sure) >= 10:
                     update_google_sheets(rows_to_sure, rows_to_not_sure, sure_sheet, not_sure_sheet)
-                    st.write("Updated google sheets")
+                    st.info("Updated google sheets")
                     rows_to_sure, rows_to_not_sure = [], []  # Clear the list after updating
 
             # Final update for any remaining rows
             if rows_to_sure or rows_to_not_sure:
                 update_google_sheets(rows_to_sure, rows_to_not_sure, sure_sheet, not_sure_sheet)
-                
             st.success(f"Finished processing '{keyword}'")
         except Exception as e:
             st.error(f"Error processing '{keyword}': {e}")
