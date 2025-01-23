@@ -37,12 +37,9 @@ def run(client):
         keywords_query = st.text_area("Keywords List:",
         help="Enter the keywords you want to search for. Use commas to separate multiple keywords.")
 
-        selected_engine = st.selectbox(
-                "Engine:",
-                options=list(engine_options.keys()),
-                help="Choose the search engine technology."
-            )
-            engine = engine_options[selected_engine]
+        selected_engine = st.selectbox("Engine:",
+        options=list(engine_options.keys()), help="Choose the search engine technology.")
+        engine = engine_options[selected_engine]
         
         # Language and Max Results in the same row
         col1, col2 = st.columns(2)
