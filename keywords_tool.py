@@ -34,10 +34,8 @@ def run(client):
     # Inputs for Keywords Search
     with st.form("keywords_search_form"):
         # Keywords input
-        keywords_query = st.text_area(
-            "Keywords List:",
-            help="Enter the keywords you want to search for. Use commas to separate multiple keywords."
-        )
+        keywords_query = st.text_area("Keywords List:",
+        help="Enter the keywords you want to search for. Use commas to separate multiple keywords.")
 
         selected_engine = st.selectbox(
                 "Engine:",
