@@ -131,6 +131,8 @@ def google_search_homemade(query, num_results=100, language="en"):
             response = requests.get(search_url, headers=headers)
             response.raise_for_status()
 
+
+            st.info(response)
             # Parse the response with BeautifulSoup
             soup = BeautifulSoup(response.text, "html.parser")
             
