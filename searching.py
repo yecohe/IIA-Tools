@@ -339,9 +339,12 @@ def filter_ignored_urls(block_list, classified_urls):
     
 
 # Function to search and filter URLs based on query
-def search_and_filter_urls(query, block_list, num_results=100, language="en", homepage_only=False):
-    # Search results placeholder
-    search_results = google_search(query, num_results, language)
+def search_and_filter_urls(query, block_list, num_results=100, language="en", homepage_only=False, engine="API"):
+    if engine == "API":
+        search_results = google_search(query, num_results, language)
+    if engine == "home":
+        search_results = google_search_homemade(query, num_results, language)
+        
     classified_urls = []
     
     for result in search_results:
@@ -435,7 +438,7 @@ def process_single_url(url, source, good_keywords, bad_keywords):
 
 
 # Process keywords to fetch and evaluate URLs
-def process_keywords(client, sheet_id, keywords, lang="en", inurl=False, limit=100, homepage=False):
+def process_keywords(client, sheet_id, keywords, lang="en", inurl=False, limit=100, homepage=False, engine = "API"):
     """Process a list of keywords to fetch and evaluate URLs."""
     keywords_sheet, sure_sheet, not_sure_sheet, good_keywords, bad_keywords, block_list = fetch_and_get_keywords(client, sheet_id)
 
@@ -448,10 +451,10 @@ def process_keywords(client, sheet_id, keywords, lang="en", inurl=False, limit=1
         time.sleep(delay)
         
         try:
-            homepage_urls = search_and_filter_urls(keyword, block_list, num_results=limit, language=lang, homepage_only=homepage)
+            homepage_urls = search_and_filter_urls(keyword, block_list, num_results=limit, language=lang, homepage_only=homepage, engine)
             inurl_urls = []
             if inurl:
-                inurl_urls = search_and_filter_urls(f"inurl:{keyword}", block_list, num_results=limit, language=lang, homepage_only=homepage)
+                inurl_urls = search_and_filter_urls(f"inurl:{keyword}", block_list, num_results=limit, language=lang, homepage_only=homepage, engine)
 
             all_urls = list({url: source for url, source in homepage_urls + inurl_urls}.items())
             for url, source in all_urls:
@@ -460,8 +463,17 @@ def process_keywords(client, sheet_id, keywords, lang="en", inurl=False, limit=1
                     rows_to_sure.append(row_data)
                 else:
                     rows_to_not_sure.append(row_data)
+                                    
+                # Update Google Sheets when there are 20 rows in either list
+                if len(rows_to_not_sure) >= 10 or len(rows_to_sure) >= 10:
+                    update_google_sheets(rows_to_sure, rows_to_not_sure, sure_sheet, not_sure_sheet)
+                    st.write("Updated google sheets")
+                    rows_to_sure, rows_to_not_sure = [], []  # Clear the list after updating
 
-            update_google_sheets(rows_to_sure, rows_to_not_sure, sure_sheet, not_sure_sheet)
+            # Final update for any remaining rows
+            if rows_to_sure or rows_to_not_sure:
+                update_google_sheets(rows_to_sure, rows_to_not_sure, sure_sheet, not_sure_sheet)
+                
             st.success(f"Finished processing '{keyword}'")
         except Exception as e:
             st.error(f"Error processing '{keyword}': {e}")
@@ -484,7 +496,7 @@ def process_urls(client, sheet_id, urls, source_name):
                 else:
                     rows_to_not_sure.append(row_data)
                     
-                # Update Google Sheets when there are 50 rows in either list
+                # Update Google Sheets when there are 20 rows in either list
                 if len(rows_to_not_sure) >= 20 or len(rows_to_sure) >= 20:
                     update_google_sheets(rows_to_sure, rows_to_not_sure, sure_sheet, not_sure_sheet)
                     st.write("Updated google sheets")
