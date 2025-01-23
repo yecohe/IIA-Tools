@@ -26,6 +26,11 @@ def run(client):
         "Polish (pl)": "pl"
     }
 
+    engine_options: {
+        "API Service": "API",
+        "Scraping": "homemade"
+    }
+
     # Inputs for Keywords Search
     with st.form("keywords_search_form"):
         # Keywords input
@@ -66,6 +71,13 @@ def run(client):
                 help="Check this box if you want to search only for pages that are homepages (domain or subdomain)."
             )
 
+        selected_engine = st.selectbox(
+                "Engine:",
+                options=list(engine_options.keys()),
+                help="Choose the search engine technology."
+            )
+            engine = engine_options[selected_engine]
+        
         # Submit button
         submit_button = st.form_submit_button("Search")
 
@@ -83,5 +95,5 @@ def run(client):
 
             # Call the process_keywords function with the selected limit
             sheet_id = st.secrets["google_id"]
-            process_keywords(client, sheet_id, keywords_query, lang=language, inurl=include_inurl, limit=limit, homepage=homepage_only)
+            process_keywords(client, sheet_id, keywords_query, lang=language, inurl=include_inurl, limit=limit, homepage=homepage_only, engine)
             st.info("The URLs were added to the file.")
