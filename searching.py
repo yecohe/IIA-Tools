@@ -16,6 +16,7 @@ from googlesearch import search
 from googleapiclient.discovery import build
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
 import time
 
 # Install cache for HTTP requests
