@@ -177,8 +177,10 @@ def google_search_selenium(query, num_results=10, language="en"):
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--disable-dev-shm-usage")
 
-        path_to_chromedriver = r'C:\chrome\chromedriver.exe'  
-        driver = webdriver.Chrome(service=Service(path_to_chromedriver), options=chrome_options)
+        #path_to_chromedriver = r'C:\chrome\chromedriver.exe'  
+        #driver = webdriver.Chrome(service=Service(path_to_chromedriver), options=chrome_options)
+
+        driver = webdriver.Chrome()
         
         search_url = f"https://www.google.com/search?q={query}&hl={language}&num=10"
         driver.get(search_url)
