@@ -180,7 +180,7 @@ def google_search_selenium(query, num_results=10, language="en"):
         #path_to_chromedriver = r'C:\chrome\chromedriver.exe'  
         #driver = webdriver.Chrome(service=Service(path_to_chromedriver), options=chrome_options)
 
-        driver = webdriver.Chrome()
+        driver = webdriver.Chrome(options=chrome_options)
         
         search_url = f"https://www.google.com/search?q={query}&hl={language}&num=10"
         driver.get(search_url)
