@@ -172,6 +172,7 @@ def google_search_homemade(query, num_results=100, language="en"):
 def google_search_selenium(query, num_results=10, language="en"):
     try:
         # Setup headless browser options
+        options = get_default_chrome_options()
         chrome_options = Options()
         chrome_options.add_argument("--headless")  # Run in headless mode
         chrome_options.add_argument("--no-sandbox")
