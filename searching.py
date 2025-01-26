@@ -178,8 +178,8 @@ def google_search_selenium(query, num_results=10, language="en"):
         chrome_options.add_argument("--disable-dev-shm-usage")
     
         # Use Service object for ChromeDriver
-        service = Service("C:/chromedriver-win64/chromedriver.exe")        
-        driver = webdriver.Chrome(service=service, options=chrome_options)
+        service = webdriver.ChromeService()
+        driver = webdriver.Chrome(service=service)
    
         search_url = f"https://www.google.com/search?q={query}&hl={language}&num=10"
         driver.get(search_url)
