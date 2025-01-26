@@ -171,6 +171,7 @@ def google_search_homemade(query, num_results=100, language="en"):
 
 def google_search_selenium(query, num_results=10, language="en"):
     try:
+        st.info(/home/appuser/.cache/selenium/chromedriver/linux64/132.0.6834.110/chromedriver)
         # Setup headless browser options
         chrome_options = Options()
         chrome_options.add_argument("--headless")  # Run in headless mode
