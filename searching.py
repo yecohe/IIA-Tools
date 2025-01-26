@@ -18,6 +18,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 import time
+import tempfile
 
 # Install cache for HTTP requests
 requests_cache.install_cache('http_cache', expire_after=300)
@@ -171,15 +172,15 @@ def google_search_homemade(query, num_results=100, language="en"):
 
 def google_search_selenium(query, num_results=10, language="en"):
     try:
+        temp_dir = tempfile.mkdtemp()
+
         # Setup headless browser options
         chrome_options = Options()
         chrome_options.add_argument("--headless")  # Run in headless mode
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--disable-dev-shm-usage")
-
-        #path_to_chromedriver = r'C:\chrome\chromedriver.exe'  
-        #driver = webdriver.Chrome(service=Service(path_to_chromedriver), options=chrome_options)
-
+        chrome_options.add_argument(f"--user-data-dir={temp_dir}")
+        
         driver = webdriver.Chrome(options=chrome_options)
         
         search_url = f"https://www.google.com/search?q={query}&hl={language}&num=10"
