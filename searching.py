@@ -175,12 +175,11 @@ def google_search_selenium(query, num_results=10, language="en"):
         chrome_options.add_argument("--headless")  # Run in headless mode
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--disable-dev-shm-usage")
-        
-        # Initialize WebDriver
-        #driver = webdriver.Chrome(options=chrome_options)
-        driver = webdriver.Chrome(executable_path="C:/chromedriver-win64/chromedriver.exe", options=chrome_options)
-
     
+        # Use Service object for ChromeDriver
+        service = Service("C:/chromedriver-win64/chromedriver.exe")        
+        driver = webdriver.Chrome(service=service, options=chrome_options)
+   
         search_url = f"https://www.google.com/search?q={query}&hl={language}&num=10"
         driver.get(search_url)
     
