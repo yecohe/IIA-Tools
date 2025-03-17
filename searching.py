@@ -363,25 +363,24 @@ def count_keywords(title, description, good_keywords, bad_keywords):
     
 # Function to calculate score
 def calculate_score(url, title, description, languages, good_keywords, bad_keywords):
-    score = "C"
     try:
         if languages and languages[0] != 'english':
             title = translate_to_english(title)
             description = translate_to_english(description)
+        
         good_count, bad_count = count_keywords(title, description, good_keywords, bad_keywords)
-        if url.endswith(".il") or url.endswith(".il/"):
-            score = "A"
-            details = "Hebrew / .il"
-        elif "hebrew" in languages:
-            score = "A"
-            details = "Hebrew / .il"
-        elif good_count > 0:
-            score = "B"
-            details = "Good keywords"
-        else:
-            score = "C"
-            details = "No good keywords"
-        return score, details, good_count, bad_count
+        
+        if bad_count > 1:
+            return "C", "Bad keywords", good_count, bad_count
+        
+        if url.endswith(".il") or url.endswith(".il/") or "hebrew" in languages:
+            return "A", "Hebrew / .il", good_count, bad_count
+        
+        if good_count > 0:
+            return "B", "Good keywords", good_count, bad_count
+        
+        return "C", "No good keywords", good_count, bad_count
+    
     except Exception as e:
         error_handler("counting keywords", title, e)
         return "C", "Error", 0, 0
@@ -472,7 +471,7 @@ def fetch_and_get_keywords(client, sheet_id):
         keywords_sheet = client.open_by_key(st.secrets["keywords_id"]).worksheet("Keywords")
         block_sheet = client.open_by_key(st.secrets["keywords_id"]).worksheet("Block")
         sure_sheet = client.open_by_key(sheet_id).worksheet("Sure")
-        not_sure_sheet = client.open_by_key(sheet_id).worksheet("Not Sure")        
+        not_sure_sheet = client.open_by_key(sheet_id).worksheet("Not Sure")      
         good_keywords = [kw.lower() for kw in keywords_sheet.col_values(1)[1:]]  # Lowercase good keywords
         bad_keywords = [kw.lower() for kw in keywords_sheet.col_values(3)[1:]]  # Lowercase bad keywords
         block_list = block_sheet.col_values(1)[1:]
