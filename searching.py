@@ -394,7 +394,8 @@ def calculate_score(url, title, description, languages, good_keywords, bad_keywo
         return "C", "No good keywords", total_good_count, total_bad_count
 
     except Exception as e:
-        return "Error", str(e)
+        st.error(f"Error processing calculate score for: {e}")
+        return "C", "Error", 0, 0
 
 
 
