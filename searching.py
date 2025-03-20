@@ -364,26 +364,38 @@ def count_keywords(title, description, good_keywords, bad_keywords):
 # Function to calculate score
 def calculate_score(url, title, description, languages, good_keywords, bad_keywords):
     try:
-        if languages and languages[0] != 'english':
-            title = translate_to_english(title)
-            description = translate_to_english(description)
-        
-        good_count, bad_count = count_keywords(title, description, good_keywords, bad_keywords)
-        
-        if bad_count > 1:
-            return "C", "Bad keywords", good_count, bad_count
-        
+        # Count keywords in the original text
+        original_good_count, original_bad_count = count_keywords(title, description, good_keywords, bad_keywords)
+
+        # Translate if any language is not English
+        if languages and any(lang.lower() != 'english' for lang in languages):
+            trans_title = translate_to_english(title)
+            trans_description = translate_to_english(description)
+
+            # Count keywords in the translated text
+            translated_good_count, translated_bad_count = count_keywords(trans_title, trans_description, good_keywords, bad_keywords)
+        else:
+            translated_good_count = 0
+            translated_bad_count = 0
+
+        # Total keyword counts
+        total_good_count = original_good_count + translated_good_count
+        total_bad_count = original_bad_count + translated_bad_count
+
+        if total_bad_count > 1:
+            return "C", "Bad keywords", total_good_count, total_bad_count
+
         if url.endswith(".il") or url.endswith(".il/") or "hebrew" in languages:
-            return "A", "Hebrew / .il", good_count, bad_count
-        
-        if good_count > 0:
-            return "B", "Good keywords", good_count, bad_count
-        
-        return "C", "No good keywords", good_count, bad_count
-    
+            return "A", "Hebrew / .il", total_good_count, total_bad_count
+
+        if total_good_count > 0:
+            return "B", "Good keywords", total_good_count, total_bad_count
+
+        return "C", "No good keywords", total_good_count, total_bad_count
+
     except Exception as e:
-        error_handler("counting keywords", title, e)
-        return "C", "Error", 0, 0
+        return "Error", str(e)
+
 
 
 # Function to filter out ignored URLs
