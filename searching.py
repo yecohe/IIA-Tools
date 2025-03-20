@@ -366,7 +366,6 @@ def calculate_score(url, title, description, languages, good_keywords, bad_keywo
     try:
         # Count keywords in the original text
         original_good_count, original_bad_count = count_keywords(title, description, good_keywords, bad_keywords)
-        st.info(original_good_count)
 
         # Translate if any language is not English
         if languages and any(lang.lower() != 'english' for lang in languages):
@@ -394,7 +393,7 @@ def calculate_score(url, title, description, languages, good_keywords, bad_keywo
         return "C", "No good keywords", total_good_count, total_bad_count
 
     except Exception as e:
-        st.error(f"Error processing calculate score for: {e}")
+        st.error(f"Error processing calculate score for {url}: {e}")
         return "C", "Error", 0, 0
 
 
