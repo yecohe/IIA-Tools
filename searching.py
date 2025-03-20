@@ -366,14 +366,12 @@ def calculate_score(url, title, description, languages, good_keywords, bad_keywo
     try:
         # Count keywords in the original text
         original_good_count, original_bad_count = count_keywords(title, description, good_keywords, bad_keywords)
-        st.info(title)
+        st.info(original_good_count)
 
         # Translate if any language is not English
         if languages and any(lang.lower() != 'english' for lang in languages):
             trans_title = translate_to_english(title)
             trans_description = translate_to_english(description)
-            st.info(trans_title)
-
             # Count keywords in the translated text
             translated_good_count, translated_bad_count = count_keywords(trans_title, trans_description, good_keywords, bad_keywords)
         else:
