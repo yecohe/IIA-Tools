@@ -15,7 +15,7 @@ client = None
 
 # Sidebar Header
 with st.sidebar:
-    st.header("Israeli Internet Archive")
+    st.header("IIA Tools for Hana")
 
 # Handle credentials upload
 if not authenticated:
