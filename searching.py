@@ -19,6 +19,8 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 import time
 import tempfile
+import string
+import unicodedata
 
 # Install cache for HTTP requests
 requests_cache.install_cache('http_cache', expire_after=300)
@@ -352,14 +354,29 @@ def count_keywords(title, description, good_keywords, bad_keywords):
     """Count occurrences of good and bad keywords in the title and description."""
     try:
         combined_text = combine_text(title, description)
+        # Normalize dashes and hyphens to spaces
+        for dash in ["-", "–", "—", "−"]:
+            combined_text = combined_text.replace(dash, " ")
+        # Unicode normalization to strip accents/special chars
+        combined_text = unicodedata.normalize("NFKD", combined_text).encode("ascii", "ignore").decode()
+        # Convert to lowercase for case-insensitive matching
+        combined_text = combined_text.lower()
+        # Remove punctuation
+        combined_text = combined_text.translate(str.maketrans("", "", string.punctuation))
+        # Normalize whitespace
+        combined_text = re.sub(r'\s+', ' ', combined_text).strip()
+        # Prepare keyword lists (also lowercased)
+        good_keywords = [word.lower() for word in good_keywords]
+        bad_keywords = [word.lower() for word in bad_keywords]
+        # Count keywords
         word_counts = Counter(combined_text.split())
         good_count = sum(word_counts[word] for word in good_keywords if word in word_counts)
         bad_count = sum(word_counts[word] for word in bad_keywords if word in word_counts)
         return good_count, bad_count
-    # Catch all other exceptions
     except Exception as e:
         error_handler("counting keywords", title, e)
         return 0, 0
+
     
 # Function to calculate score
 def calculate_score(url, title, description, languages, good_keywords, bad_keywords):
