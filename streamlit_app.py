@@ -15,7 +15,7 @@ client = None
 
 # Sidebar Header
 with st.sidebar:
-    st.header("IIA Tools for Hana")
+    st.header("IIA Tools for Omri")
 
 # Handle credentials upload
 if not authenticated:
