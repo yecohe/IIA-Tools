@@ -11,7 +11,7 @@ googletrans==4.0.0-rc1
 SPARQLWrapper
 streamlit_option_menu
 #googlesearch-python
-mi-googlesearch-python==1.3.0.post1
+mi-googlesearch-python
 requests_cache
 openpyxl
 pandas
