@@ -10,7 +10,8 @@ pycld2
 googletrans==4.0.0-rc1
 SPARQLWrapper
 streamlit_option_menu
-googlesearch-python
+#googlesearch-python
+mi-googlesearch-python==1.3.0.post1
 requests_cache
 openpyxl
 pandas
