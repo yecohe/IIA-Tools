@@ -25,7 +25,8 @@ import unicodedata
 # Install cache for HTTP requests
 requests_cache.install_cache('http_cache', expire_after=300)
 
-headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36"}
+#headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36"}
+headers = {"User-Agent": "AdsBot-Google (+http://www.google.com/adsbot.html)"}
 
 
 # Error handler function to streamline error handling
