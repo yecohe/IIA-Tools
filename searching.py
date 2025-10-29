@@ -125,6 +125,95 @@ def count_j_in_domain(url):
     domain = extract_domain_from_url(url)
     return domain.count('j')
 
+
+def duckduckgo_search(query, num_results=100, language="en", headers=headers):
+    """
+    Scrape DuckDuckGo (HTML endpoint) for result links.
+
+    Args:
+        query (str): Search query.
+        num_results (int): Maximum number of result URLs to return.
+        language (str): BCP-47 language tag (e.g., "en", "de").
+                        DuckDuckGo's region/language param is 'kl' (e.g., "us-en", "de-de").
+                        This function maps "en" -> "us-en" by default and "xx" -> "xx-xx".
+        headers (dict): Optional requests headers. If None, a reasonable default is used.
+
+    Returns:
+        list[str]: List of result URLs.
+    """
+    results = []
+    start = 0                 # DuckDuckGo uses 's' as an offset (0-based)
+    page_size_guess = 50      # DDG HTML typically returns up to ~50 per page; safe to step by 50
+    base_url = "https://html.duckduckgo.com/html/"
+
+    # Map simple language code to DDG's 'kl' region-language format
+    # If you have a more precise mapping, replace this heuristic.
+    lang = (language or "en").lower()
+    if lang == "en":
+        kl = "us-en"
+    else:
+        kl = f"{lang}-{lang}"
+
+
+    while len(results) < num_results:
+        params = {
+            "q": query,
+            "kl": kl,
+            "s": str(start)   # offset for pagination
+        }
+
+        try:
+            response = requests.get(base_url, params=params, headers=headers, timeout=30)
+            response.raise_for_status()
+
+            st.write(f"### DuckDuckGo HTML (offset {start})")
+            st.code(response.text[:2000], language="html")  # preview first ~2k chars for debugging
+
+            soup = BeautifulSoup(response.text, "html.parser")
+
+            # Each result is typically in a div.result with an anchor 'a.result__a'
+            for a in soup.select("div.result a.result__a"):
+                href = a.get("href")
+                if href:
+                    results.append(href)
+                    if len(results) >= num_results:
+                        break
+
+            # If we didn't find any new results on this page, stop.
+            # (Covers end-of-results or layout changes)
+            if start == 0 and not results:
+                # No results at all on first page
+                break
+            # If this page yielded nothing beyond what we already had, stop.
+            # (Heuristic: count how many we had before this fetch)
+            # More explicit check:
+            found_links_this_page = len(soup.select("div.result a.result__a"))
+            if found_links_this_page == 0:
+                break
+
+            # Move to the next page
+            start += page_size_guess
+
+            # Be polite: random delay between requests
+            time.sleep(random.uniform(2, 6))
+
+        except Exception as e:
+            # Keep your existing error handler interface
+            error_handler("duckduckgo search", query, e)
+            break
+
+    # Truncate to exactly num_results in case we over-collected
+    results = results[:num_results]
+
+    if results:
+        st.info(f"Fetched {len(results)} DuckDuckGo results for '{query}'")
+    else:
+        st.error(f"No DuckDuckGo results found for the query '{query}'")
+
+    return results
+
+
+
 def google_search_homemade(query, num_results=100, language="en"):
     results = []
     start = 0  # Google uses `start` parameter for pagination
