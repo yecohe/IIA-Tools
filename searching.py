@@ -513,16 +513,22 @@ def filter_ignored_urls(block_list, classified_urls):
 
 # Function to search and filter URLs based on query
 def search_and_filter_urls(query, block_list, num_results=100, language="en", homepage_only=False, engine="API"):
-    if engine == "API":
-        search_results = google_search(query, num_results, language)
+    engine = (engine or "").strip().lower()   # normalize
+    search_results = []                        # always defined
+
+    if engine == "api":
+        search_results = google_search(query, num_results, language) or []
     elif engine == "homemade":
-        search_results = google_search_homemade(query, num_results, language)
+        search_results = google_search_homemade(query, num_results, language) or []
     elif engine == "library":
-        search_results = google_search_library(query, num_results, language)
+        search_results = google_search_library(query, num_results, language) or []
     elif engine == "selenium":
-        search_results = google_search_selenium(query, num_results, language)
+        search_results = google_search_selenium(query, num_results, language) or []
     elif engine == "duckduckgo":
-        search_results = duckduckgo_search(query, num_results, language)     
+        search_results = duckduckgo_search(query, num_results, language) or []
+    else:
+        st.error(f"Unknown engine '{engine}'. Falling back to API.")
+        search_results = google_search(query, num_results, language) or []  
         
     classified_urls = []
     
