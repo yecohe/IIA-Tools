@@ -207,10 +207,10 @@ def duckduckgo_search(query, num_results=100, language="en"):
 
     if results:
         st.info(f"Fetched {len(results)} DuckDuckGo results for '{query}'")
+        return results
     else:
         st.error(f"No DuckDuckGo results found for the query '{query}'")
-
-    return results
+        return []
 
 
 
