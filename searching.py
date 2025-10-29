@@ -529,7 +529,7 @@ def search_and_filter_urls(query, block_list, num_results=100, language="en", ho
     else:
         st.error(f"Unknown engine '{engine}'. Falling back to API.")
         search_results = google_search(query, num_results, language) or []  
-        
+    st.write(f"Engine resolved to: '{engine}'")    
     classified_urls = []
     
     for result in search_results:
