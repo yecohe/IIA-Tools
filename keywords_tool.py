@@ -23,6 +23,7 @@ def run(client):
         "Spanish - Spain (es-ES)": "es-ES",
         "Portuguese - Brazil (pt-BR)": "pt-BR",
         "Portuguese - Portugal (pt-PT)": "pt-PT",
+        "Turkish": "tr",
         "Polish (pl)": "pl"
     }
 
