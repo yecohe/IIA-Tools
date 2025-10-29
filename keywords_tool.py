@@ -30,7 +30,7 @@ def run(client):
     engine_options = {
         "Pip Library": "library",
         "API Service": "API",
-        "Scraping": "homemade"
+        "DuckDuckGo": "duckduckgo_search"
     }
 
     # Inputs for Keywords Search
