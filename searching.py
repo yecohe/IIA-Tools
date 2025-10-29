@@ -126,7 +126,7 @@ def count_j_in_domain(url):
     return domain.count('j')
 
 
-def duckduckgo_search(query, num_results=100, language="en", headers=headers):
+def duckduckgo_search(query, num_results=100, language="en"):
     """
     Scrape DuckDuckGo (HTML endpoint) for result links.
 
