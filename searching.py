@@ -516,13 +516,12 @@ def search_and_filter_urls(query, block_list, num_results=100, language="en", ho
     if engine == "API":
         search_results = google_search(query, num_results, language)
     elif engine == "homemade":
-        st.info("homemade")
         search_results = google_search_homemade(query, num_results, language)
     elif engine == "library":
         search_results = google_search_library(query, num_results, language)
     elif engine == "selenium":
         search_results = google_search_selenium(query, num_results, language)
-       elif engine == "duckduckgo":
+    elif engine == "duckduckgo":
         search_results = duckduckgo_search(query, num_results, language)     
         
     classified_urls = []
