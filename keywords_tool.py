@@ -19,8 +19,10 @@ def run(client):
         "Dutch (nl)": "nl",
         "Romanian (ro)": "ro",
         "Hungarian (hu)": "hu",
-        "Spanish": "es",
-        "Portuguese": "pt",
+        "Spanish - Latin America (es-419)": "es-419",
+        "Spanish - Spain (es-ES)": "es-ES",
+        "Portuguese - Brazil (pt-BR)": "pt-BR",
+        "Portuguese - Portugal (pt-PT)": "pt-PT",
         "Turkish": "tr",
         "Polish (pl)": "pl"
     }
