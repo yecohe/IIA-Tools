@@ -304,48 +304,75 @@ def google_search_selenium(query, num_results=10, language="en"):
 
 
 def google_search(query, num_results=100, language="en"):
+    """
+    Fetch up to `num_results` results (Google CSE exposes at most 100 organic results).
+    Handles paging with start indices in [1..91] and fixes language parameters.
+    """
     api_key = st.secrets["cse_key"]
     cse_id = st.secrets["cse_id"]
+
+    # Normalize language codes:
+    # - hl: can be "en" or "es-ES" etc., but we’ll keep it simple and pass what we can.
+    # - lr: MUST be in the form "lang_xx" (two-letter code only). If not available, omit.
+    lang_for_hl = (language or "en")
+    lang_for_lr = (language.split("-")[0].lower() if language else "en")
+    lr_param = f"lang_{lang_for_lr}" if len(lang_for_lr) == 2 else None
+
     try:
-        # Build the service
         service = build("customsearch", "v1", developerKey=api_key)
-        start_index = 1
+
+        # Google CSE returns at most 10 results per page and at most ~100 total.
+        target = min(int(num_results), 100)
+
         all_results = []
+        start_index = 1  # valid range is 1..91 (with num=10)
 
-        # Fetch results in pages of 10
-        while len(all_results) < num_results:
-            # Adjust the number of results on each page (10 at most)
-            results = service.cse().list(
-                q=query,
-                cx=cse_id,
-                num=10,
-                start=start_index,
-                hl=language,
-                lr=f"lang_{language}"
-            ).execute()
+        while len(all_results) < target and start_index <= 91:
+            # Ask only for what we still need (<=10)
+            page_num = min(10, target - len(all_results))
 
-            # Extract URLs from results
+            req = {
+                "q": query,
+                "cx": cse_id,
+                "num": page_num,
+                "start": start_index,
+                "hl": lang_for_hl,
+            }
+            if lr_param:
+                req["lr"] = lr_param
+
+            results = service.cse().list(**req).execute()
+
             items = results.get("items", [])
-            for item in items:
-                all_results.append(item["link"])
-                if len(all_results) >= num_results:
-                    break
+            if not items:
+                break  # no more items available
 
-            # Update start index for the next page of results
+            for item in items:
+                link = item.get("link")
+                if link:
+                    all_results.append(link)
+                    if len(all_results) >= target:
+                        break
+
+            # Advance to the next page. With num<=10, the next valid start is +10.
             start_index += 10
+
+            # Optional: stop early if we’ve reached the end of available results.
+            total_avail_str = results.get("searchInformation", {}).get("totalResults", "0")
+            try:
+                total_avail = int(total_avail_str)
+                if start_index > total_avail:
+                    break
+            except ValueError:
+                pass  # if Google doesn’t return a parseable number, just keep paging
+
         st.info(f"Fetched {len(all_results)} results for '{query}'")
         return all_results
+
     except Exception as e:
         st.error(f"An error occurred during the search: {e}")
         return []
 
-def google_search_library(query, num_results=100, language="en"):
-    try:
-        results = search(query, num_results=num_results, lang=language)
-        return results
-    except Exception as e:
-        print(f"An error occurred during the search: {e}")
-        return []
 
 # Function to fetch title from a URL
 def get_title(url):
