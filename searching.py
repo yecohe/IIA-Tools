@@ -141,11 +141,12 @@ def duckduckgo_search(query, num_results=100, language="en"):
     Returns:
         list[str]: List of result URLs.
     """
+    DDG_HEADERS = {'origin': 'https://lite.duckduckgo.com', 'referer': 'https://lite.duckduckgo.com/'}
     results = []
     start = 0                 # DuckDuckGo uses 's' as an offset (0-based)
     page_size_guess = 50      # DDG HTML typically returns up to ~50 per page; safe to step by 50
-    base_url = "https://html.duckduckgo.com/html/"
-
+    BASE_URL = 'https://lite.duckduckgo.com/lite/'
+    
     # Map simple language code to DDG's 'kl' region-language format
     # If you have a more precise mapping, replace this heuristic.
     lang = (language or "en").lower()
@@ -163,7 +164,7 @@ def duckduckgo_search(query, num_results=100, language="en"):
         }
 
         try:
-            response = requests.get(base_url, params=params, headers=headers, timeout=30)
+            response = requests.get(BASE_URL, params=params, headers=DDG_HEADERS, timeout=30)
             response.raise_for_status()
 
             st.write(f"### DuckDuckGo HTML (offset {start})")
