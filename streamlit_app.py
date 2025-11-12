@@ -15,7 +15,7 @@ client = None
 
 # Sidebar Header
 with st.sidebar:
-    st.header("IIA Tools for Omri")
+    st.header("IIA Tools for Roi")
 
 # Handle credentials upload
 if not authenticated:
