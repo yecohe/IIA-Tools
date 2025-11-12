@@ -28,8 +28,8 @@ def run(client):
     }
 
     engine_options = {
-        "Pip Library": "library",
         "API Service": "API",
+        "Pip Library": "library",
         "Scraping": "homemade"
     }
 
